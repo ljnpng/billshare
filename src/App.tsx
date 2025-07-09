@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useAppStore } from './store';
 import StepIndicator from './components/StepIndicator';
 import SetupStep from './components/SetupStep';
@@ -17,10 +17,12 @@ const App: React.FC = () => {
     activeReceiptId,
     addReceipt,
   } = useAppStore();
+  const isInitialized = useRef(false);
 
   useEffect(() => {
-    if (receipts.length === 0) {
+    if (!isInitialized.current && receipts.length === 0) {
       addReceipt('收据');
+      isInitialized.current = true;
     }
   }, [receipts, addReceipt]);
 
