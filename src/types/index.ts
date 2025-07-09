@@ -18,6 +18,7 @@ export interface MenuItem {
 
 export interface Receipt {
   id: string;
+  name: string;
   items: MenuItem[];
   subtotal: number; // 小计
   tax: number; // 税额
@@ -84,7 +85,8 @@ export interface RawReceiptData {
 // 用于前端状态管理
 export interface AppState {
   people: Person[];
-  receipt: Receipt | null;
+  receipts: Receipt[];
+  activeReceiptId: string | null;
   currentStep: 'setup' | 'input' | 'assign' | 'summary';
   isLoading: boolean;
   error: string | null;

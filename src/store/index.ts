@@ -9,7 +9,11 @@ interface AppStore extends AppState {
   addPerson: (name: string) => void;
   removePerson: (personId: string) => void;
   
-  setReceipt: (receipt: Receipt) => void;
+  addReceipt: (name?: string) => string;
+  removeReceipt: (receiptId: string) => void;
+  updateReceiptName: (receiptId: string, name: string) => void;
+  setActiveReceipt: (receiptId: string) => void;
+
   processRawData: (rawData: RawReceiptData) => void;
   updateTaxAndTip: (tax: number, tip: number) => void;
   addItem: (name: string, price: number) => void;
@@ -21,6 +25,7 @@ interface AppStore extends AppState {
   setError: (error: string | null) => void;
   
   // Computed values
+  getActiveReceipt: () => Receipt | undefined;
   getBillSummary: () => ReturnType<typeof dataProcessor.generateBillSummary> | null;
   
   // Reset
@@ -41,7 +46,8 @@ export const useAppStore = create<AppStore>()(
     (set, get) => ({
       // Initial state
       people: [],
-      receipt: null,
+      receipts: [],
+      activeReceiptId: null,
       currentStep: 'setup',
       isLoading: false,
       error: null,
@@ -61,21 +67,62 @@ export const useAppStore = create<AppStore>()(
       },
       
       removePerson: (personId) => {
-        set(state => ({
-          people: state.people.filter(p => p.id !== personId),
-          receipt: state.receipt ? {
-            ...state.receipt,
-            items: state.receipt.items.map(item => ({
+        set(state => {
+          const newReceipts = state.receipts.map(r => ({
+            ...r,
+            items: r.items.map(item => ({
               ...item,
               assignedTo: item.assignedTo.filter(id => id !== personId)
             }))
-          } : null
-        }));
+          }));
+          return { people: state.people.filter(p => p.id !== personId), receipts: newReceipts };
+        });
       },
       
-      setReceipt: (receipt) => set({ receipt }),
+      addReceipt: (name = '新收据') => {
+        const newReceipt: Receipt = {
+          id: `receipt_${Date.now()}`,
+          name: `${name} ${get().receipts.length + 1}`,
+          items: [],
+          subtotal: 0,
+          tax: 0,
+          tip: 0,
+          total: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        set(state => ({
+          receipts: [...state.receipts, newReceipt],
+          activeReceiptId: newReceipt.id,
+        }));
+        return newReceipt.id;
+      },
+
+      removeReceipt: (receiptId) => {
+        set(state => {
+          const newReceipts = state.receipts.filter(r => r.id !== receiptId);
+          let newActiveId = state.activeReceiptId;
+          if (newActiveId === receiptId) {
+            newActiveId = newReceipts.length > 0 ? newReceipts[0].id : null;
+          }
+          return { receipts: newReceipts, activeReceiptId: newActiveId };
+        });
+      },
+
+      updateReceiptName: (receiptId, name) => {
+        set(state => ({
+          receipts: state.receipts.map(r => 
+            r.id === receiptId ? { ...r, name, updatedAt: new Date() } : r
+          ),
+        }));
+      },
+
+      setActiveReceipt: (receiptId) => set({ activeReceiptId: receiptId }),
       
       processRawData: (rawData) => {
+        const { activeReceiptId } = get();
+        if (!activeReceiptId) return;
+
         try {
           set({ isLoading: true, error: null });
           const receipt = dataProcessor.processRawData(rawData);
@@ -84,7 +131,10 @@ export const useAppStore = create<AppStore>()(
             throw new Error('数据验证失败');
           }
           
-          set({ receipt, isLoading: false });
+          set(state => ({
+            receipts: state.receipts.map(r => r.id === activeReceiptId ? {...receipt, id: r.id, name: r.name } : r),
+            isLoading: false,
+          }));
         } catch (error) {
           set({ 
             error: error instanceof Error ? error.message : '数据处理失败',
@@ -94,12 +144,14 @@ export const useAppStore = create<AppStore>()(
       },
       
       updateTaxAndTip: (tax, tip) => {
-        const { receipt } = get();
+        const receipt = get().getActiveReceipt();
         if (!receipt) return;
         
         try {
           const updatedReceipt = dataProcessor.updateTaxAndTip(receipt, tax, tip);
-          set({ receipt: updatedReceipt });
+          set(state => ({
+            receipts: state.receipts.map(r => r.id === receipt.id ? updatedReceipt : r),
+          }));
         } catch (error) {
           set({ 
             error: error instanceof Error ? error.message : '更新税费失败' 
@@ -108,12 +160,14 @@ export const useAppStore = create<AppStore>()(
       },
       
       addItem: (name, price) => {
-        const { receipt } = get();
+        const receipt = get().getActiveReceipt();
         if (!receipt) return;
         
         try {
           const updatedReceipt = dataProcessor.addItem(receipt, name, price);
-          set({ receipt: updatedReceipt });
+          set(state => ({
+            receipts: state.receipts.map(r => r.id === receipt.id ? updatedReceipt : r),
+          }));
         } catch (error) {
           set({ 
             error: error instanceof Error ? error.message : '添加条目失败' 
@@ -122,12 +176,14 @@ export const useAppStore = create<AppStore>()(
       },
       
       removeItem: (itemId) => {
-        const { receipt } = get();
+        const receipt = get().getActiveReceipt();
         if (!receipt) return;
         
         try {
           const updatedReceipt = dataProcessor.removeItem(receipt, itemId);
-          set({ receipt: updatedReceipt });
+          set(state => ({
+            receipts: state.receipts.map(r => r.id === receipt.id ? updatedReceipt : r),
+          }));
         } catch (error) {
           set({ 
             error: error instanceof Error ? error.message : '删除条目失败' 
@@ -136,12 +192,14 @@ export const useAppStore = create<AppStore>()(
       },
       
       updateItemAssignment: (itemId, assignedTo) => {
-        const { receipt } = get();
+        const receipt = get().getActiveReceipt();
         if (!receipt) return;
         
         try {
           const updatedReceipt = dataProcessor.updateItemAssignment(receipt, itemId, assignedTo);
-          set({ receipt: updatedReceipt });
+          set(state => ({
+            receipts: state.receipts.map(r => r.id === receipt.id ? updatedReceipt : r),
+          }));
         } catch (error) {
           set({ 
             error: error instanceof Error ? error.message : '更新分配失败' 
@@ -152,9 +210,16 @@ export const useAppStore = create<AppStore>()(
       setCurrentStep: (currentStep) => set({ currentStep }),
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
+
+      getActiveReceipt: () => {
+        const { receipts, activeReceiptId } = get();
+        return receipts.find(r => r.id === activeReceiptId);
+      },
       
       getBillSummary: () => {
-        const { receipt, people } = get();
+        const { people } = get();
+        const receipt = get().getActiveReceipt();
+
         if (!receipt || people.length === 0) return null;
         
         try {
@@ -169,7 +234,8 @@ export const useAppStore = create<AppStore>()(
       
       reset: () => set({
         people: [],
-        receipt: null,
+        receipts: [],
+        activeReceiptId: null,
         currentStep: 'setup',
         isLoading: false,
         error: null

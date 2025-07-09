@@ -4,16 +4,18 @@ import { useAppStore } from '../store';
 import { RawReceiptData } from '../types';
 
 const InputStep: React.FC = () => {
-  const { 
-    receipt, 
-    processRawData, 
-    addItem, 
-    removeItem, 
-    updateTaxAndTip, 
-    setCurrentStep 
+  const {
+    getActiveReceipt,
+    processRawData,
+    addItem,
+    removeItem,
+    updateTaxAndTip,
+    setCurrentStep,
   } = useAppStore();
-  
-  const [newItemName, setNewItemName] = useState('');
+
+  const receipt = getActiveReceipt();
+
+  const [newItemName, setNewItemName] = React.useState('');
   const [newItemPrice, setNewItemPrice] = useState('');
   const [taxAmount, setTaxAmount] = useState(receipt?.tax?.toString() || '');
   const [tipAmount, setTipAmount] = useState(receipt?.tip?.toString() || '');
@@ -26,9 +28,13 @@ const InputStep: React.FC = () => {
         tax: 0,
         tip: 0
       };
-      processRawData(initialData);
+      // 这将在 activeReceiptId 设置后由 store 保证有 receipt
+      // processRawData(initialData);
+    } else {
+      setTaxAmount(String(receipt.tax));
+      setTipAmount(String(receipt.tip));
     }
-  }, [receipt, processRawData]);
+  }, [receipt]);
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +79,7 @@ const InputStep: React.FC = () => {
               添加每个消费项目的名称和价格
             </p>
           </div>
-          
+
           <div className="card-content">
             {/* 添加条目表单 */}
             <form onSubmit={handleAddItem} className="mb-6">
@@ -157,7 +163,7 @@ const InputStep: React.FC = () => {
               输入税费和小费金额，系统会自动按比例分摊
             </p>
           </div>
-          
+
           <div className="card-content">
             <div className="space-y-4">
               {/* 税费输入 */}

@@ -1,14 +1,15 @@
 import React from 'react';
-import { Check, Users, DollarSign } from 'lucide-react';
 import { useAppStore } from '../store';
+import { UserCheck, Users, CheckCircle, ArrowRight } from 'lucide-react';
 
 const AssignStep: React.FC = () => {
-  const { 
-    receipt, 
-    people, 
-    updateItemAssignment, 
-    setCurrentStep 
-  } = useAppStore();
+  const { people, getActiveReceipt, updateItemAssignment, setCurrentStep } = useAppStore();
+  const receipt = getActiveReceipt();
+
+  if (!receipt || !people.length) {
+    // 应该由 App.tsx 中的逻辑处理，这里做个兜底
+    return <div>加载中...</div>;
+  }
 
   const handlePersonToggle = (itemId: string, personId: string) => {
     if (!receipt) return;
@@ -71,7 +72,7 @@ const AssignStep: React.FC = () => {
           <div className="mb-6 p-4 bg-blue-50 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <Check className="h-5 w-5 text-blue-600 mr-2" />
+                <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
                 <span className="text-sm font-medium text-blue-800">
                   已分配 {getAssignedItemsCount()} / {receipt.items.length} 个条目
                 </span>
@@ -163,7 +164,7 @@ const AssignStep: React.FC = () => {
                         />
                         <span className="text-sm font-medium">{person.name}</span>
                         {item.assignedTo.includes(person.id) && (
-                          <Check className="h-4 w-4 ml-auto" />
+                          <CheckCircle className="h-4 w-4 ml-auto" />
                         )}
                       </div>
                     </button>
