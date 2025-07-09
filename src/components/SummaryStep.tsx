@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
-import { DollarSign, Receipt, RotateCcw, Share2, Copy, Check } from 'lucide-react';
+import { DollarSign, Receipt, RotateCcw, Share2, Copy, Check, ChevronDown } from 'lucide-react';
 import { useAppStore } from '../store';
 
 const SummaryStep: React.FC = () => {
   const { getBillSummary, reset, setCurrentStep } = useAppStore();
   const [copySuccess, setCopySuccess] = useState(false);
+  const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
   
   const billSummary = getBillSummary();
+
+  const toggleReceipt = (receiptId: string) => {
+    setExpandedReceipts(prev =>
+      prev.includes(receiptId)
+        ? prev.filter(id => id !== receiptId)
+        : [...prev, receiptId]
+    );
+  };
 
   const handleCopyToClipboard = () => {
     if (!billSummary) return;
@@ -131,12 +140,53 @@ const SummaryStep: React.FC = () => {
         </div>
         <div className="card-content">
             <div className="space-y-2">
-                {billSummary.receipts.map(receipt => (
-                    <div key={receipt.id} className="flex justify-between p-2 bg-gray-50 rounded-md">
-                        <span>{receipt.name}</span>
-                        <span>${receipt.total.toFixed(2)}</span>
-                    </div>
-                ))}
+                {billSummary.receipts.map(receipt => {
+                    const isExpanded = expandedReceipts.includes(receipt.id);
+                    return (
+                        <div key={receipt.id} className="bg-gray-50 rounded-lg">
+                            <button
+                                onClick={() => toggleReceipt(receipt.id)}
+                                className="w-full flex justify-between items-center p-4 text-left"
+                            >
+                                <span className="font-medium">{receipt.name}</span>
+                                <div className="flex items-center">
+                                    <span className="mr-4 font-medium">${receipt.total.toFixed(2)}</span>
+                                    <ChevronDown
+                                        className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                    />
+                                </div>
+                            </button>
+                            {isExpanded && (
+                                <div className="p-4 border-t">
+                                    <div className="space-y-2">
+                                        {receipt.items.map(item => (
+                                            <div key={item.id} className="flex justify-between">
+                                                <span className="text-gray-600">{item.name}</span>
+                                                <span>${item.finalPrice.toFixed(2)}</span>
+                                            </div>
+                                        ))}
+                                        { (receipt.tax > 0 || receipt.tip > 0) &&
+                                        <div className="border-t pt-2 mt-2">
+                                            <div className="flex justify-between text-sm">
+                                            <span className="text-gray-500">小计</span>
+                                            <span>${receipt.subtotal.toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                            <span className="text-gray-500">税费</span>
+                                            <span>${receipt.tax.toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                            <span className="text-gray-500">小费</span>
+                                            <span>${receipt.tip.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         </div>
       </div>
