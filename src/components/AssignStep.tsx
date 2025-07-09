@@ -104,65 +104,75 @@ const AssignStep: React.FC = () => {
           </div>
 
           {/* 条目分配列表 */}
-          <div className="space-y-4">
-            {allItems.map((item) => (
-              <div key={item.id} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-lg">{item.name}</h4>
-                    <div className="text-sm text-gray-600">
-                      原价: ${item.originalPrice.toFixed(2)}
-                      {item.finalPrice > item.originalPrice && (
-                        <span className="ml-2 text-blue-600">
-                          含税费: ${item.finalPrice.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm text-gray-600">
-                      {item.assignedTo.length > 0 ? (
-                        <span className="text-green-600">
-                          已分配给 {item.assignedTo.length} 人
-                        </span>
-                      ) : (
-                        <span className="text-red-600">
-                          未分配
-                        </span>
-                      )}
-                    </div>
-                    {item.assignedTo.length > 0 && (
-                      <div className="text-sm font-medium">
-                        每人: ${(item.finalPrice / item.assignedTo.length).toFixed(2)}
-                      </div>
-                    )}
-                  </div>
+          <div className="space-y-8">
+            {receipts.map(receipt => (
+              <div key={receipt.id}>
+                <div className="mb-4">
+                  <h3 className="text-xl font-semibold text-gray-800">{receipt.name}</h3>
+                  <p className="text-sm text-gray-500">共 {receipt.items.length} 个条目</p>
                 </div>
-                
-                {/* 人员选择 */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                  {people.map(person => (
-                    <button
-                      key={person.id}
-                      onClick={() => handlePersonToggle(item.id, person.id)}
-                      className={`p-2 rounded-lg border-2 transition-all ${
-                        item.assignedTo.includes(person.id)
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex items-center">
-                        <div 
-                          className="person-color"
-                          style={{ backgroundColor: person.color }}
-                        />
-                        <span className="text-sm font-medium">{person.name}</span>
-                        {item.assignedTo.includes(person.id) && (
-                          <CheckCircle className="h-4 w-4 ml-auto" />
-                        )}
+                <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                  <div className="divide-y divide-gray-200">
+                    {receipt.items.map((item) => (
+                      <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors duration-200">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-lg">{item.name}</h4>
+                            <div className="text-sm text-gray-600">
+                              原价: ${item.originalPrice.toFixed(2)}
+                              {item.finalPrice > item.originalPrice && (
+                                <span className="ml-2 text-blue-600">
+                                  含税费: ${item.finalPrice.toFixed(2)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right flex-shrink-0 ml-4">
+                            <div className="text-sm text-gray-600">
+                              {item.assignedTo.length > 0 ? (
+                                <span className="text-green-600 font-semibold">
+                                  已分配给 {item.assignedTo.length} 人
+                                </span>
+                              ) : (
+                                <span className="text-red-600 font-semibold">
+                                  未分配
+                                </span>
+                              )}
+                            </div>
+                            {item.assignedTo.length > 0 && (
+                              <div className="text-sm font-medium">
+                                每人: ${(item.finalPrice / item.assignedTo.length).toFixed(2)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* 人员选择 */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-2">
+                          {people.map(person => (
+                            <button
+                              key={person.id}
+                              onClick={() => handlePersonToggle(item.id, person.id)}
+                              className={`p-2 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ease-in-out transform hover:scale-105 ${
+                                item.assignedTo.includes(person.id)
+                                  ? 'border-blue-500 bg-blue-100 text-blue-800 shadow-sm'
+                                  : 'border-gray-200 bg-white hover:border-gray-400'
+                              }`}
+                            >
+                              <div 
+                                className="person-color-sm"
+                                style={{ backgroundColor: person.color }}
+                              />
+                              <span className="text-sm font-medium">{person.name}</span>
+                              {item.assignedTo.includes(person.id) && (
+                                <CheckCircle className="h-4 w-4 ml-2 flex-shrink-0" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </button>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}

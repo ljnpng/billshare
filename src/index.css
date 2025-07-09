@@ -93,6 +93,14 @@
   margin-right: 0.5rem;
 }
 
+.person-color-sm {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
 .step-indicator {
   @apply relative flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium;
 }
