@@ -1,9 +1,10 @@
-import React from 'react';
-import { DollarSign, Receipt, RotateCcw, Share2, Copy } from 'lucide-react';
+import React, { useState } from 'react';
+import { DollarSign, Receipt, RotateCcw, Share2, Copy, Check } from 'lucide-react';
 import { useAppStore } from '../store';
 
 const SummaryStep: React.FC = () => {
   const { getBillSummary, reset, setCurrentStep } = useAppStore();
+  const [copySuccess, setCopySuccess] = useState(false);
   
   const billSummary = getBillSummary();
 
@@ -25,7 +26,8 @@ const SummaryStep: React.FC = () => {
     });
 
     navigator.clipboard.writeText(text).then(() => {
-      alert('已复制到剪贴板！');
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
     });
   };
 
@@ -176,10 +178,15 @@ const SummaryStep: React.FC = () => {
           </button>
           <button
             onClick={handleCopyToClipboard}
-            className="btn btn-secondary btn-md"
+            className={`btn btn-md ${copySuccess ? 'btn-success' : 'btn-secondary'}`}
+            disabled={copySuccess}
           >
-            <Copy className="h-4 w-4 mr-2" />
-            复制汇总
+            {copySuccess ? (
+              <Check className="h-4 w-4 mr-2" />
+            ) : (
+              <Copy className="h-4 w-4 mr-2" />
+            )}
+            {copySuccess ? '已复制' : '复制汇总'}
           </button>
         </div>
         
