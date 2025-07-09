@@ -12,18 +12,22 @@ const SummaryStep: React.FC = () => {
     if (!billSummary) return;
 
     let text = '费用分摊汇总\n\n';
-    text += `总计: $${billSummary.receipt.total.toFixed(2)}\n`;
-    text += `小计: $${billSummary.receipt.subtotal.toFixed(2)}\n`;
-    text += `税费: $${billSummary.receipt.tax.toFixed(2)}\n`;
-    text += `小费: $${billSummary.receipt.tip.toFixed(2)}\n\n`;
+    text += `总计: $${billSummary.grandTotal.toFixed(2)}\n`;
+    text += `小计: $${billSummary.totalSubtotal.toFixed(2)}\n`;
+    text += `税费: $${billSummary.totalTax.toFixed(2)}\n`;
+    text += `小费: $${billSummary.totalTip.toFixed(2)}\n\n`;
     
+    text += '--- 各人应付 ---\n';
     billSummary.personalBills.forEach(bill => {
       text += `${bill.personName}: $${bill.totalFinal.toFixed(2)}\n`;
-      bill.items.forEach(item => {
-        text += `  - ${item.itemName}: $${item.finalShare.toFixed(2)}\n`;
-      });
-      text += '\n';
     });
+    text += '\n';
+
+    text += '--- 收据详情 ---\n';
+    billSummary.receipts.forEach(receipt => {
+      text += `${receipt.name}: $${receipt.total.toFixed(2)}\n`;
+    });
+
 
     navigator.clipboard.writeText(text).then(() => {
       setCopySuccess(true);
@@ -33,6 +37,7 @@ const SummaryStep: React.FC = () => {
 
   const handleStartOver = () => {
     reset();
+    setCurrentStep('setup');
   };
 
   const handleEditAssignments = () => {
@@ -78,19 +83,19 @@ const SummaryStep: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600">小计:</span>
-                  <span>${billSummary.receipt.subtotal.toFixed(2)}</span>
+                  <span>${billSummary.totalSubtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">税费:</span>
-                  <span>${billSummary.receipt.tax.toFixed(2)}</span>
+                  <span>${billSummary.totalTax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">小费:</span>
-                  <span>${billSummary.receipt.tip.toFixed(2)}</span>
+                  <span>${billSummary.totalTip.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold border-t pt-2">
                   <span>总计:</span>
-                  <span>${billSummary.receipt.total.toFixed(2)}</span>
+                  <span>${billSummary.grandTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -118,6 +123,24 @@ const SummaryStep: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* 收据明细 */}
+      <div className="card mb-6">
+        <div className="card-header">
+            <h2 className="card-title">收据明细</h2>
+        </div>
+        <div className="card-content">
+            <div className="space-y-2">
+                {billSummary.receipts.map(receipt => (
+                    <div key={receipt.id} className="flex justify-between p-2 bg-gray-50 rounded-md">
+                        <span>{receipt.name}</span>
+                        <span>${receipt.total.toFixed(2)}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+      </div>
+
 
       {/* 详细分摊 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -194,7 +217,7 @@ const SummaryStep: React.FC = () => {
           onClick={handleStartOver}
           className="btn btn-primary btn-md"
         >
-          <Share2 className="h-4 w-4 mr-2" />
+          <RotateCcw className="h-4 w-4 mr-2" />
           重新开始
         </button>
       </div>

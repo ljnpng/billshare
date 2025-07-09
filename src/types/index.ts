@@ -43,9 +43,13 @@ export interface PersonalBill {
 }
 
 export interface BillSummary {
-  receipt: Receipt;
+  receipts: Receipt[];
   people: Person[];
   personalBills: PersonalBill[];
+  totalSubtotal: number;
+  totalTax: number;
+  totalTip: number;
+  grandTotal: number;
   createdAt: Date;
 }
 
@@ -64,7 +68,7 @@ export interface DataProcessor {
   generatePersonalBills(receipt: Receipt, people: Person[]): PersonalBill[];
   
   // 生成最终汇总
-  generateBillSummary(receipt: Receipt, people: Person[]): BillSummary;
+  generateBillSummary(receipts: Receipt[], people: Person[]): BillSummary;
 }
 
 // 原始输入数据格式（支持多种输入方式）
@@ -86,7 +90,6 @@ export interface RawReceiptData {
 export interface AppState {
   people: Person[];
   receipts: Receipt[];
-  activeReceiptId: string | null;
   currentStep: 'setup' | 'input' | 'assign' | 'summary';
   isLoading: boolean;
   error: string | null;

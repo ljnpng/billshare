@@ -150,13 +150,46 @@ export class BillDataProcessor implements DataProcessor {
   /**
    * 生成最终账单汇总
    */
-  generateBillSummary(receipt: Receipt, people: Person[]): BillSummary {
-    const personalBills = this.generatePersonalBills(receipt, people);
+  generateBillSummary(receipts: Receipt[], people: Person[]): BillSummary {
+    const personalBillsMap = new Map<string, PersonalBill>();
+
+    people.forEach(person => {
+      personalBillsMap.set(person.id, {
+        personId: person.id,
+        personName: person.name,
+        items: [],
+        totalOriginal: 0,
+        totalFinal: 0
+      });
+    });
+
+    receipts.forEach(receipt => {
+      const billsForReceipt = this.generatePersonalBills(receipt, people);
+      billsForReceipt.forEach(bill => {
+        const existingBill = personalBillsMap.get(bill.personId);
+        if (existingBill) {
+          existingBill.items.push(...bill.items);
+          existingBill.totalOriginal += bill.totalOriginal;
+          existingBill.totalFinal += bill.totalFinal;
+        }
+      });
+    });
+
+    const personalBills = Array.from(personalBillsMap.values());
     
+    const totalSubtotal = receipts.reduce((sum, r) => sum + r.subtotal, 0);
+    const totalTax = receipts.reduce((sum, r) => sum + r.tax, 0);
+    const totalTip = receipts.reduce((sum, r) => sum + r.tip, 0);
+    const grandTotal = receipts.reduce((sum, r) => sum + r.total, 0);
+
     return {
-      receipt,
+      receipts,
       people,
       personalBills,
+      totalSubtotal,
+      totalTax,
+      totalTip,
+      grandTotal,
       createdAt: new Date()
     };
   }

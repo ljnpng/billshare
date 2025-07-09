@@ -6,7 +6,6 @@ import InputStep from './components/InputStep';
 import AssignStep from './components/AssignStep';
 import SummaryStep from './components/SummaryStep';
 import ErrorAlert from './components/ErrorAlert';
-import { ReceiptTabs } from './components/ReceiptTabs';
 
 const App: React.FC = () => {
   const { 
@@ -14,8 +13,8 @@ const App: React.FC = () => {
     error, 
     people,
     receipts,
-    activeReceiptId,
     addReceipt,
+    setCurrentStep,
   } = useAppStore();
   const isInitialized = useRef(false);
 
@@ -26,27 +25,31 @@ const App: React.FC = () => {
     }
   }, [receipts, addReceipt]);
 
-  const activeReceipt = receipts.find(r => r.id === activeReceiptId);
-
   const renderStep = () => {
     // 如果人员少于2人，强制留在设置步骤
     if (currentStep !== 'setup' && people.length < 2) {
+      setCurrentStep('setup');
       return <SetupStep />;
     }
 
-    // 如果没有活动的收据，也停留在设置步骤
-    if (currentStep !== 'setup' && !activeReceipt) {
-      return <SetupStep />;
+    // 如果没有收据，也停留在输入步骤
+    if (currentStep !== 'setup' && receipts.length === 0) {
+      setCurrentStep('input');
+      return <InputStep />;
     }
+    
+    const totalItems = receipts.reduce((sum, r) => sum + r.items.length, 0);
 
     // 如果进入分配步骤，但没有条目，则退回输入步骤
-    if (currentStep === 'assign' && activeReceipt && activeReceipt.items.length === 0) {
+    if (currentStep === 'assign' && totalItems === 0) {
+      setCurrentStep('input');
       return <InputStep />;
     }
 
     // 如果进入汇总步骤，但有条目未分配，则退回分配步骤
-    const isAllAssigned = activeReceipt?.items.every(item => item.assignedTo.length > 0) ?? false;
-    if (currentStep === 'summary' && !isAllAssigned) {
+    const isAllAssigned = receipts.flatMap(r => r.items).every(item => item.assignedTo.length > 0);
+    if (currentStep === 'summary' && totalItems > 0 && !isAllAssigned) {
+      setCurrentStep('assign');
       return <AssignStep />;
     }
 
@@ -77,10 +80,8 @@ const App: React.FC = () => {
         {error && <ErrorAlert message={error} />}
         
         <div className="mb-8">
-          <StepIndicator />
+          <StepIndicator currentStep={currentStep} />
         </div>
-
-        <ReceiptTabs />
 
         <main className="animation-fade-in">
           {renderStep()}

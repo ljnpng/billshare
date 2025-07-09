@@ -3,18 +3,17 @@ import { useAppStore } from '../store';
 import { UserCheck, Users, CheckCircle, ArrowRight } from 'lucide-react';
 
 const AssignStep: React.FC = () => {
-  const { people, getActiveReceipt, updateItemAssignment, setCurrentStep } = useAppStore();
-  const receipt = getActiveReceipt();
+  const { people, receipts, updateItemAssignment, setCurrentStep } = useAppStore();
+  
+  const allItems = receipts.flatMap(r => r.items);
 
-  if (!receipt || !people.length) {
+  if (allItems.length === 0 || !people.length) {
     // 应该由 App.tsx 中的逻辑处理，这里做个兜底
     return <div>加载中...</div>;
   }
 
   const handlePersonToggle = (itemId: string, personId: string) => {
-    if (!receipt) return;
-    
-    const item = receipt.items.find(item => item.id === itemId);
+    const item = allItems.find(item => item.id === itemId);
     if (!item) return;
 
     const newAssignedTo = item.assignedTo.includes(personId)
@@ -25,7 +24,7 @@ const AssignStep: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (receipt && receipt.items.every(item => item.assignedTo.length > 0)) {
+    if (allItems.every(item => item.assignedTo.length > 0)) {
       setCurrentStep('summary');
     }
   };
@@ -35,17 +34,14 @@ const AssignStep: React.FC = () => {
   };
 
   const getAssignedItemsCount = () => {
-    if (!receipt) return 0;
-    return receipt.items.filter(item => item.assignedTo.length > 0).length;
+    return allItems.filter(item => item.assignedTo.length > 0).length;
   };
 
   const getPersonAssignmentInfo = (personId: string) => {
-    if (!receipt) return { count: 0, total: 0 };
-    
     let count = 0;
     let total = 0;
     
-    receipt.items.forEach(item => {
+    allItems.forEach(item => {
       if (item.assignedTo.includes(personId)) {
         count++;
         total += item.finalPrice / item.assignedTo.length;
@@ -54,8 +50,6 @@ const AssignStep: React.FC = () => {
     
     return { count, total: Math.round(total * 100) / 100 };
   };
-
-  if (!receipt) return null;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -74,10 +68,10 @@ const AssignStep: React.FC = () => {
               <div className="flex items-center">
                 <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
                 <span className="text-sm font-medium text-blue-800">
-                  已分配 {getAssignedItemsCount()} / {receipt.items.length} 个条目
+                  已分配 {getAssignedItemsCount()} / {allItems.length} 个条目
                 </span>
               </div>
-              {getAssignedItemsCount() === receipt.items.length && (
+              {getAssignedItemsCount() === allItems.length && (
                 <span className="text-sm text-green-600 font-medium">
                   ✓ 所有条目已分配
                 </span>
@@ -111,7 +105,7 @@ const AssignStep: React.FC = () => {
 
           {/* 条目分配列表 */}
           <div className="space-y-4">
-            {receipt.items.map((item) => (
+            {allItems.map((item) => (
               <div key={item.id} className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex-1">
@@ -187,7 +181,7 @@ const AssignStep: React.FC = () => {
         <button
           onClick={handleNext}
           className="btn btn-primary btn-lg"
-          disabled={getAssignedItemsCount() !== receipt.items.length}
+          disabled={getAssignedItemsCount() !== allItems.length}
         >
           下一步：费用汇总
         </button>
