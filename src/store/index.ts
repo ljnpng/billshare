@@ -30,13 +30,26 @@ interface AppStore extends AppState {
   reset: () => void;
 }
 
-// 生成随机颜色
-const generateRandomColor = () => {
-  const colors = [
-    '#EF4444', '#F97316', '#F59E0B', '#10B981', 
-    '#06B6D4', '#3B82F6', '#8B5CF6', '#EC4899'
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
+// 颜色系列，选择一组视觉上区分度高且美观的颜色
+// 使用 Pinterest 的 Gestalt 设计系统的12色分类调色板
+const colorPalette = [
+  '#0081FE', // 亮蓝
+  '#11A69C', // 蓝绿
+  '#FF5383', // 粉红
+  '#D17711', // 橙色
+  '#924AF7', // 紫色
+  '#00AB55', // 绿色
+  '#F2681F', // 亮橙
+  '#DE2C62', // 洋红
+  '#005062', // 深青
+  '#400387', // 深紫
+  '#660E00', // 深红
+  '#003C96', // 深蓝
+];
+
+// 根据已有的人数，顺序分配颜色
+const assignColor = (peopleCount: number) => {
+  return colorPalette[peopleCount % colorPalette.length];
 };
 
 export const useAppStore = create<AppStore>()(
@@ -53,14 +66,14 @@ export const useAppStore = create<AppStore>()(
       setPeople: (people) => set({ people }),
       
       addPerson: (name) => {
-        const newPerson: Person = {
-          id: `person_${Date.now()}`,
-          name,
-          color: generateRandomColor()
-        };
-        set(state => ({ 
-          people: [...state.people, newPerson] 
-        }));
+        set(state => {
+          const newPerson: Person = {
+            id: `person_${Date.now()}`,
+            name,
+            color: assignColor(state.people.length)
+          };
+          return { people: [...state.people, newPerson] };
+        });
       },
       
       removePerson: (personId) => {
