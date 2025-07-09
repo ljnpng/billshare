@@ -54,7 +54,7 @@ export class BillDataProcessor implements DataProcessor {
    */
   validateData(receipt: Receipt): boolean {
     // 检查基本字段
-    if (!receipt.id || !receipt.items || receipt.items.length === 0) {
+    if (!receipt.id || !receipt.items) {
       return false;
     }
 
