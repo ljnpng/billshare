@@ -9,7 +9,7 @@ export interface Person {
 export interface MenuItem {
   id: string;
   name: string;
-  originalPrice: number; // 原价
+  originalPrice: number | null; // 原价，允许为 null 以支持 AI 识别后的待填写状态
   finalPrice: number; // 含税含小费的最终价格
   assignedTo: string[]; // 分配给谁的ID列表
   createdAt: Date;
@@ -93,4 +93,29 @@ export interface AppState {
   currentStep: 'setup' | 'input' | 'assign' | 'summary';
   isLoading: boolean;
   error: string | null;
+  isAiProcessing: boolean; // 新增：AI处理状态
+}
+
+// 新增：AI识别相关的类型定义
+export interface AIRecognizedItem {
+  name: string;
+  price: number | null; // 允许价格为 null，用户可以后续填写
+  description?: string;
+}
+
+export interface AIRecognizedReceipt {
+  businessName?: string;
+  items: AIRecognizedItem[];
+  subtotal?: number | null;
+  tax?: number | null;
+  tip?: number | null;
+  total?: number | null;
+  date?: string;
+  confidence?: number; // 识别置信度
+}
+
+export interface AIProcessingResult {
+  success: boolean;
+  data?: AIRecognizedReceipt;
+  error?: string;
 } 

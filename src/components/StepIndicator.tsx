@@ -27,39 +27,44 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep }) => {
 
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between">
-        {steps.map((step, index) => {
-          const status = getStepStatus(index);
-          const Icon = step.icon;
-          
-          return (
-            <React.Fragment key={step.id}>
-              <div className="flex flex-col items-center">
-                <div className={`step-indicator ${status}`}>
-                  {status === 'completed' ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Icon className="h-4 w-4" />
+      <div className="bg-white rounded-2xl p-6 shadow-xl shadow-gray-200/40 border border-gray-200/60">
+        <div className="flex items-center justify-between">
+          {steps.map((step, index) => {
+            const status = getStepStatus(index);
+            const Icon = step.icon;
+            
+            return (
+              <React.Fragment key={step.id}>
+                <div className="flex flex-col items-center group">
+                  <div className={`step-indicator ${status} group-hover:scale-105 transition-transform`}>
+                    {status === 'completed' ? (
+                      <Check className="h-5 w-5" />
+                    ) : (
+                      <Icon className="h-5 w-5" />
+                    )}
+                  </div>
+                  <span className={`mt-3 text-sm font-semibold transition-colors ${
+                    status === 'active' ? 'text-blue-600' : 
+                    status === 'completed' ? 'text-green-600' : 
+                    'text-gray-500'
+                  }`}>
+                    {step.label}
+                  </span>
+                  {status === 'active' && (
+                    <div className="mt-2 w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
                   )}
                 </div>
-                <span className={`mt-2 text-sm font-medium ${
-                  status === 'active' ? 'text-blue-600' : 
-                  status === 'completed' ? 'text-green-600' : 
-                  'text-gray-500'
-                }`}>
-                  {step.label}
-                </span>
-              </div>
-              
-              {index < steps.length - 1 && (
-                <div className={`step-line ${
-                  getStepStatus(index + 1) === 'completed' || 
-                  getStepStatus(index + 1) === 'active' ? 'active' : ''
-                }`} />
-              )}
-            </React.Fragment>
-          );
-        })}
+                
+                {index < steps.length - 1 && (
+                  <div className={`step-line ${
+                    getStepStatus(index + 1) === 'completed' || 
+                    getStepStatus(index + 1) === 'active' ? 'active' : ''
+                  }`} />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

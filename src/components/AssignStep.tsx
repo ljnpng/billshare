@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppStore } from '../store';
-import { UserCheck, Users, CheckCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 
 const AssignStep: React.FC = () => {
   const { people, receipts, updateItemAssignment, setCurrentStep } = useAppStore();
@@ -53,26 +53,26 @@ const AssignStep: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="card mb-6">
+      <div className="card mb-8">
         <div className="card-header">
           <h2 className="card-title">分配条目</h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-description">
             为每个条目选择付费的人员。每个条目可以由多人分摊。
           </p>
         </div>
         
         <div className="card-content">
           {/* 进度指示 */}
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+          <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-200/60">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
-                <span className="text-sm font-medium text-blue-800">
+                <CheckCircle className="h-6 w-6 text-blue-600 mr-3" />
+                <span className="text-base font-semibold text-blue-800">
                   已分配 {getAssignedItemsCount()} / {allItems.length} 个条目
                 </span>
               </div>
               {getAssignedItemsCount() === allItems.length && (
-                <span className="text-sm text-green-600 font-medium">
+                <span className="text-sm text-green-600 font-semibold bg-green-100 px-3 py-1 rounded-full">
                   ✓ 所有条目已分配
                 </span>
               )}
@@ -80,22 +80,22 @@ const AssignStep: React.FC = () => {
           </div>
 
           {/* 人员预览 */}
-          <div className="mb-6">
-            <h3 className="text-lg font-medium mb-3">人员预览</h3>
+          <div className="mb-8">
+            <h3 className="text-xl font-bold mb-4">人员预览</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {people.map(person => {
                 const info = getPersonAssignmentInfo(person.id);
                 return (
-                  <div key={person.id} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center mb-2">
+                  <div key={person.id} className="p-4 bg-white rounded-xl shadow-sm border border-gray-200/60 hover:shadow-md transition-shadow">
+                    <div className="flex items-center mb-3">
                       <div 
                         className="person-color"
                         style={{ backgroundColor: person.color }}
                       />
-                      <span className="font-medium">{person.name}</span>
+                      <span className="font-semibold">{person.name}</span>
                     </div>
                     <div className="text-sm text-gray-600">
-                      {info.count} 个条目 • ${info.total.toFixed(2)}
+                      {info.count} 个条目 • <span className="font-semibold text-blue-600">${info.total.toFixed(2)}</span>
                     </div>
                   </div>
                 );
@@ -107,12 +107,12 @@ const AssignStep: React.FC = () => {
           <div className="space-y-8">
             {receipts.map(receipt => (
               <div key={receipt.id}>
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-gray-800">{receipt.name}</h3>
-                  <p className="text-sm text-gray-500">共 {receipt.items.length} 个条目</p>
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{receipt.name}</h3>
+                  <p className="text-subtitle mt-1">共 {receipt.items.length} 个条目</p>
                 </div>
-                <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <div className="divide-y divide-gray-200">
+                <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/40 border border-gray-200/60 overflow-hidden">
+                  <div className="divide-y divide-gray-200/60">
                     {receipt.items.map((item) => (
                       <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors duration-200">
                         <div className="flex items-start justify-between mb-3">
@@ -148,24 +148,27 @@ const AssignStep: React.FC = () => {
                         </div>
                         
                         {/* 人员选择 */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 pt-4" role="group" aria-label={`为 ${item.name} 选择付费人员`}>
                           {people.map(person => (
                             <button
                               key={person.id}
                               onClick={() => handlePersonToggle(item.id, person.id)}
-                              className={`p-2 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ease-in-out transform hover:scale-105 ${
+                              className={`p-3 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ease-in-out transform hover:scale-105 ${
                                 item.assignedTo.includes(person.id)
-                                  ? 'border-blue-500 bg-blue-100 text-blue-800 shadow-sm'
-                                  : 'border-gray-200 bg-white hover:border-gray-400'
+                                  ? 'border-blue-500 bg-blue-100 text-blue-800 shadow-md'
+                                  : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-sm'
                               }`}
+                              aria-pressed={item.assignedTo.includes(person.id)}
+                              aria-label={`${item.assignedTo.includes(person.id) ? '取消' : '选择'} ${person.name} 为 ${item.name} 付费`}
                             >
                               <div 
                                 className="person-color-sm"
                                 style={{ backgroundColor: person.color }}
+                                aria-hidden="true"
                               />
-                              <span className="text-sm font-medium">{person.name}</span>
+                              <span className="text-sm font-semibold">{person.name}</span>
                               {item.assignedTo.includes(person.id) && (
-                                <CheckCircle className="h-4 w-4 ml-2 flex-shrink-0" />
+                                <CheckCircle className="h-4 w-4 ml-2 flex-shrink-0 text-blue-600" aria-hidden="true" />
                               )}
                             </button>
                           ))}
@@ -181,19 +184,20 @@ const AssignStep: React.FC = () => {
       </div>
 
       {/* 导航按钮 */}
-      <div className="flex justify-between">
+      <div className="flex flex-col sm:flex-row gap-4 sm:justify-between">
         <button
           onClick={handleBack}
-          className="btn btn-secondary btn-lg"
+          className="btn btn-secondary btn-lg order-2 sm:order-1"
         >
           上一步
         </button>
         <button
           onClick={handleNext}
-          className="btn btn-primary btn-lg"
+          className="btn btn-primary btn-lg order-1 sm:order-2"
           disabled={getAssignedItemsCount() !== allItems.length}
         >
-          下一步：费用汇总
+          <span className="hidden sm:inline">下一步：费用汇总</span>
+          <span className="sm:hidden">费用汇总</span>
         </button>
       </div>
     </div>

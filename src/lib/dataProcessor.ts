@@ -7,18 +7,21 @@ import {
   PersonalBill, 
   BillSummary 
 } from '../types';
+import { dataLogger } from './logger';
 
 export class BillDataProcessor implements DataProcessor {
   /**
    * 处理原始输入数据，转换为标准的Receipt格式
    */
   processRawData(rawData: RawReceiptData): Receipt {
+    dataLogger.info('开始处理原始数据', { itemCount: rawData.items.length });
+    
     const now = new Date();
     const receiptId = `receipt_${Date.now()}`;
     
     // 处理条目数据
     const items: MenuItem[] = rawData.items.map((item, index) => ({
-      id: `item_${receiptId}_${index}`,
+      id: `item_${receiptId}_${index}_${Math.random().toString(36).substr(2, 9)}`,
       name: item.name,
       originalPrice: item.price * (item.quantity || 1),
       finalPrice: 0, // 将在calculateTaxAndTip中计算
@@ -37,6 +40,7 @@ export class BillDataProcessor implements DataProcessor {
 
     const receipt: Receipt = {
       id: receiptId,
+      name: 'AI识别收据',
       items,
       subtotal,
       tax,
@@ -46,6 +50,15 @@ export class BillDataProcessor implements DataProcessor {
       updatedAt: now
     };
 
+    dataLogger.info('原始数据处理完成', { 
+      receiptId, 
+      itemCount: items.length, 
+      subtotal, 
+      tax, 
+      tip, 
+      total 
+    });
+
     return this.calculateTaxAndTip(receipt);
   }
 
@@ -53,23 +66,38 @@ export class BillDataProcessor implements DataProcessor {
    * 验证数据完整性
    */
   validateData(receipt: Receipt): boolean {
+    dataLogger.debug('开始验证数据完整性', { receiptId: receipt.id });
+    
     // 检查基本字段
     if (!receipt.id || !receipt.items) {
+      dataLogger.error('数据验证失败：缺少基本字段', { id: receipt.id, hasItems: !!receipt.items });
       return false;
     }
 
     // 检查每个条目
     for (const item of receipt.items) {
       if (!item.id || !item.name || item.originalPrice < 0) {
+        dataLogger.error('数据验证失败：条目数据无效', { 
+          itemId: item.id, 
+          itemName: item.name, 
+          price: item.originalPrice 
+        });
         return false;
       }
     }
 
     // 检查金额逻辑
     if (receipt.subtotal < 0 || receipt.tax < 0 || receipt.tip < 0 || receipt.total < 0) {
+      dataLogger.error('数据验证失败：金额数据无效', { 
+        subtotal: receipt.subtotal,
+        tax: receipt.tax,
+        tip: receipt.tip,
+        total: receipt.total
+      });
       return false;
     }
 
+    dataLogger.debug('数据验证通过', { receiptId: receipt.id });
     return true;
   }
 
@@ -83,6 +111,15 @@ export class BillDataProcessor implements DataProcessor {
 
     // 计算每个条目的最终价格（按比例分摊税费和小费）
     const updatedItems = items.map(item => {
+      // 如果原价为 null，则最终价格也为 0，不参与税费和小费分摊
+      if (item.originalPrice === null) {
+        return {
+          ...item,
+          finalPrice: 0,
+          updatedAt: new Date()
+        };
+      }
+      
       const ratio = item.originalPrice / subtotal;
       const taxShare = tax * ratio;
       const tipShare = tip * ratio;
@@ -106,6 +143,11 @@ export class BillDataProcessor implements DataProcessor {
    * 生成个人账单
    */
   generatePersonalBills(receipt: Receipt, people: Person[]): PersonalBill[] {
+    dataLogger.info('开始生成个人账单', { 
+      receiptId: receipt.id, 
+      peopleCount: people.length 
+    });
+    
     const personalBills: PersonalBill[] = [];
 
     people.forEach(person => {
@@ -121,7 +163,9 @@ export class BillDataProcessor implements DataProcessor {
         if (item.assignedTo.includes(person.id)) {
           // 计算该人应该支付的份额
           const shareCount = item.assignedTo.length;
-          const originalShare = item.originalPrice / shareCount;
+          // 如果原价为 null，则不计算分摊费用
+          const originalPrice = item.originalPrice || 0;
+          const originalShare = originalPrice / shareCount;
           const finalShare = item.finalPrice / shareCount;
 
           personalBill.items.push({
@@ -142,6 +186,12 @@ export class BillDataProcessor implements DataProcessor {
       personalBill.totalFinal = Math.round(personalBill.totalFinal * 100) / 100;
 
       personalBills.push(personalBill);
+    });
+
+    dataLogger.info('个人账单生成完成', { 
+      receiptId: receipt.id, 
+      billsCount: personalBills.length,
+      totalAmount: personalBills.reduce((sum, bill) => sum + bill.totalFinal, 0)
     });
 
     return personalBills;
@@ -234,9 +284,9 @@ export class BillDataProcessor implements DataProcessor {
   /**
    * 添加新条目
    */
-  addItem(receipt: Receipt, itemName: string, price: number): Receipt {
+  addItem(receipt: Receipt, itemName: string, price: number | null): Receipt {
     const newItem: MenuItem = {
-      id: `item_${receipt.id}_${Date.now()}`,
+      id: `item_${receipt.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: itemName,
       originalPrice: price,
       finalPrice: 0,
@@ -245,11 +295,13 @@ export class BillDataProcessor implements DataProcessor {
       updatedAt: new Date()
     };
 
+    // 只有当价格不为 null 时才计算到小计中
+    const priceToAdd = price || 0;
     const updatedReceipt = {
       ...receipt,
       items: [...receipt.items, newItem],
-      subtotal: receipt.subtotal + price,
-      total: receipt.subtotal + price + receipt.tax + receipt.tip,
+      subtotal: receipt.subtotal + priceToAdd,
+      total: receipt.subtotal + priceToAdd + receipt.tax + receipt.tip,
       updatedAt: new Date()
     };
 
@@ -264,11 +316,13 @@ export class BillDataProcessor implements DataProcessor {
     if (!itemToRemove) return receipt;
 
     const updatedItems = receipt.items.filter(item => item.id !== itemId);
+    // 只有当价格不为 null 时才从小计中减去
+    const priceToRemove = itemToRemove.originalPrice || 0;
     const updatedReceipt = {
       ...receipt,
       items: updatedItems,
-      subtotal: receipt.subtotal - itemToRemove.originalPrice,
-      total: receipt.subtotal - itemToRemove.originalPrice + receipt.tax + receipt.tip,
+      subtotal: receipt.subtotal - priceToRemove,
+      total: receipt.subtotal - priceToRemove + receipt.tax + receipt.tip,
       updatedAt: new Date()
     };
 

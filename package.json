@@ -7,14 +7,18 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:ai": "node scripts/test-ai.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.56.0",
+    "browser-image-compression": "^2.0.2",
+    "loglevel": "^1.9.2",
+    "lucide-react": "^0.288.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.47.0",
-    "zustand": "^4.4.4",
-    "lucide-react": "^0.288.0"
+    "zustand": "^4.4.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",
@@ -31,4 +35,4 @@
     "typescript": "^5.2.2",
     "vite": "^4.5.0"
   }
-} 
+}

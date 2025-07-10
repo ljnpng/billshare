@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DollarSign, Receipt, RotateCcw, Share2, Copy, Check, ChevronDown } from 'lucide-react';
+import { RotateCcw, Copy, Check, ChevronDown } from 'lucide-react';
 import { useAppStore } from '../store';
 
 const SummaryStep: React.FC = () => {
