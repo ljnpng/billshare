@@ -1,15 +1,7 @@
-// 获取环境变量的安全函数
-const getEnvVar = (key: string, defaultValue: string = ''): string => {
-  if (typeof process === 'undefined' || !process.env) {
-    return defaultValue;
-  }
-  return process.env[key] || defaultValue;
-};
-
 // AI 服务配置
 export const AI_CONFIG = {
   // AI 服务提供商选择
-  provider: getEnvVar('AI_PROVIDER', 'claude') as 'claude' | 'groq',
+  provider: (process.env.AI_PROVIDER || 'claude') as 'claude' | 'groq',
   
   // Claude API 配置
   claude: {
