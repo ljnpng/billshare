@@ -53,38 +53,7 @@ export interface BillSummary {
   createdAt: Date;
 }
 
-// 统一的数据处理接口
-export interface DataProcessor {
-  // 处理原始输入数据（可能来自OCR或手动输入）
-  processRawData(rawData: any): Receipt;
-  
-  // 验证数据完整性
-  validateData(receipt: Receipt): boolean;
-  
-  // 计算税费和小费分摊
-  calculateTaxAndTip(receipt: Receipt): Receipt;
-  
-  // 生成个人账单
-  generatePersonalBills(receipt: Receipt, people: Person[]): PersonalBill[];
-  
-  // 生成最终汇总
-  generateBillSummary(receipts: Receipt[], people: Person[]): BillSummary;
-}
 
-// 原始输入数据格式（支持多种输入方式）
-export interface RawItemData {
-  name: string;
-  price: number;
-  quantity?: number;
-}
-
-export interface RawReceiptData {
-  items: RawItemData[];
-  subtotal?: number;
-  tax?: number;
-  tip?: number;
-  total?: number;
-}
 
 // 用于前端状态管理
 export interface AppState {
