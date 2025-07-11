@@ -12,6 +12,12 @@ build
 out/
 next-env.d.ts
 
+# Vercel 部署
+.vercel
+
+# Turbo (如果使用)
+.turbo
+
 # 环境变量
 .env
 .env.local
