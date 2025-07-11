@@ -37,7 +37,6 @@
       "destination": "/api/$1"
     }
   ],
-  "regions": ["hkg1", "sfo1"],
   "github": {
     "enabled": false
   }
