@@ -293,7 +293,13 @@ vercel link
 cat .vercel/project.json
 ```
 
-**获取 Vercel API Token：**
+**快速设置（推荐）：**
+```bash
+# 运行自动配置脚本
+./scripts/setup-secrets.sh
+```
+
+**手动获取 Vercel API Token：**
 1. 访问 [Vercel Account Settings](https://vercel.com/account/tokens)
 2. 点击 "Create Token"
 3. 输入 Token 名称（如 "GitHub Actions"）
