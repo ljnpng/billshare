@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverComponentsExternalPackages: ['@anthropic-ai/sdk'],
+    appDir: true,
+  },
+  images: {
+    domains: ['localhost'],
   },
   // 启用严格模式
   reactStrictMode: true,
@@ -21,4 +24,4 @@ const nextConfig = {
   poweredByHeader: false,
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig; 
