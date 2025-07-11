@@ -199,10 +199,10 @@ export async function POST(request: NextRequest) {
     aiLogger.info('开始调用 Claude API...')
 
     const response = await anthropic.beta.messages.create({
-      model: AI_CONFIG.api.model,
-      max_tokens: AI_CONFIG.api.maxTokens,
-      temperature: AI_CONFIG.api.temperature,
-      betas: [...AI_CONFIG.api.betas],
+      model: AI_CONFIG.claude.model,
+      max_tokens: AI_CONFIG.claude.maxTokens,
+      temperature: AI_CONFIG.claude.temperature,
+      betas: [...AI_CONFIG.claude.betas],
       messages: [
         {
           role: 'user',
