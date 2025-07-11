@@ -26,26 +26,33 @@ echo ""
 read -s -p "请输入 Vercel Token: " VERCEL_TOKEN
 echo ""
 
-# 选择 AI 服务
-echo "🤖 请选择 AI 服务提供商:"
+# 设置 AI 服务配置
+echo "🤖 配置 AI 服务:"
+echo "为了支持灵活切换，建议配置两个 AI 服务的 API Key"
+echo ""
+
+# 获取 Claude API Key
+echo "请获取 Claude API Key:"
+echo "访问 https://console.anthropic.com/"
+read -s -p "请输入 Claude API Key: " CLAUDE_API_KEY
+echo ""
+
+# 获取 Groq API Key  
+echo "请获取 Groq API Key:"
+echo "访问 https://console.groq.com/"
+read -s -p "请输入 Groq API Key: " GROQ_API_KEY
+echo ""
+
+# 选择默认 AI 服务
+echo "请选择默认 AI 服务提供商:"
 echo "1. Claude (高精度，推荐)"
 echo "2. Groq (高速度，经济)"
 read -p "请选择 (1 或 2): " ai_choice
 
 if [ "$ai_choice" = "1" ]; then
     AI_PROVIDER="claude"
-    echo "请获取 Claude API Key:"
-    echo "访问 https://console.anthropic.com/"
-    read -s -p "请输入 Claude API Key: " CLAUDE_API_KEY
-    echo ""
-    GROQ_API_KEY=""
 else
     AI_PROVIDER="groq"
-    echo "请获取 Groq API Key:"
-    echo "访问 https://console.groq.com/"
-    read -s -p "请输入 Groq API Key: " GROQ_API_KEY
-    echo ""
-    CLAUDE_API_KEY=""
 fi
 
 # 设置 GitHub Secrets
@@ -56,13 +63,9 @@ gh secret set VERCEL_ORG_ID --body "$ORG_ID"
 gh secret set VERCEL_PROJECT_ID --body "$PROJECT_ID"
 gh secret set AI_PROVIDER --body "$AI_PROVIDER"
 
-if [ -n "$CLAUDE_API_KEY" ]; then
-    gh secret set CLAUDE_API_KEY --body "$CLAUDE_API_KEY"
-fi
-
-if [ -n "$GROQ_API_KEY" ]; then
-    gh secret set GROQ_API_KEY --body "$GROQ_API_KEY"
-fi
+# 设置 AI API Keys (两个都设置)
+gh secret set CLAUDE_API_KEY --body "$CLAUDE_API_KEY"
+gh secret set GROQ_API_KEY --body "$GROQ_API_KEY"
 
 echo "✅ GitHub Secrets 设置完成！"
 echo ""
@@ -71,12 +74,8 @@ echo "   - VERCEL_TOKEN"
 echo "   - VERCEL_ORG_ID"
 echo "   - VERCEL_PROJECT_ID"
 echo "   - AI_PROVIDER ($AI_PROVIDER)"
-if [ -n "$CLAUDE_API_KEY" ]; then
-    echo "   - CLAUDE_API_KEY"
-fi
-if [ -n "$GROQ_API_KEY" ]; then
-    echo "   - GROQ_API_KEY"
-fi
+echo "   - CLAUDE_API_KEY"
+echo "   - GROQ_API_KEY"
 
 echo ""
 echo "🚀 现在可以触发部署了！"
