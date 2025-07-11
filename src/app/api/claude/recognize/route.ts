@@ -4,6 +4,7 @@ import { AIRecognizedReceipt, AIProcessingResult } from '@/types'
 import { AI_CONFIG } from '@/lib/config'
 import { COMPLETE_RECEIPT_PROMPT } from '@/lib/prompts'
 import { aiLogger } from '@/lib/logger'
+import convert from 'heic-convert'
 
 // 配置API路由
 export const runtime = 'nodejs'
@@ -18,8 +19,53 @@ const anthropic = new Anthropic({
  * 检查文件是否为支持的图片格式
  */
 const isSupportedImageFormat = (mimeType: string): boolean => {
-  const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+  const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif']
   return supportedTypes.includes(mimeType)
+}
+
+/**
+ * 检查文件是否为 HEIC 格式
+ */
+const isHeicFormat = (file: File): boolean => {
+  return file.type === 'image/heic' || file.type === 'image/heif' || 
+         file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')
+}
+
+/**
+ * 转换 HEIC 格式到 JPEG
+ */
+const convertHeicToJpeg = async (file: File): Promise<File> => {
+  try {
+    aiLogger.info('开始转换 HEIC 格式...', {
+      fileName: file.name,
+      fileSize: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
+    })
+    
+    // 将 ArrayBuffer 转换为 Buffer
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    
+    const outputBuffer = await convert({
+      buffer: buffer,
+      format: 'JPEG',
+      quality: 0.9
+    })
+    
+    const jpegFile = new File([outputBuffer], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+      type: 'image/jpeg',
+      lastModified: Date.now(),
+    })
+    
+    aiLogger.info('HEIC 转换完成', {
+      originalSize: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
+      convertedSize: `${(jpegFile.size / 1024 / 1024).toFixed(2)}MB`,
+    })
+    
+    return jpegFile
+  } catch (error) {
+    aiLogger.error('HEIC 转换失败:', error)
+    throw new Error(`HEIC 转换失败: ${error instanceof Error ? error.message : '未知错误'}`)
+  }
 }
 
 /**
@@ -140,10 +186,16 @@ export async function POST(request: NextRequest) {
       fileType: file.type,
     })
 
-    // 1. 上传到 Files API
-    const fileId = await uploadToFilesAPI(file)
+    // 1. 预处理图片（转换 HEIC 格式）
+    let processedFile = file
+    if (isHeicFormat(file)) {
+      processedFile = await convertHeicToJpeg(file)
+    }
 
-    // 2. 调用 Claude API 进行识别
+    // 2. 上传到 Files API
+    const fileId = await uploadToFilesAPI(processedFile)
+
+    // 3. 调用 Claude API 进行识别
     aiLogger.info('开始调用 Claude API...')
 
     const response = await anthropic.beta.messages.create({
@@ -173,7 +225,7 @@ export async function POST(request: NextRequest) {
 
     aiLogger.info('Claude API 调用成功')
 
-    // 3. 解析响应
+    // 4. 解析响应
     const content = response.content[0]
     if (content.type !== 'text') {
       throw new Error('无效的API响应格式')
@@ -184,7 +236,7 @@ export async function POST(request: NextRequest) {
       throw new Error('API响应为空')
     }
 
-    // 4. 解析 JSON 结果
+    // 5. 解析 JSON 结果
     let recognizedData: AIRecognizedReceipt
     try {
       recognizedData = JSON.parse(responseText)
@@ -202,12 +254,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 5. 基本格式验证
+    // 6. 基本格式验证
     if (!validateBasicFormat(recognizedData)) {
       throw new Error('识别结果格式错误')
     }
 
-    // 6. 清理数据
+    // 7. 清理数据
     recognizedData.items = recognizedData.items.filter(item => 
       item.name && typeof item.name === 'string' && item.name.trim().length > 0
     )
@@ -222,12 +274,12 @@ export async function POST(request: NextRequest) {
       throw new Error('未识别到有效的商品信息')
     }
 
-    // 7. 最终验证
+    // 8. 最终验证
     if (!validateResponse(recognizedData)) {
       throw new Error('识别结果验证失败')
     }
 
-    // 8. 清理上传的文件
+    // 9. 清理上传的文件
     try {
       await anthropic.beta.files.delete(fileId)
       aiLogger.info('临时文件已清理')
