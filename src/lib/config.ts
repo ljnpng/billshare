@@ -1,11 +1,21 @@
 // AI 服务配置
 export const AI_CONFIG = {
+  // AI 服务提供商选择
+  provider: (process.env.AI_PROVIDER || 'claude') as 'claude' | 'groq',
+  
   // Claude API 配置
-  api: {
+  claude: {
     model: 'claude-3-5-haiku-20241022',
     maxTokens: 8192, // Claude 3.5 Haiku 最大支持 8192 tokens
     temperature: 0.3,
     betas: ['files-api-2025-04-14'] as const,
+  },
+
+  // Groq API 配置
+  groq: {
+    model: 'meta-llama/llama-4-scout-17b-16e-instruct', // Groq 视觉模型
+    maxTokens: 4096,
+    temperature: 0.3,
   },
   
   // 图片处理配置

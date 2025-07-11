@@ -76,7 +76,12 @@ const callRecognitionAPI = async (file: File): Promise<AIProcessingResult> => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch('/api/claude/recognize', {
+    // 根据配置选择 API 端点
+    const apiEndpoint = AI_CONFIG.provider === 'groq' ? '/api/groq/recognize' : '/api/claude/recognize';
+    
+    aiLogger.info(`使用 ${AI_CONFIG.provider} 服务进行识别`);
+
+    const response = await fetch(apiEndpoint, {
       method: 'POST',
       body: formData,
     });
