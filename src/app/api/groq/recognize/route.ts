@@ -9,10 +9,15 @@ import convert from 'heic-convert'
 // 配置API路由
 export const runtime = 'nodejs'
 
-// 初始化 Groq 客户端
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-})
+// 获取 Groq 客户端实例
+const getGroqClient = () => {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error('GROQ_API_KEY 环境变量未配置')
+  }
+  return new Groq({
+    apiKey: process.env.GROQ_API_KEY,
+  })
+}
 
 /**
  * 检查文件是否为支持的图片格式
@@ -149,6 +154,7 @@ export async function POST(request: NextRequest) {
     // 3. 调用 Groq API 进行识别
     aiLogger.info('开始调用 Groq API...')
 
+    const groq = getGroqClient()
     const response = await groq.chat.completions.create({
       messages: [
         {

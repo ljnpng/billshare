@@ -10,10 +10,15 @@ import convert from 'heic-convert'
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-// 初始化Anthropic客户端
-const anthropic = new Anthropic({
-  apiKey: process.env.CLAUDE_API_KEY,
-})
+// 获取 Anthropic 客户端实例
+const getAnthropicClient = () => {
+  if (!process.env.CLAUDE_API_KEY) {
+    throw new Error('CLAUDE_API_KEY 环境变量未配置')
+  }
+  return new Anthropic({
+    apiKey: process.env.CLAUDE_API_KEY,
+  })
+}
 
 /**
  * 检查文件是否为支持的图片格式
@@ -75,6 +80,7 @@ const uploadToFilesAPI = async (file: File): Promise<string> => {
   try {
     aiLogger.info('开始上传文件到 Files API...')
 
+    const anthropic = getAnthropicClient()
     const fileUpload = await anthropic.beta.files.upload({
       file: await toFile(file, file.name, { type: file.type }),
       betas: ['files-api-2025-04-14'],
@@ -198,6 +204,7 @@ export async function POST(request: NextRequest) {
     // 3. 调用 Claude API 进行识别
     aiLogger.info('开始调用 Claude API...')
 
+    const anthropic = getAnthropicClient()
     const response = await anthropic.beta.messages.create({
       model: AI_CONFIG.claude.model,
       max_tokens: AI_CONFIG.claude.maxTokens,
@@ -281,7 +288,8 @@ export async function POST(request: NextRequest) {
 
     // 9. 清理上传的文件
     try {
-      await anthropic.beta.files.delete(fileId)
+      const anthropicForCleanup = getAnthropicClient()
+      await anthropicForCleanup.beta.files.delete(fileId)
       aiLogger.info('临时文件已清理')
     } catch (cleanupError) {
       aiLogger.warn('清理临时文件失败:', cleanupError)
