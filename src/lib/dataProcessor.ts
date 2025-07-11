@@ -31,7 +31,7 @@ export class BillDataProcessor implements DataProcessor {
     }));
 
     // 计算小计
-    const subtotal = rawData.subtotal || items.reduce((sum, item) => sum + item.originalPrice, 0);
+    const subtotal = rawData.subtotal || items.reduce((sum, item) => sum + (item.originalPrice || 0), 0);
     
     // 处理税费和小费
     const tax = rawData.tax || 0;
@@ -76,7 +76,7 @@ export class BillDataProcessor implements DataProcessor {
 
     // 检查每个条目
     for (const item of receipt.items) {
-      if (!item.id || !item.name || item.originalPrice < 0) {
+      if (!item.id || !item.name || (item.originalPrice !== null && item.originalPrice < 0)) {
         dataLogger.error('数据验证失败：条目数据无效', { 
           itemId: item.id, 
           itemName: item.name, 

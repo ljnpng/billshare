@@ -119,8 +119,8 @@ const AssignStep: React.FC = () => {
                           <div className="flex-1">
                             <h4 className="font-medium text-lg">{item.name}</h4>
                             <div className="text-sm text-gray-600">
-                              原价: ${item.originalPrice.toFixed(2)}
-                              {item.finalPrice > item.originalPrice && (
+                              原价: ${item.originalPrice?.toFixed(2) || 'N/A'}
+                              {item.originalPrice && item.finalPrice > item.originalPrice && (
                                 <span className="ml-2 text-blue-600">
                                   含税费: ${item.finalPrice.toFixed(2)}
                                 </span>

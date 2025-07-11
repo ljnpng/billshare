@@ -1,8 +1,8 @@
 import log from 'loglevel';
 
 // 配置日志级别
-const isDev = import.meta.env.MODE === 'development';
-const isTest = import.meta.env.MODE === 'test';
+const isDev = process.env.NODE_ENV === 'development';
+const isTest = process.env.NODE_ENV === 'test';
 
 // 在开发环境显示所有日志，生产环境只显示 warn 和 error
 if (isDev || isTest) {

@@ -28,7 +28,6 @@ export const AI_CONFIG = {
   
   // 错误消息配置
   errors: {
-    noApiKey: '请在环境变量中设置 VITE_CLAUDE_API_KEY',
     fileUploadFailed: '文件上传失败，请检查网络连接或稍后重试',
     unsupportedFormat: '不支持的图片格式，请使用 JPG、PNG、GIF 或 WebP 格式',
     fileTooLarge: '文件太大，请选择小于 25MB 的图片',
@@ -43,17 +42,6 @@ export const AI_CONFIG = {
     noValidItems: '未识别到任何有效的商品项目（商品名称不能为空）',
   },
 } as const;
-
-// 获取 API Key
-export const getApiKey = (): string => {
-  const apiKey = (import.meta as any).env.VITE_CLAUDE_API_KEY || '';
-  
-  if (!apiKey) {
-    throw new Error(AI_CONFIG.errors.noApiKey);
-  }
-  
-  return apiKey;
-};
 
 // 检查图片格式是否支持
 export const isSupportedImageFormat = (type: string): boolean => {
