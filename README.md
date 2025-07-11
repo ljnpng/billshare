@@ -264,6 +264,42 @@ npm run lint
    - 确认项目目录
    - 等待构建和部署完成
 
+#### 方法三：GitHub Actions 自动部署
+
+项目已包含 `.github/workflows/deploy.yml` 文件，实现：
+- Pull Request 触发预览部署
+- main 分支推送触发生产部署
+- 自动构建和环境变量注入
+
+**配置 GitHub Secrets：**
+1. 在 GitHub 仓库中，进入 Settings → Secrets and variables → Actions
+2. 添加以下 secrets：
+   - `VERCEL_TOKEN`: Vercel API Token
+   - `VERCEL_ORG_ID`: Vercel 组织 ID
+   - `VERCEL_PROJECT_ID`: Vercel 项目 ID
+   - `CLAUDE_API_KEY`: Claude API 密钥
+   - `GROQ_API_KEY`: Groq API 密钥
+   - `AI_PROVIDER`: AI 服务提供商
+
+**获取 Vercel 配置信息：**
+```bash
+# 安装 Vercel CLI
+npm install -g vercel
+
+# 登录并链接项目
+vercel link
+
+# 获取项目信息
+cat .vercel/project.json
+```
+
+**获取 Vercel API Token：**
+1. 访问 [Vercel Account Settings](https://vercel.com/account/tokens)
+2. 点击 "Create Token"
+3. 输入 Token 名称（如 "GitHub Actions"）
+4. 选择适当的 scope
+5. 复制生成的 token
+
 #### 环境变量配置
 
 在 Vercel 中配置以下环境变量：
@@ -291,39 +327,7 @@ npm run lint
 - **CORS 配置**：支持跨域请求
 - **缓存策略**：静态资源自动缓存
 
-### 其他部署方式
 
-#### Docker 部署
-```bash
-# 构建镜像
-docker build -t aapay .
-
-# 运行容器 (使用 Claude)
-docker run -p 3000:3000 -e CLAUDE_API_KEY=your_claude_api_key -e AI_PROVIDER=claude aapay
-
-# 运行容器 (使用 Groq)
-docker run -p 3000:3000 -e GROQ_API_KEY=your_groq_api_key -e AI_PROVIDER=groq aapay
-```
-
-#### 传统服务器部署
-```bash
-# 构建生产版本
-npm run build
-
-# 启动生产服务器
-npm start
-```
-
-#### Railway 部署
-1. 连接 GitHub 仓库到 Railway
-2. 配置环境变量
-3. 自动构建和部署
-
-#### Netlify 部署
-1. 连接 GitHub 仓库到 Netlify
-2. 构建命令：`npm run build`
-3. 发布目录：`.next`
-4. 配置环境变量
 
 ### 部署后验证
 
