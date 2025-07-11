@@ -383,4 +383,4 @@ A: 重新部署项目，环境变量更改需要重新构建
 
 ## 许可证
 
-MIT License 
+MIT License # GitHub Actions部署已修复
