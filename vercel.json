@@ -1,13 +1,11 @@
 {
   "version": 2,
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
-  "devCommand": "npm run dev",
   "env": {
     "NEXT_PUBLIC_APP_NAME": "AAP费用分摊",
-    "NEXT_PUBLIC_APP_VERSION": "2.0.0"
+    "NEXT_PUBLIC_APP_VERSION": "2.0.0",
+    "CLAUDE_API_KEY": "@claude_api_key",
+    "GROQ_API_KEY": "@groq_api_key",
+    "AI_PROVIDER": "claude"
   },
   "functions": {
     "src/app/api/**/*.ts": {
@@ -39,6 +37,7 @@
       "destination": "/api/$1"
     }
   ],
+  "regions": ["hkg1", "sfo1"],
   "github": {
     "enabled": false
   }
