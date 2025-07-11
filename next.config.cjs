@@ -19,8 +19,6 @@ const nextConfig = {
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
-  // 输出配置 - 支持 Docker 部署
-  output: 'standalone',
   // 压缩配置
   compress: true,
   // 优化配置
