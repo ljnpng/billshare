@@ -21,7 +21,7 @@ interface AppStore extends AppState {
   updateItemAssignment: (itemId: string, assignedTo: string[]) => void;
   
   // AI识别相关
-  processReceiptImage: (receiptId: string, imageFile: File) => Promise<boolean>;
+  processReceiptImage: (receiptId: string, imageFile: File, locale?: string) => Promise<boolean>;
   setAiProcessing: (processing: boolean) => void;
   
   setCurrentStep: (step: AppState['currentStep']) => void;
@@ -217,17 +217,18 @@ export const useAppStore = create<AppStore>()(
       },
 
       // AI识别相关actions
-      processReceiptImage: async (receiptId, imageFile) => {
+      processReceiptImage: async (receiptId, imageFile, locale = 'zh') => {
         storeLogger.info('开始处理收据图片', { 
           receiptId, 
           fileName: imageFile.name,
-          fileSize: imageFile.size
+          fileSize: imageFile.size,
+          locale
         });
         
         set({ isAiProcessing: true, error: null });
         
         try {
-          const result = await recognizeReceipt(imageFile);
+          const result = await recognizeReceipt(imageFile, locale);
           
           if (!result.success || !result.data) {
             storeLogger.error('AI识别失败', { 

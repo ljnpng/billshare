@@ -71,15 +71,16 @@ const preprocessImage = async (file: File): Promise<File> => {
 /**
  * 调用Next.js API路由进行识别
  */
-const callRecognitionAPI = async (file: File): Promise<AIProcessingResult> => {
+const callRecognitionAPI = async (file: File, locale: string = 'zh'): Promise<AIProcessingResult> => {
   try {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('locale', locale);
 
     // 根据配置选择 API 端点
     const apiEndpoint = AI_CONFIG.provider === 'groq' ? '/api/groq/recognize' : '/api/claude/recognize';
     
-    aiLogger.info(`使用 ${AI_CONFIG.provider} 服务进行识别`);
+    aiLogger.info(`使用 ${AI_CONFIG.provider} 服务进行识别，语言: ${locale}`);
 
     const response = await fetch(apiEndpoint, {
       method: 'POST',
@@ -102,7 +103,7 @@ const callRecognitionAPI = async (file: File): Promise<AIProcessingResult> => {
 /**
  * 使用 Next.js API 路由识别账单
  */
-export const recognizeReceipt = async (imageFile: File): Promise<AIProcessingResult> => {
+export const recognizeReceipt = async (imageFile: File, locale: string = 'zh'): Promise<AIProcessingResult> => {
   try {
     aiLogger.info('开始 AI 识别流程...');
 
@@ -110,7 +111,7 @@ export const recognizeReceipt = async (imageFile: File): Promise<AIProcessingRes
     const processedFile = await preprocessImage(imageFile);
 
     // 2. 调用 Next.js API 路由
-    const result = await callRecognitionAPI(processedFile);
+    const result = await callRecognitionAPI(processedFile, locale);
 
     if (result.success) {
       aiLogger.info('AI 识别成功', {

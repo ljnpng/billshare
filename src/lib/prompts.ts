@@ -81,6 +81,93 @@ export const RECEIPT_ANALYSIS_PROMPT = `
 现在请分析这张账单图片：
 `;
 
+// 英文版本的提示词
+export const RECEIPT_ANALYSIS_PROMPT_EN = `
+You are a professional receipt recognition expert. Please carefully analyze this receipt image using the following structured approach:
+
+## Step 1: Image Content Confirmation
+First confirm this is a valid receipt/bill image.
+
+## Step 2: Information Extraction
+Please extract the following information item by item:
+
+### Business Information
+- Business name (store name)
+- Address (if visible)
+- Date and time
+
+### Item Details Analysis
+**Important Note: Pay special attention to price number recognition**
+- Carefully examine each item line, ensure price numbers are accurate
+- Note the distinction between item names and price columns
+- If prices are unclear, indicate "price unclear" in description
+
+### Cost Calculation
+- Subtotal (sum of all item prices)
+- Tax (Tax/GST/VAT)
+- Tip (Tip/Service Charge)
+- Total (final payment amount)
+
+## Step 3: Data Validation
+- Check if item price sum matches subtotal
+- Verify total = subtotal + tax + tip
+- If numbers don't match, lower confidence score
+
+## Response Format
+Please return strictly in the following JSON format:
+
+\`\`\`json
+{
+  "businessName": "specific business name",
+  "items": [
+    {
+      "name": "item name (keep original text)",
+      "price": accurate_numeric_price,
+      "description": "additional info or price recognition notes"
+    }
+  ],
+  "subtotal": subtotal_number,
+  "tax": tax_number,
+  "tip": tip_number,
+  "total": total_number,
+  "date": "YYYY-MM-DD",
+  "confidence": 0.0_to_1.0_confidence_score
+}
+\`\`\`
+
+## Special Requirements:
+1. **Price Recognition**: If individual item prices cannot be clearly identified, set to null and explain in description
+2. **Number Format**: All prices must be pure numbers, no currency symbols
+3. **Confidence Assessment**:
+   - 0.9+: All information very clear
+   - 0.7-0.9: Most information clear, some unclear
+   - 0.5-0.7: Key information difficult to identify
+   - Below 0.5: Poor image quality or not a valid receipt
+
+## Error Handling
+If image is not a receipt or cannot be recognized, return:
+\`\`\`json
+{
+  "businessName": null,
+  "items": [],
+  "subtotal": null,
+  "tax": null,
+  "tip": null,
+  "total": null,
+  "date": null,
+  "confidence": 0.0,
+  "error": "specific error reason"
+}
+\`\`\`
+
+Now please analyze this receipt image:
+`;
+
+// 根据语言获取对应的提示词
+export const getReceiptAnalysisPrompt = (locale: string = 'zh') => {
+  return locale === 'en' ? RECEIPT_ANALYSIS_PROMPT_EN : RECEIPT_ANALYSIS_PROMPT;
+};
+
 // 简化的提示词（用于快速识别）
 export const SIMPLE_RECEIPT_PROMPT = `
 请识别这张账单图片中的关键信息：
@@ -92,6 +179,21 @@ export const SIMPLE_RECEIPT_PROMPT = `
 
 请以 JSON 格式返回结果，重点关注价格数字的准确性。
 `;
+
+export const SIMPLE_RECEIPT_PROMPT_EN = `
+Please identify key information from this receipt image:
+
+1. Business name
+2. Item list and prices
+3. Total amount
+4. Date
+
+Please return results in JSON format, focusing on price number accuracy.
+`;
+
+export const getSimpleReceiptPrompt = (locale: string = 'zh') => {
+  return locale === 'en' ? SIMPLE_RECEIPT_PROMPT_EN : SIMPLE_RECEIPT_PROMPT;
+};
 
 // 错误情况的 Prompt
 export const ERROR_RESPONSE_PROMPT = `
@@ -109,7 +211,26 @@ export const ERROR_RESPONSE_PROMPT = `
 }
 `;
 
-// 完整的 Prompt
+export const ERROR_RESPONSE_PROMPT_EN = `
+If unable to recognize, return:
+{
+  "businessName": null,
+  "items": [],
+  "subtotal": null,
+  "tax": null,
+  "tip": null,
+  "total": null,
+  "date": null,
+  "confidence": 0.0,
+  "error": "specific failure reason"
+}
+`;
+
+export const getErrorResponsePrompt = (locale: string = 'zh') => {
+  return locale === 'en' ? ERROR_RESPONSE_PROMPT_EN : ERROR_RESPONSE_PROMPT;
+};
+
+// 完整的 Prompt（保持向后兼容）
 export const COMPLETE_RECEIPT_PROMPT = RECEIPT_ANALYSIS_PROMPT;
 
 // 示例响应格式

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Groq } from 'groq-sdk'
 import { AIRecognizedReceipt, AIProcessingResult } from '@/types'
 import { AI_CONFIG } from '@/lib/config'
-import { COMPLETE_RECEIPT_PROMPT } from '@/lib/prompts'
+import { getReceiptAnalysisPrompt } from '@/lib/prompts'
 import { aiLogger } from '@/lib/logger'
 import { validateAndPreprocessImage, validateAIResponse, parseAIResponse } from '@/lib/imageUtils'
 
@@ -30,9 +30,10 @@ const fileToBase64 = async (file: File): Promise<string> => {
 
 export async function POST(request: NextRequest) {
   try {
-    // 获取上传的文件
+    // 获取上传的文件和语言参数
     const formData = await request.formData()
     const file = formData.get('file') as File
+    const locale = formData.get('locale') as string || 'zh'
 
     if (!file) {
       return NextResponse.json(
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
           content: [
             {
               type: 'text',
-              text: COMPLETE_RECEIPT_PROMPT,
+              text: getReceiptAnalysisPrompt(locale),
             },
             {
               type: 'image_url',
