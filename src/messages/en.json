@@ -1,0 +1,127 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "next": "Next",
+    "previous": "Previous",
+    "back": "Back",
+    "continue": "Continue",
+    "finish": "Finish",
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied",
+    "price": "Price",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "tip": "Tip",
+    "amount": "Amount",
+    "name": "Name",
+    "date": "Date",
+    "items": "Items",
+    "person": "Person",
+    "people": "People",
+    "receipt": "Receipt",
+    "receipts": "Receipts"
+  },
+  "app": {
+    "title": "AAP Bill Splitter",
+    "description": "Smart bill splitting for meals, taxes, and tips - ensuring everyone pays their fair share"
+  },
+  "steps": {
+    "setup": "Setup People",
+    "input": "Input Bills",
+    "assign": "Assign Items",
+    "summary": "Cost Summary"
+  },
+  "setupStep": {
+    "title": "Setup Bill Splitting People",
+    "description": "Add people who will participate in bill splitting. At least 2 people are required.",
+    "addPersonPlaceholder": "Enter person's name",
+    "addButton": "Add",
+    "noPeopleMessage": "No people added yet",
+    "noPeopleSubMessage": "Please add at least 2 people to start splitting",
+    "needMorePeopleMessage": "Please add at least 1 more person to continue",
+    "nextButton": "Next: Input Bills"
+  },
+  "inputStep": {
+    "title": "Input Bill Items",
+    "description": "Add one or more receipts and input the name and price for each item.",
+    "aiRecognition": "AI Recognition",
+    "aiRecognizing": "Recognizing...",
+    "manualAdd": "Manual Add",
+    "emptyStateTitle": "Start adding your first bill",
+    "emptyStateDescription": "All items will be displayed here.",
+    "nextButton": "Next: Assign Items",
+    "assignItems": "Assign Items"
+  },
+  "assignStep": {
+    "title": "Assign Items",
+    "description": "Select the people who will pay for each item. Each item can be shared by multiple people.",
+    "progressText": "Assigned {assigned} / {total} items",
+    "allAssigned": "✓ All items assigned",
+    "peoplePreview": "People Preview",
+    "itemsCount": "{count} items",
+    "assigned": "Assigned to {count} people",
+    "unassigned": "Unassigned",
+    "perPerson": "Per person",
+    "originalPrice": "Original price",
+    "includingTax": "Including tax",
+    "nextButton": "Next: Cost Summary",
+    "costSummary": "Cost Summary",
+    "sharedWith": "Shared with {count} people",
+    "exclusive": "Exclusive"
+  },
+  "summaryStep": {
+    "title": "Cost Summary",
+    "description": "Here's the final amount each person needs to pay",
+    "billOverview": "Bill Overview",
+    "personalSplit": "Personal Split",
+    "receiptDetails": "Receipt Details",
+    "detailedSplit": "Detailed Split",
+    "grandTotal": "Grand Total",
+    "cannotGenerate": "Cannot generate cost summary",
+    "restartButton": "Restart",
+    "modifyAssignments": "Modify Assignments",
+    "startOver": "Start Over",
+    "copyToClipboard": "Copy to Clipboard",
+    "shareResults": "Share Results"
+  },
+  "receiptCard": {
+    "deleteReceipt": "Delete",
+    "addItemPlaceholder": "Item name (e.g., Pizza)",
+    "pricePlaceholder": "Price",
+    "addItemButton": "Add",
+    "noItemsMessage": "No items yet",
+    "taxLabel": "Tax",
+    "tipLabel": "Tip",
+    "summaryTitle": "Receipt Summary",
+    "needsPriceMessage": "Price needed",
+    "taxHelpText": "Enter the tax amount for this receipt",
+    "tipHelpText": "Enter the tip amount for this receipt"
+  },
+  "errorAlert": {
+    "title": "Error Occurred"
+  },
+  "languageSwitcher": {
+    "switchLanguage": "Switch Language",
+    "chinese": "中文",
+    "english": "English"
+  },
+  "copySuccess": {
+    "title": "Bill Splitting Summary",
+    "totalLabel": "Total",
+    "subtotalLabel": "Subtotal",
+    "taxLabel": "Tax",
+    "tipLabel": "Tip",
+    "personalBillsHeader": "--- Personal Bills ---",
+    "receiptDetailsHeader": "--- Receipt Details ---"
+  }
+} 

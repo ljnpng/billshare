@@ -1,0 +1,127 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "出现错误",
+    "success": "成功",
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存",
+    "edit": "编辑",
+    "delete": "删除",
+    "add": "添加",
+    "next": "下一步",
+    "previous": "上一步",
+    "back": "返回",
+    "continue": "继续",
+    "finish": "完成",
+    "close": "关闭",
+    "copy": "复制",
+    "copied": "已复制",
+    "price": "价格",
+    "total": "总计",
+    "subtotal": "小计",
+    "tax": "税费",
+    "tip": "小费",
+    "amount": "金额",
+    "name": "姓名",
+    "date": "日期",
+    "items": "项目",
+    "person": "人员",
+    "people": "人员",
+    "receipt": "收据",
+    "receipts": "收据"
+  },
+  "app": {
+    "title": "AAP费用分摊",
+    "description": "智能分摊餐费、税费和小费，让每个人都支付合理的份额"
+  },
+  "steps": {
+    "setup": "设置人员",
+    "input": "输入账单",
+    "assign": "分配条目",
+    "summary": "费用汇总"
+  },
+  "setupStep": {
+    "title": "设置分摊人员",
+    "description": "添加参与费用分摊的人员，至少需要2个人",
+    "addPersonPlaceholder": "输入人员姓名",
+    "addButton": "添加",
+    "noPeopleMessage": "还没有添加任何人员",
+    "noPeopleSubMessage": "请添加至少2个人来开始分摊",
+    "needMorePeopleMessage": "请再添加至少1个人来继续",
+    "nextButton": "下一步：输入账单"
+  },
+  "inputStep": {
+    "title": "输入账单条目",
+    "description": "添加一张或多张收据，并输入每个条目的名称和价格。",
+    "aiRecognition": "AI识别",
+    "aiRecognizing": "识别中...",
+    "manualAdd": "手动添加",
+    "emptyStateTitle": "开始添加你的第一份账单",
+    "emptyStateDescription": "所有条目都会在这里显示。",
+    "nextButton": "下一步：分配条目",
+    "assignItems": "分配条目"
+  },
+  "assignStep": {
+    "title": "分配条目",
+    "description": "为每个条目选择付费的人员。每个条目可以由多人分摊。",
+    "progressText": "已分配 {assigned} / {total} 个条目",
+    "allAssigned": "✓ 所有条目已分配",
+    "peoplePreview": "人员预览",
+    "itemsCount": "{count} 个条目",
+    "assigned": "已分配给 {count} 人",
+    "unassigned": "未分配",
+    "perPerson": "每人",
+    "originalPrice": "原价",
+    "includingTax": "含税费",
+    "nextButton": "下一步：费用汇总",
+    "costSummary": "费用汇总",
+    "sharedWith": "与 {count} 人分摊",
+    "exclusive": "独享"
+  },
+  "summaryStep": {
+    "title": "费用汇总",
+    "description": "以下是每个人需要支付的最终金额",
+    "billOverview": "账单总览",
+    "personalSplit": "人员分摊",
+    "receiptDetails": "收据明细",
+    "detailedSplit": "详细分摊",
+    "grandTotal": "总计",
+    "cannotGenerate": "无法生成费用汇总",
+    "restartButton": "重新开始",
+    "modifyAssignments": "修改分配",
+    "startOver": "重新开始",
+    "copyToClipboard": "复制到剪贴板",
+    "shareResults": "分享结果"
+  },
+  "receiptCard": {
+    "deleteReceipt": "删除",
+    "addItemPlaceholder": "项目名称 (例如: 披萨)",
+    "pricePlaceholder": "价格",
+    "addItemButton": "添加",
+    "noItemsMessage": "暂无项目",
+    "taxLabel": "税费 (Tax)",
+    "tipLabel": "小费 (Tip)",
+    "summaryTitle": "收据汇总",
+    "needsPriceMessage": "需要填写价格",
+    "taxHelpText": "输入此收据的税费金额",
+    "tipHelpText": "输入此收据的小费金额"
+  },
+  "errorAlert": {
+    "title": "出现错误"
+  },
+  "languageSwitcher": {
+    "switchLanguage": "切换语言",
+    "chinese": "中文",
+    "english": "English"
+  },
+  "copySuccess": {
+    "title": "费用分摊汇总",
+    "totalLabel": "总计",
+    "subtotalLabel": "小计",
+    "taxLabel": "税费",
+    "tipLabel": "小费",
+    "personalBillsHeader": "--- 各人应付 ---",
+    "receiptDetailsHeader": "--- 收据详情 ---"
+  }
+} 
