@@ -39,7 +39,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
       tip: receipt.tip,
       name: receipt.name
     });
-  }, [receipt.tax, receipt.tip, receipt.name]);
+  }, [receipt.id, receipt.tax, receipt.tip, receipt.name]);
 
   const handleNameSave = () => {
     if (name.trim() !== receipt.name) {

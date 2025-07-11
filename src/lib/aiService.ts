@@ -1,4 +1,4 @@
-import { AIRecognizedReceipt, AIProcessingResult } from '../types';
+import { AIProcessingResult } from '../types';
 import imageCompression from 'browser-image-compression';
 import { AI_CONFIG, isSupportedImageFormat, getSupportedFormatsInfo } from './config';
 import { aiLogger } from './logger';

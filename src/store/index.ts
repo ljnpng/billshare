@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { AppState, Person, Receipt, RawReceiptData } from '../types';
+import { AppState, Person, Receipt } from '../types';
 import { dataProcessor } from '../lib/dataProcessor';
 import { recognizeReceipt } from '../lib/aiService';
 import { storeLogger } from '../lib/logger';
@@ -15,7 +15,6 @@ interface AppStore extends AppState {
   removeReceipt: (receiptId: string) => void;
   updateReceiptName: (receiptId: string, name: string) => void;
 
-  processRawData: (receiptId: string, rawData: RawReceiptData) => void;
   updateTaxAndTip: (receiptId: string, tax: number, tip: number) => void;
   addItem: (receiptId: string, name: string, price: number | null) => void;
   removeItem: (receiptId: string, itemId: string) => void;
@@ -141,10 +140,6 @@ export const useAppStore = create<AppStore>()(
             r.id === receiptId ? { ...r, name, updatedAt: new Date() } : r
           ),
         }));
-      },
-      
-      processRawData: (_receiptId, _rawData) => {
-        // Disabled for now as it depends on active receipt logic
       },
       
       updateTaxAndTip: (receiptId, tax, tip) => {

@@ -1,6 +1,4 @@
 import { 
-  DataProcessor, 
-  RawReceiptData, 
   Receipt, 
   MenuItem, 
   Person, 
@@ -9,59 +7,7 @@ import {
 } from '../types';
 import { dataLogger } from './logger';
 
-export class BillDataProcessor implements DataProcessor {
-  /**
-   * 处理原始输入数据，转换为标准的Receipt格式
-   */
-  processRawData(rawData: RawReceiptData): Receipt {
-    dataLogger.info('开始处理原始数据', { itemCount: rawData.items.length });
-    
-    const now = new Date();
-    const receiptId = `receipt_${Date.now()}`;
-    
-    // 处理条目数据
-    const items: MenuItem[] = rawData.items.map((item, index) => ({
-      id: `item_${receiptId}_${index}_${Math.random().toString(36).substr(2, 9)}`,
-      name: item.name,
-      originalPrice: item.price * (item.quantity || 1),
-      finalPrice: 0, // 将在calculateTaxAndTip中计算
-      assignedTo: [],
-      createdAt: now,
-      updatedAt: now
-    }));
-
-    // 计算小计
-    const subtotal = rawData.subtotal || items.reduce((sum, item) => sum + (item.originalPrice || 0), 0);
-    
-    // 处理税费和小费
-    const tax = rawData.tax || 0;
-    const tip = rawData.tip || 0;
-    const total = rawData.total || subtotal + tax + tip;
-
-    const receipt: Receipt = {
-      id: receiptId,
-      name: 'AI识别收据',
-      items,
-      subtotal,
-      tax,
-      tip,
-      total,
-      createdAt: now,
-      updatedAt: now
-    };
-
-    dataLogger.info('原始数据处理完成', { 
-      receiptId, 
-      itemCount: items.length, 
-      subtotal, 
-      tax, 
-      tip, 
-      total 
-    });
-
-    return this.calculateTaxAndTip(receipt);
-  }
-
+export class BillDataProcessor {
   /**
    * 验证数据完整性
    */
