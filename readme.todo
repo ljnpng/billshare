@@ -1,0 +1,76 @@
+# README 改进计划
+
+> 目标：将现有 README 打磨成一个成熟、对开发者极度友好的文档，帮助新同事或开源用户在 **5 分钟内**完成理解、安装与运行，并能深度参与贡献。
+
+---
+
+## 目录结构建议
+1. **Badges 区**
+   - 项目状态、License、CI、Codecov、NPM Version、Vercel Deploy 等。
+2. **项目简介**
+   - 保留现有简介，但用一句话高亮核心卖点；增加动图 / 截图示例。
+3. **演示 & 截图**
+   - 加入 GIF 或 Loom 链接，展示「拍照 → 识别 → 分摊」完整流程。 , demo 地址 https://aapay.amoy.day
+4. **在线体验**
+   - 添加 Vercel Demo 链接 & QRCode，方便手机扫码体验。
+5. **功能特性**
+   - 维持现有，但用表格或卡片方式展示；加入 Roadmap 打勾 ☑️ 视觉。
+6. **技术栈 & 架构图**
+   - Mermaid 或 Excalidraw 架构图：前端、API、AI Provider、存储流程。
+7. **快速开始**
+   - 精简本地安装步骤，提供一键脚本 `npm run setup`。
+   - 将 `.env.example` 片段折叠代码块（<details>）。
+8. **脚本命令**
+   - 单独列出 `package.json` scripts 对照表：说明、场景、示例。
+9. **环境变量说明**
+   - 用表格列出所有变量、默认值、是否必填、作用域（server/client）。
+10. **开发工作流**
+    - Git 分支策略 (feat/fix/chore)
+    - Commit message 约定（Conventional Commits）
+    - Pre-commit 钩子（lint-staged, husky）
+11. **测试指南**
+    - 单元测试、集成测试示例；覆盖率 badge；如何编写 Mock for AI API。
+12. **CI/CD**
+    - GitHub Actions YAML 概览；CI 步骤解释；如何触发 Preview Deploy。
+13. **部署文档**
+    - Vercel 继续保留
+    - 补充 Docker Compose / Kubernetes
+14. **国际化指南**
+    - 如何添加新的语言 JSON；翻译流程。
+15. **安全与合规**
+    - 说明不保存收据图片；GDPR 合规提示；密钥管理最佳实践。
+16. **FAQ 扩充**
+    - 分类标签；常见错误截图对照。
+17. **Roadmap**
+    - 未来特性列表：OCR fallback、本地离线模式、PWA、移动端 App。
+18. **贡献指南**
+    - `CONTRIBUTING.md` 概览；Issue / PR 模板；Code of Conduct。
+19. **社区与支持**
+    - Discord / QQ 群；GitHub Discussions；Release Notes 链接。
+20. **License**
+    - 保留 MIT；注明图片/字体等第三方资源许可。
+
+---
+
+## 撰写风格 & 细节
+- **目录自动生成**：使用 `markdown-toc` 或 GitHub `[[TOC]]`。
+- **语气统一**：面向开发者，避免营销腔；使用第二人称 “你”。
+- **Markdown 质量**：避免超过 120 列；保持空行；使用表格边框对齐。
+- **可复制性**：所有命令块前后提及工作目录；避免省略步骤。
+
+---
+
+## 交付清单
+- [ ] 在 `README.md` 中按照上述结构重写。
+- [ ] 新增 `docs/architecture.md` 放置详细架构图。
+- [ ] 新增 `docs/i18n-guide.md` 说明多语言扩展。
+- [ ] 新增 `CONTRIBUTING.md`，包含代码规范和 PR 流程。
+- [ ] 添加 Husky & lint-staged 配置，写入 `package.json`。
+- [ ] 在 `.github` 目录下加入 `ISSUE_TEMPLATE`&`PULL_REQUEST_TEMPLATE`。
+- [ ] 配置 GitHub Actions，添加 `ci.yml`、`cd.yml`。
+- [ ] 截图或录屏 demo 放入 `public/demo.gif`，并引用。
+- [ ] 插入 badges：CI、Coverage、License、Demo。
+
+---
+
+> **备注**：完成上述改进后，再次审阅 README，确保新开发者能在 5 分钟内跑通并对项目有整体认知。
