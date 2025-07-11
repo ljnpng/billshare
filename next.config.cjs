@@ -10,8 +10,6 @@ const nextConfig = {
   reactStrictMode: true,
   // 启用 SWC 压缩
   swcMinify: true,
-  // 输出配置 - 支持 Docker 部署
-  output: 'standalone',
   // 环境变量配置
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,

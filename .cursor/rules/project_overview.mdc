@@ -1,0 +1,50 @@
+# AAPay 项目概览
+
+本文档旨在全面介绍 AAPay 项目，一个基于 AI 的收据分摊应用。
+
+## 核心功能
+
+- **AI 智能识别**:
+  - **多服务支持**: 可通过 [`src/lib/config.ts`](mdc:src/lib/config.ts) 配置，选择使用 Claude (高精度) 或 Groq (高速度) 服务。
+  - **图片预处理**: 在客户端通过 [`browser-image-compression`](https://www.npmjs.com/package/browser-image-compression) 压缩图片，提升性能。相关逻辑在 [`src/lib/imageUtils.ts`](mdc:src/lib/imageUtils.ts)（或 `aiService.ts`）中。
+  - **HEIC 支持**: 在服务器端通过 [`heic-convert`](https://www.npmjs.com/package/heic-convert) 自动转换 HEIC/HEIF 格式。
+  - **多语言提示**: AI 提示会根据在 [`src/middleware.ts`](mdc:src/middleware.ts) 中检测到的用户语言 (`zh`/`en`) 动态调整。
+
+- **智能分摊计算**:
+  - **按比例分摊**: 税费和小费根据各项原价占小计的比例进行分摊。
+  - **多人共享**: 单项费用可在多人间平均分摊。
+  - **多账单聚合**: 支持汇总多张收据的费用。
+  - **核心逻辑**: 全部计算逻辑封装在 [`src/lib/dataProcessor.ts`](mdc:src/lib/dataProcessor.ts) 中。
+
+## 技术架构
+
+### 技术栈
+
+- **框架**: [Next.js 14](mdc:next.config.cjs) (App Router)
+- **语言**: [TypeScript](mdc:tsconfig.json)
+- **状态管理**: [Zustand](mdc:src/store/index.ts)
+- **样式**: [Tailwind CSS](mdc:tailwind.config.js)
+- **国际化 (i18n)**: 使用 [`next-intl`](https://www.npmjs.com/package/next-intl)。
+  - **配置文件**: [`i18n.ts`](mdc:i18n.ts)
+  - **路由中间件**: [`src/middleware.ts`](mdc:src/middleware.ts)
+  - **语言包**: [`src/messages/`](mdc:src/messages/)
+
+### 关键文件和目录
+
+- `src/app/[locale]/page.tsx`: 应用主页面入口。
+- `src/app/api/`: API 路由。
+  - `claude/recognize/route.ts`: [Claude 服务端点](mdc:src/app/api/claude/recognize/route.ts)。
+  - `groq/recognize/route.ts`: [Groq 服务端点](mdc:src/app/api/groq/recognize/route.ts)。
+- `src/components/`: UI 组件，按步骤划分 (`SetupStep`, `InputStep`, etc.)。
+- `src/lib/`: 核心业务逻辑。
+  - `aiService.ts`: [客户端 AI 服务调用逻辑](mdc:src/lib/aiService.ts)。
+  - `dataProcessor.ts`: [核心费用计算逻辑](mdc:src/lib/dataProcessor.ts)。
+  - `config.ts`: [应用配置和环境变量管理](mdc:src/lib/config.ts)。
+- `src/store/index.ts`: [Zustand 全局状态](mdc:src/store/index.ts)。
+
+## 开发与部署
+
+- **开发**: `npm run dev` 命令会启动开发服务器并在浏览器中自动打开应用。
+- **测试**: 使用 `npm run test:ai` 测试 AI 识别功能，测试用例位于 [`test-receipts/`](mdc:test-receipts/)。
+- **部署**:
+  - **Vercel**: 已通过 [`vercel.json`](mdc:vercel.json) 进行优化。

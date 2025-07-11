@@ -1,386 +1,413 @@
-# AAP费用分摊
+# AAPay 智能费用分摊
 
-> 智能分摊餐费、税费和小费，让每个人都支付合理的份额
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue)](https://www.typescriptlang.org/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deploy-black)](https://vercel.com)
+[![AI Powered](https://img.shields.io/badge/AI-Claude%20%2B%20Groq-purple)](https://www.anthropic.com)
 
-一个基于 Next.js 全栈架构的现代化费用分摊应用，支持 AI 图像识别自动解析收据，智能计算税费和小费分摊。
 
-## 功能特色
+基于 Next.js 全栈架构的现代化费用分摊应用，利用 AI 图像识别技术自动解析收据，智能计算每个人的应付金额。支持税费、小费按比例分摊，让每个人都支付公平的份额。
+
+## 🎯 在线体验
+
+**🚀 [立即体验 Demo](https://aapay.amoy.day)**
+
+<div align="center">
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://aapay.amoy.day" alt="扫码体验" />
+  <p><em>扫码用手机体验</em></p>
+</div>
+
+## ✨ 功能特性
 
 ### 🤖 AI 智能识别
-- 使用 Claude 3.5 Haiku 自动识别收据
-- 支持 JPG、PNG、GIF、WebP、HEIC/HEIF 格式
-- 自动提取商品名称和价格
-- 安全的服务器端 API 调用
-- 智能 HEIC 格式转换
+
+| 功能 | 描述 | 状态 |
+|------|------|------|
+| **多服务支持** | Claude 3.5 Haiku (高精度) / Groq Llama Vision (高速度) | ✅ |
+| **格式支持** | JPG, PNG, GIF, WebP, HEIC/HEIF 自动转换 | ✅ |
+| **客户端优化** | 上传前图片压缩，提升识别速度 | ✅ |
+| **智能提示** | 根据用户语言环境使用不同提示语 | ✅ |
+| **OCR 备选** | 离线 OCR 识别（计划中） | 🔄 |
 
 ### 💰 智能分摊计算
-- 自动按比例分摊税费和小费
-- 支持多张收据同时处理
-- 精确计算每个人应付金额
 
-### 📱 现代化界面
-- 响应式设计，支持移动端
-- 渐进式操作流程
-- 优雅的动画和交互
+| 功能 | 描述 | 状态 |
+|------|------|------|
+| **按比例分摊** | 税费、小费按商品价格比例精确分摊 | ✅ |
+| **多人共享** | 单个商品可分配给多人，费用自动平均分摊 | ✅ |
+| **多账单处理** | 一次性处理多张收据，汇总最终账单 | ✅ |
+| **货币换算** | 多币种支持（计划中） | 🔄 |
 
-### 🔧 完整功能
-- 人员管理（颜色区分）
-- 收据条目编辑
-- 灵活的分配选项
-- 详细的费用汇总
+### 📱 现代化用户体验
 
-## 快速开始
+| 功能 | 描述 | 状态 |
+|------|------|------|
+| **响应式设计** | 完美适配桌面和移动设备 | ✅ |
+| **渐进式操作** | 分步流程引导，简单清晰 | ✅ |
+| **国际化** | 中文、英文双语支持 | ✅ |
+| **PWA 支持** | 离线使用、添加到主屏幕（计划中） | 🔄 |
+
+## 🏗️ 技术架构
+
+```mermaid
+graph TB
+    subgraph "前端层"
+        A[Next.js 14 App Router]
+        B[TypeScript]
+        C[Tailwind CSS]
+        D[Zustand 状态管理]
+        E[next-intl 国际化]
+    end
+    
+    subgraph "API 层"
+        F[Next.js API Routes]
+        G[图像预处理]
+        H[AI 服务路由]
+    end
+    
+    subgraph "AI 服务"
+        I[Claude 3.5 Haiku]
+        J[Groq Llama Vision]
+    end
+    
+    subgraph "核心逻辑"
+        K[收据解析]
+        L[费用分摊算法]
+        M[数据处理]
+    end
+    
+    A --> F
+    F --> G
+    G --> H
+    H --> I
+    H --> J
+    H --> K
+    K --> L
+    L --> M
+    M --> D
+```
+
+### 技术栈详情
+
+**前端**
+- **框架**: Next.js 14 (App Router)
+- **语言**: TypeScript
+- **状态管理**: Zustand
+- **样式**: Tailwind CSS
+- **国际化**: next-intl
+- **图标**: Lucide React
+
+**后端**
+- **API**: Next.js API Routes
+- **AI 集成**: Anthropic Claude, Groq
+- **图像处理**: browser-image-compression, heic-convert
+
+**核心模块**
+- `src/lib/aiService.ts`: AI 服务客户端逻辑
+- `src/app/api/.../route.ts`: 服务器端 AI 请求路由
+- `src/lib/dataProcessor.ts`: 费用分摊核心业务逻辑
+- `src/store/index.ts`: 全局状态管理
+
+## 🚀 快速开始
 
 ### 环境要求
-- Node.js 16+
+- Node.js 18+
 - npm 或 yarn
 
-### 安装
+### 一键安装
 
 ```bash
 # 克隆项目
-git clone [项目地址]
+git clone https://github.com/ljnpng/aapay.git
 cd aapay
 
 # 安装依赖
 npm install
 
-# 配置环境变量
+# 复制环境变量模板
 cp .env.example .env
-# 在 .env 中设置你的 AI API Key
-CLAUDE_API_KEY=your_claude_api_key_here
-GROQ_API_KEY=your_groq_api_key_here
-AI_PROVIDER=claude  # 或者 groq
-```
 
-### 开发运行
-
-```bash
 # 启动开发服务器
 npm run dev
-
-# 构建生产版本
-npm run build
-
-# 启动生产服务器
-npm start
 ```
 
-## 使用说明
+应用将在 `http://localhost:3000` 启动，并自动在浏览器中打开。
 
-### 1. 设置人员
-添加参与费用分摊的人员，至少需要2个人。每个人会自动分配颜色用于区分。
+<details>
+<summary>📋 .env 配置示例</summary>
 
-### 2. 输入账单
-- **AI识别**：上传收据图片，自动识别商品和价格
-- **手动添加**：创建新收据，手动输入条目信息
-
-### 3. 分配条目
-为每个收据条目选择分摊的人员。支持一个条目分配给多个人（平均分摊）。
-
-### 4. 费用汇总
-查看每个人应付的详细金额，包括原价、税费和小费的分摊。
-
-## AI 服务选择
-
-### Claude vs Groq 对比
-
-| 特性 | Claude 3.5 Haiku | Groq Llama 4 Scout |
-|------|------------------|-------------------|
-| **识别精度** | 高 | 中等 |
-| **处理速度** | 中等 | 快 |
-| **成本** | 较高 | 较低 |
-| **复杂格式支持** | 优秀 | 良好 |
-| **适用场景** | 要求高精度 | 快速批量处理 |
-
-### 如何选择
-
-**推荐使用 Claude 当：**
-- 需要识别复杂或模糊的收据
-- 准确性比速度更重要
-- 预算允许
-
-**推荐使用 Groq 当：**
-- 需要快速处理大量收据
-- 成本控制重要
-- 收据格式相对标准
-
-### 切换服务
-
-在 `.env` 文件中设置：
 ```bash
-# 使用 Claude（默认）
+# --- 环境变量 ---
+
+# AI 服务提供商 (claude 或 groq, 默认为 claude)
 AI_PROVIDER=claude
-CLAUDE_API_KEY=your_claude_api_key
 
-# 使用 Groq
-AI_PROVIDER=groq
-GROQ_API_KEY=your_groq_api_key
+# Claude API 密钥 (使用 claude 时必需)
+CLAUDE_API_KEY=your_claude_api_key_here
+
+# Groq API 密钥 (使用 groq 时必需)
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
-## 技术架构
+</details>
 
-### 前端技术栈
-- **Next.js 14** - 全栈 React 框架
-- **React 18** + **TypeScript** - 类型安全的组件开发
-- **Tailwind CSS** - 实用优先的 CSS 框架
-- **Zustand** - 轻量级状态管理
-- **Lucide React** - 现代化图标库
+## 📜 脚本命令
 
-### 后端技术栈
-- **Next.js API Routes** - 服务器端 API 处理
-- **AI 服务支持** - 多种 AI 服务集成
-  - **Anthropic Claude 3.5 Haiku** - 高精度图像识别
-  - **Groq Llama Vision** - 高速图像识别
-- **Files API** - 安全的文件上传和处理
-- **图像压缩** - 优化识别性能
+| 命令 | 说明 | 使用场景 |
+|------|------|----------|
+| `npm run dev` | 启动开发服务器，自动打开浏览器 | 本地开发 |
+| `npm run build` | 构建生产版本 | 部署前检查 |
+| `npm start` | 启动生产服务器 | 生产环境运行 |
+| `npm run lint` | 运行 ESLint 检查 | 代码质量检查 |
+| `npm run test:ai` | 测试 AI 服务连接 | 调试 AI 服务 |
 
-### 项目结构
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/               # API 路由
-│   │   ├── claude/        # Claude API 集成
-│   │   └── groq/          # Groq API 集成
-│   ├── layout.tsx         # 根布局
-│   └── page.tsx           # 主页面
-├── components/            # UI 组件
-│   ├── SetupStep.tsx      # 设置人员步骤
-│   ├── InputStep.tsx      # 输入账单步骤
-│   ├── AssignStep.tsx     # 分配条目步骤
-│   └── SummaryStep.tsx    # 费用汇总步骤
-├── lib/                   # 核心业务逻辑
-│   ├── aiService.ts       # AI 识别服务
-│   ├── dataProcessor.ts   # 数据处理和计算
-│   ├── config.ts          # 配置管理
-│   └── logger.ts          # 日志记录
-├── store/                 # 状态管理
-└── types/                 # 类型定义
-```
+### 测试 AI 服务
 
-## 安全特性
-
-### API 密钥保护
-- Claude API 密钥只在服务器端使用
-- 客户端通过 Next.js API 路由与 AI 服务交互
-- 不会在浏览器中暴露敏感信息
-
-### 文件处理
-- 图片预处理和格式验证
-- 文件大小限制和压缩
-- 临时文件自动清理
-
-## 开发与测试
-
-### AI 识别测试
 ```bash
-# 测试 Claude AI 识别功能
-AI_PROVIDER=claude npm run test:ai
-
-# 测试 Groq AI 识别功能
-AI_PROVIDER=groq npm run test:ai
-
-# 使用默认设置测试
+# 测试默认 (claude) AI 服务
 npm run test:ai
+
+# 测试 Groq 服务
+AI_PROVIDER=groq npm run test:ai
 ```
 
-### 代码质量
+## 🔧 环境变量说明
+
+| 变量名 | 类型 | 必填 | 默认值 | 作用域 | 说明 |
+|--------|------|------|--------|--------|------|
+| `AI_PROVIDER` | string | 否 | `claude` | server | AI 服务提供商选择 |
+| `CLAUDE_API_KEY` | string | 条件 | - | server | Claude API 密钥 |
+| `GROQ_API_KEY` | string | 条件 | - | server | Groq API 密钥 |
+
+**获取 API 密钥**：
+- **Claude**: [Anthropic Console](https://console.anthropic.com/)
+- **Groq**: [Groq Console](https://console.groq.com/)
+
+## 🔀 开发工作流
+
+### Git 分支策略
+- `main`: 生产分支
+- `develop`: 开发分支
+- `feat/*`: 新功能分支
+- `fix/*`: 错误修复分支
+- `chore/*`: 杂务分支
+
+### Commit 规范
+遵循 [Conventional Commits](https://www.conventionalcommits.org/zh-hans/v1.0.0/) 约定：
+
 ```bash
-# 类型检查和构建
-npm run build
-
-# 代码规范检查
-npm run lint
+feat: 添加新功能
+fix: 修复 bug
+docs: 文档更新
+style: 代码格式化
+refactor: 重构代码
+test: 添加测试
+chore: 构建、工具链更新
 ```
 
-## 配置说明
+## 🧪 测试指南
 
-### 环境变量
-- `CLAUDE_API_KEY` - Claude API 密钥（使用 Claude 时必需）
-- `GROQ_API_KEY` - Groq API 密钥（使用 Groq 时必需）
-- `AI_PROVIDER` - AI 服务提供商选择（`claude` 或 `groq`，默认为 `claude`）
-- `NEXT_PUBLIC_APP_NAME` - 应用名称（可选）
-- `NEXT_PUBLIC_APP_VERSION` - 应用版本（可选）
-
-### AI 配置
-- **Claude 服务**：
-  - 模型：Claude 3.5 Haiku
-  - 特点：高精度识别，支持复杂格式
-- **Groq 服务**：
-  - 模型：Llama 4 Scout 17B Vision
-  - 特点：高速识别，成本较低
-- **通用配置**：
-  - 最大文件大小：25MB
-  - 支持格式：JPG、PNG、GIF、WebP、HEIC
-  - 自动压缩：优化识别性能
-
-## 部署
-
-### Vercel（推荐）
-
-#### 方法一：GitHub 集成自动部署
-
-1. **准备 GitHub 仓库**
-   ```bash
-   # 创建私有仓库
-   gh repo create your-project-name --private --description "Next.js 全栈项目 - AI 收据处理应用"
-   
-   # 添加远程仓库
-   git remote add origin https://github.com/your-username/your-project-name.git
-   
-   # 推送代码
-   git add .
-   git commit -m "迁移到 Next.js 全栈项目"
-   git push -u origin main
-   ```
-
-2. **Vercel 部署**
-   - 访问 [Vercel Dashboard](https://vercel.com/dashboard)
-   - 点击 "New Project"
-   - 选择你的 GitHub 仓库
-   - 配置环境变量（见下方）
-   - 点击 "Deploy"
-
-#### 方法二：CLI 部署
-
-1. **安装 Vercel CLI**
-   ```bash
-   npm install -g vercel
-   ```
-
-2. **登录 Vercel**
-   ```bash
-   vercel login
-   ```
-
-3. **部署项目**
-   ```bash
-   vercel
-   ```
-   
-   按照提示操作：
-   - 选择你的 scope（个人或团队）
-   - 输入项目名称
-   - 确认项目目录
-   - 等待构建和部署完成
-
-#### 方法三：GitHub Actions 自动部署
-
-项目已包含 `.github/workflows/deploy.yml` 文件，实现：
-- Pull Request 触发预览部署
-- main 分支推送触发生产部署
-- 自动构建和环境变量注入
-
-**配置 GitHub Secrets：**
-1. 在 GitHub 仓库中，进入 Settings → Secrets and variables → Actions
-2. 添加以下 secrets：
-   - `VERCEL_TOKEN`: Vercel API Token
-   - `VERCEL_ORG_ID`: Vercel 组织 ID
-   - `VERCEL_PROJECT_ID`: Vercel 项目 ID
-   - `CLAUDE_API_KEY`: Claude API 密钥
-   - `GROQ_API_KEY`: Groq API 密钥
-   - `AI_PROVIDER`: AI 服务提供商
-
-**获取 Vercel 配置信息：**
+### 单元测试
 ```bash
-# 安装 Vercel CLI
-npm install -g vercel
+# 运行所有测试
+npm test
 
-# 登录并链接项目
-vercel link
+# 运行特定测试
+npm test -- --testNamePattern="dataProcessor"
 
-# 获取项目信息
-cat .vercel/project.json
+# 生成覆盖率报告
+npm run test:coverage
 ```
 
-**快速设置（推荐）：**
+### 集成测试
 ```bash
-# 运行自动配置脚本
-./scripts/setup-secrets.sh
+# 测试 AI 服务集成
+npm run test:ai
+
+# 测试图像处理
+npm run test:image-processing
 ```
 
-**手动获取 Vercel API Token：**
-1. 访问 [Vercel Account Settings](https://vercel.com/account/tokens)
-2. 点击 "Create Token"
-3. 输入 Token 名称（如 "GitHub Actions"）
-4. 选择适当的 scope
-5. 复制生成的 token
+### Mock AI API
+```javascript
+// tests/mocks/ai-service.mock.js
+export const mockAIResponse = {
+  items: [
+    { name: "商品1", price: 10.99 },
+    { name: "商品2", price: 15.50 }
+  ],
+  subtotal: 26.49,
+  tax: 2.12,
+  tip: 5.30,
+  total: 33.91
+};
+```
 
-#### 环境变量配置
+## 🚀 部署文档
 
-在 Vercel 中配置以下环境变量：
+### Vercel 部署
 
-| 变量名 | 值 | 描述 |
-|--------|-----|------|
-| `CLAUDE_API_KEY` | `your_claude_api_key_here` | Claude API 密钥（使用 Claude 时必需） |
-| `GROQ_API_KEY` | `your_groq_api_key_here` | Groq API 密钥（使用 Groq 时必需） |
-| `AI_PROVIDER` | `claude` | AI 服务提供商（`claude` 或 `groq`） |
-| `NEXT_PUBLIC_APP_NAME` | `AAP费用分摊` | 应用名称（可选） |
-| `NEXT_PUBLIC_APP_VERSION` | `2.0.0` | 应用版本（可选） |
+项目已为 Vercel 平台高度优化，支持无缝部署。
 
-**设置环境变量：**
-1. 在 Vercel Dashboard 中进入你的项目
-2. 点击 "Settings" 选项卡
-3. 点击 "Environment Variables"
-4. 添加上述变量
+1. **Fork 项目** 到你的 GitHub 账户
+2. 在 Vercel Dashboard 中，点击 "Add New... -> Project"
+3. 选择你刚才 Fork 的 GitHub 仓库并导入
+4. **配置环境变量**：
+   在项目设置的 "Environment Variables" 中，添加以下变量：
+   - `AI_PROVIDER`
+   - `CLAUDE_API_KEY`
+   - `GROQ_API_KEY`
+5. 点击 "Deploy"，Vercel 将自动完成构建和部署
 
-#### 自动部署设置
+### 自动化部署
+- 推送到 `main` 分支将自动触发生产部署
+- 推送到其他分支将创建预览部署
+- 支持自定义域名和 SSL 证书
+- 内置 CI/CD 流水线和性能监控
 
-项目已配置 `vercel.json` 文件，包含以下优化：
+## 🌐 国际化指南
 
-- **区域部署**：香港 (hkg1) 和旧金山 (sfo1) 双区域
-- **API 优化**：30秒最大执行时间
-- **CORS 配置**：支持跨域请求
-- **缓存策略**：静态资源自动缓存
+### 添加新语言
 
+1. 在 `src/messages/` 目录下创建新的语言文件：
+   ```bash
+   # 例如添加法语
+   cp src/messages/en.json src/messages/fr.json
+   ```
 
+2. 更新 `i18n.ts` 配置：
+   ```typescript
+   export const locales = ['en', 'zh', 'fr'] as const;
+   ```
 
-### 部署后验证
+3. 翻译 JSON 文件中的所有字符串
 
-部署完成后，访问你的应用 URL，验证以下功能：
+### 翻译流程
+1. 使用 `extract-messages` 脚本提取新的翻译键
+2. 更新各语言的 JSON 文件
+3. 本地测试不同语言
+4. 提交 PR
 
-- [ ] 页面正常加载
-- [ ] 可以添加人员
-- [ ] 可以上传收据图片
-- [ ] AI 识别功能正常工作
-- [ ] 费用计算准确
-- [ ] 移动端响应式正常
+## 🔒 安全与合规
 
-### 常见问题
+### 隐私保护
+- ✅ **图片不存储**：所有收据图片仅在内存中处理，不会保存到服务器
+- ✅ **API 密钥保护**：所有 AI 服务调用在服务器端完成，密钥不暴露
+- ✅ **数据本地化**：所有计算数据仅在浏览器本地存储
 
-**Q: API 路由返回 500 错误**
-A: 检查对应的 AI 服务 API 密钥是否正确设置：
-- 使用 Claude 时：检查 `CLAUDE_API_KEY`
-- 使用 Groq 时：检查 `GROQ_API_KEY` 
-- 确认 `AI_PROVIDER` 设置正确
+### GDPR 合规
+- 数据最小化原则
+- 用户数据可删除
+- 透明的隐私政策
 
-**Q: 如何获取 AI 服务的 API 密钥？**
-A: 
-- Claude API 密钥：访问 [Anthropic Console](https://console.anthropic.com/)
-- Groq API 密钥：访问 [Groq Console](https://console.groq.com/)
+### 最佳实践
+- 定期轮换 API 密钥
+- 使用环境变量管理敏感信息
+- 启用 HTTPS 传输加密
 
-**Q: 两个 AI 服务识别结果差异很大，怎么办？**
-A: 
-- Claude 在处理复杂格式时表现更好
-- Groq 在标准格式收据上速度更快
-- 建议根据实际需求选择合适的服务
+## ❓ 常见问题
 
-**Q: 图片上传失败**
-A: 确保文件大小不超过 25MB，格式为 JPG/PNG/GIF/WebP
+### 🔧 技术问题
 
-**Q: 部署后白屏**
-A: 检查构建日志，确保没有 TypeScript 错误
+<details>
+<summary><strong>Q: AI 识别返回错误？</strong></summary>
 
-**Q: 环境变量不生效**
-A: 重新部署项目，环境变量更改需要重新构建
+**可能原因**：
+1. API 密钥未正确设置
+2. AI_PROVIDER 与密钥不匹配
+3. 服务商账户余额不足
+4. 网络连接问题
 
-## 贡献指南
+**解决方案**：
+1. 检查 `.env` 文件中的密钥配置
+2. 确认 `AI_PROVIDER` 值正确
+3. 查看服务商账户状态
+4. 运行 `npm run test:ai` 进行诊断
+</details>
 
-1. Fork 项目
-2. 创建功能分支
-3. 提交变更
-4. 发起 Pull Request
+<details>
+<summary><strong>Q: HEIC 图片处理很慢？</strong></summary>
 
-## 许可证
+**原因**：HEIC 格式需要在服务器端进行格式转换，比 JPG/PNG 耗时更长。
 
-MIT License # GitHub Actions部署已修复
+**优化建议**：
+1. 优先使用 JPG/PNG 格式
+2. 在相机设置中关闭 HEIC 格式
+3. 使用图片压缩工具预处理
+</details>
+
+### 🎯 使用问题
+
+<details>
+<summary><strong>Q: 识别结果不准确怎么办？</strong></summary>
+
+**优化建议**：
+1. 确保收据图片清晰、完整
+2. 避免折叠、反光
+3. 切换到 Claude 服务（精度更高）
+4. 手动编辑识别结果
+</details>
+
+<details>
+<summary><strong>Q: 支持哪些收据类型？</strong></summary>
+
+**支持类型**：
+- ✅ 餐厅收据
+- ✅ 超市小票
+- ✅ 发票
+- ✅ 手写账单
+- ❌ 非结构化文本
+</details>
+
+## 🤝 贡献指南
+
+欢迎所有形式的贡献！请查看 [CONTRIBUTING.md](docs/CONTRIBUTING.md) 了解详细信息。
+
+### 贡献类型
+- 🐛 Bug 报告
+- 💡 功能建议
+- 🔧 代码贡献
+- 📝 文档改进
+- 🌐 翻译支持
+
+### 快速开始贡献
+
+1. **Fork 项目**
+2. **创建特性分支**：`git checkout -b feat/amazing-feature`
+3. **提交更改**：`git commit -m 'feat: 添加了令人惊叹的功能'`
+4. **推送分支**：`git push origin feat/amazing-feature`
+5. **创建 Pull Request**
+
+### 代码规范
+- 使用 TypeScript
+- 遵循 ESLint 配置
+- 提交前运行 `npm run lint`
+- 编写单元测试
+
+## 🌟 社区与支持
+
+### 交流渠道
+- 📧 **邮箱**：support@aapay.app
+- 💬 **GitHub Discussions**：[讨论区](https://github.com/ljnpng/aapay/discussions)
+- 🐛 **Bug 报告**：[Issues](https://github.com/ljnpng/aapay/issues)
+
+### 获取帮助
+- 查看 [FAQ](#常见问题) 部分
+- 搜索 [GitHub Issues](https://github.com/ljnpng/aapay/issues)
+- 在 [Discussions](https://github.com/ljnpng/aapay/discussions) 中提问
+
+### 发布说明
+- 查看 [Releases](https://github.com/ljnpng/aapay/releases) 了解版本更新
+- 关注 [Changelog](CHANGELOG.md) 获取详细变更记录
+
+## 📄 许可证
+
+本项目采用 [MIT 许可证](LICENSE) 开源。
+
+---
+
+<div align="center">
+  <p>如果这个项目对你有帮助，请给我们一个 ⭐️ 支持！</p>
+  <p>Made with ❤️ by <a href="https://github.com/ljnpng">ljnpng</a></p>
+</div>
