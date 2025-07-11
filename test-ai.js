@@ -4,12 +4,22 @@ import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import FormData from 'form-data';
+import fetch from 'node-fetch';
+import { config } from 'dotenv';
+
+// 加载 .env 文件
+config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// 获取 AI 服务提供商配置
+const AI_PROVIDER = process.env.AI_PROVIDER || 'claude';
+
 // API 端点
-const API_ENDPOINT = 'http://localhost:3000/api/claude/recognize';
+const API_ENDPOINT = AI_PROVIDER === 'groq' 
+  ? 'http://localhost:3000/api/groq/recognize'
+  : 'http://localhost:3000/api/claude/recognize';
 
 // 测试单张图片
 const testImage = async (imagePath) => {
@@ -28,7 +38,7 @@ const testImage = async (imagePath) => {
     
     console.log(`📁 文件大小: ${(fileBuffer.length / 1024 / 1024).toFixed(2)}MB`);
     
-    // 准备 FormData
+    // 准备 FormData (使用 form-data 库)
     const formData = new FormData();
     formData.append('file', fileBuffer, {
       filename: fileName,
@@ -127,7 +137,7 @@ const formatResult = (result) => {
 const checkServer = async () => {
   try {
     console.log('🔍 检查服务器状态...');
-    const response = await fetch('http://localhost:3000/api/claude/recognize', {
+    const response = await fetch(API_ENDPOINT, {
       method: 'HEAD',
     });
     return true;
@@ -140,6 +150,8 @@ const checkServer = async () => {
 // 主函数
 const main = async () => {
   console.log('🚀 开始 AI 识别测试（调用 Next.js API）\n');
+  console.log(`🤖 使用 AI 服务: ${AI_PROVIDER.toUpperCase()}`);
+  console.log(`📡 API 端点: ${API_ENDPOINT}\n`);
   
   // 检查服务器
   const serverRunning = await checkServer();
