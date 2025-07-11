@@ -1,15 +1,18 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { useAppStore } from '../store'
-import StepIndicator from '../components/StepIndicator'
-import SetupStep from '../components/SetupStep'
-import InputStep from '../components/InputStep'
-import AssignStep from '../components/AssignStep'
-import SummaryStep from '../components/SummaryStep'
-import ErrorAlert from '../components/ErrorAlert'
+import { useTranslations } from 'next-intl'
+import { useAppStore } from '../../store'
+import StepIndicator from '../../components/StepIndicator'
+import SetupStep from '../../components/SetupStep'
+import InputStep from '../../components/InputStep'
+import AssignStep from '../../components/AssignStep'
+import SummaryStep from '../../components/SummaryStep'
+import ErrorAlert from '../../components/ErrorAlert'
+import LanguageSwitcher from '../../components/LanguageSwitcher'
 
 export default function Home() {
+  const t = useTranslations()
   const { 
     currentStep, 
     error, 
@@ -69,13 +72,16 @@ export default function Home() {
         <header className="text-center mb-8 sm:mb-12">
           <div className="mb-4 sm:mb-6">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-              AAP费用分摊
+              {t('app.title')}
             </h1>
             <div className="mt-3 sm:mt-4 mx-auto w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
           </div>
           <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
-            智能分摊餐费、税费和小费，让每个人都支付合理的份额
+            {t('app.description')}
           </p>
+          <div className="mt-6">
+            <LanguageSwitcher />
+          </div>
         </header>
 
         {error && <ErrorAlert message={error} />}
