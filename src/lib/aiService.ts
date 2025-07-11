@@ -47,31 +47,12 @@ const preprocessImage = async (file: File): Promise<File> => {
     throw new Error(AI_CONFIG.errors.fileTooLarge);
   }
 
-  // 处理 HEIC 格式 - 在浏览器环境中不支持转换
+  // HEIC 格式现在由后端处理转换
   if (isHeicFormat(file)) {
-    aiLogger.error('检测到 HEIC 格式文件，浏览器环境不支持转换', {
+    aiLogger.info('检测到 HEIC 格式文件，将由后端进行转换', {
       fileName: file.name,
       fileSize: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
     });
-    
-    throw new Error(`检测到 HEIC 格式文件，浏览器环境暂不支持自动转换。
-
-📱 如何将 HEIC 转换为 JPG：
-
-iPhone/iPad 用户：
-1. 打开"设置" → "相机" → "格式"
-2. 选择"高兼容性"（拍照时直接保存为 JPG）
-3. 或在"照片"应用中选择图片 → 分享 → 保存为文件 → 选择 JPG 格式
-
-Android 用户：
-1. 在相机设置中选择 JPG 格式
-2. 或使用图片编辑应用转换格式
-
-💻 电脑用户：
-1. 使用在线转换工具（如 convertio.co）
-2. 或使用图片编辑软件（如 Photoshop、GIMP）
-
-转换完成后，请重新上传 JPG 或 PNG 格式的图片。`);
   }
 
   // 检查是否为支持的格式

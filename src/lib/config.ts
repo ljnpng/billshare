@@ -11,7 +11,7 @@ export const AI_CONFIG = {
   // 图片处理配置
   image: {
     // 支持的图片格式
-    supportedFormats: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+    supportedFormats: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif'],
     // 最大文件大小 (25MB)
     maxFileSize: 25 * 1024 * 1024,
     // 最大图片尺寸
@@ -29,7 +29,7 @@ export const AI_CONFIG = {
   // 错误消息配置
   errors: {
     fileUploadFailed: '文件上传失败，请检查网络连接或稍后重试',
-    unsupportedFormat: '不支持的图片格式，请使用 JPG、PNG、GIF 或 WebP 格式',
+    unsupportedFormat: '不支持的图片格式，请使用 JPG、PNG、GIF、WebP 或 HEIC 格式',
     fileTooLarge: '文件太大，请选择小于 25MB 的图片',
     imageTooLarge: '图片尺寸过大，请选择小于 8000x8000 像素的图片',
     processingFailed: '图片处理失败',
