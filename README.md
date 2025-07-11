@@ -8,9 +8,10 @@
 
 ### 🤖 AI 智能识别
 - 使用 Claude 3.5 Haiku 自动识别收据
-- 支持 JPG、PNG、GIF、WebP 格式
+- 支持 JPG、PNG、GIF、WebP、HEIC/HEIF 格式
 - 自动提取商品名称和价格
 - 安全的服务器端 API 调用
+- 智能 HEIC 格式转换
 
 ### 💰 智能分摊计算
 - 自动按比例分摊税费和小费
@@ -46,8 +47,10 @@ npm install
 
 # 配置环境变量
 cp .env.example .env
-# 在 .env 中设置你的 Claude API Key
-CLAUDE_API_KEY=your_api_key_here
+# 在 .env 中设置你的 AI API Key
+CLAUDE_API_KEY=your_claude_api_key_here
+GROQ_API_KEY=your_groq_api_key_here
+AI_PROVIDER=claude  # 或者 groq
 ```
 
 ### 开发运行
@@ -78,6 +81,43 @@ npm start
 ### 4. 费用汇总
 查看每个人应付的详细金额，包括原价、税费和小费的分摊。
 
+## AI 服务选择
+
+### Claude vs Groq 对比
+
+| 特性 | Claude 3.5 Haiku | Groq Llama 4 Scout |
+|------|------------------|-------------------|
+| **识别精度** | 高 | 中等 |
+| **处理速度** | 中等 | 快 |
+| **成本** | 较高 | 较低 |
+| **复杂格式支持** | 优秀 | 良好 |
+| **适用场景** | 要求高精度 | 快速批量处理 |
+
+### 如何选择
+
+**推荐使用 Claude 当：**
+- 需要识别复杂或模糊的收据
+- 准确性比速度更重要
+- 预算允许
+
+**推荐使用 Groq 当：**
+- 需要快速处理大量收据
+- 成本控制重要
+- 收据格式相对标准
+
+### 切换服务
+
+在 `.env` 文件中设置：
+```bash
+# 使用 Claude（默认）
+AI_PROVIDER=claude
+CLAUDE_API_KEY=your_claude_api_key
+
+# 使用 Groq
+AI_PROVIDER=groq
+GROQ_API_KEY=your_groq_api_key
+```
+
 ## 技术架构
 
 ### 前端技术栈
@@ -89,7 +129,9 @@ npm start
 
 ### 后端技术栈
 - **Next.js API Routes** - 服务器端 API 处理
-- **Anthropic Claude 3.5 Haiku** - 高性能图像识别
+- **AI 服务支持** - 多种 AI 服务集成
+  - **Anthropic Claude 3.5 Haiku** - 高精度图像识别
+  - **Groq Llama Vision** - 高速图像识别
 - **Files API** - 安全的文件上传和处理
 - **图像压缩** - 优化识别性能
 
@@ -98,7 +140,8 @@ npm start
 src/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API 路由
-│   │   └── claude/        # Claude API 集成
+│   │   ├── claude/        # Claude API 集成
+│   │   └── groq/          # Groq API 集成
 │   ├── layout.tsx         # 根布局
 │   └── page.tsx           # 主页面
 ├── components/            # UI 组件
@@ -131,7 +174,13 @@ src/
 
 ### AI 识别测试
 ```bash
-# 测试 AI 识别功能
+# 测试 Claude AI 识别功能
+AI_PROVIDER=claude npm run test:ai
+
+# 测试 Groq AI 识别功能
+AI_PROVIDER=groq npm run test:ai
+
+# 使用默认设置测试
 npm run test:ai
 ```
 
@@ -147,15 +196,23 @@ npm run lint
 ## 配置说明
 
 ### 环境变量
-- `CLAUDE_API_KEY` - Claude API 密钥（服务器端必需）
+- `CLAUDE_API_KEY` - Claude API 密钥（使用 Claude 时必需）
+- `GROQ_API_KEY` - Groq API 密钥（使用 Groq 时必需）
+- `AI_PROVIDER` - AI 服务提供商选择（`claude` 或 `groq`，默认为 `claude`）
 - `NEXT_PUBLIC_APP_NAME` - 应用名称（可选）
 - `NEXT_PUBLIC_APP_VERSION` - 应用版本（可选）
 
 ### AI 配置
-- 模型：Claude 3.5 Haiku
-- 最大文件大小：25MB
-- 支持格式：JPG、PNG、GIF、WebP
-- 自动压缩：优化识别性能
+- **Claude 服务**：
+  - 模型：Claude 3.5 Haiku
+  - 特点：高精度识别，支持复杂格式
+- **Groq 服务**：
+  - 模型：Llama 4 Scout 17B Vision
+  - 特点：高速识别，成本较低
+- **通用配置**：
+  - 最大文件大小：25MB
+  - 支持格式：JPG、PNG、GIF、WebP、HEIC
+  - 自动压缩：优化识别性能
 
 ## 部署
 
@@ -213,7 +270,9 @@ npm run lint
 
 | 变量名 | 值 | 描述 |
 |--------|-----|------|
-| `CLAUDE_API_KEY` | `your_claude_api_key_here` | Claude API 密钥（必需） |
+| `CLAUDE_API_KEY` | `your_claude_api_key_here` | Claude API 密钥（使用 Claude 时必需） |
+| `GROQ_API_KEY` | `your_groq_api_key_here` | Groq API 密钥（使用 Groq 时必需） |
+| `AI_PROVIDER` | `claude` | AI 服务提供商（`claude` 或 `groq`） |
 | `NEXT_PUBLIC_APP_NAME` | `AAP费用分摊` | 应用名称（可选） |
 | `NEXT_PUBLIC_APP_VERSION` | `2.0.0` | 应用版本（可选） |
 
@@ -239,8 +298,11 @@ npm run lint
 # 构建镜像
 docker build -t aapay .
 
-# 运行容器
-docker run -p 3000:3000 -e CLAUDE_API_KEY=your_api_key aapay
+# 运行容器 (使用 Claude)
+docker run -p 3000:3000 -e CLAUDE_API_KEY=your_claude_api_key -e AI_PROVIDER=claude aapay
+
+# 运行容器 (使用 Groq)
+docker run -p 3000:3000 -e GROQ_API_KEY=your_groq_api_key -e AI_PROVIDER=groq aapay
 ```
 
 #### 传统服务器部署
@@ -277,7 +339,21 @@ npm start
 ### 常见问题
 
 **Q: API 路由返回 500 错误**
-A: 检查 `CLAUDE_API_KEY` 环境变量是否正确设置
+A: 检查对应的 AI 服务 API 密钥是否正确设置：
+- 使用 Claude 时：检查 `CLAUDE_API_KEY`
+- 使用 Groq 时：检查 `GROQ_API_KEY` 
+- 确认 `AI_PROVIDER` 设置正确
+
+**Q: 如何获取 AI 服务的 API 密钥？**
+A: 
+- Claude API 密钥：访问 [Anthropic Console](https://console.anthropic.com/)
+- Groq API 密钥：访问 [Groq Console](https://console.groq.com/)
+
+**Q: 两个 AI 服务识别结果差异很大，怎么办？**
+A: 
+- Claude 在处理复杂格式时表现更好
+- Groq 在标准格式收据上速度更快
+- 建议根据实际需求选择合适的服务
 
 **Q: 图片上传失败**
 A: 确保文件大小不超过 25MB，格式为 JPG/PNG/GIF/WebP
