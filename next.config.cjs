@@ -14,7 +14,7 @@ const nextConfig = {
   output: 'standalone',
   // 环境变量配置
   env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
+    AI_PROVIDER: process.env.AI_PROVIDER,
   },
   // 压缩配置
   compress: true,
