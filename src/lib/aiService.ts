@@ -1,6 +1,6 @@
 import { AIProcessingResult } from '../types';
 import imageCompression from 'browser-image-compression';
-import { AI_CONFIG, isSupportedImageFormat, getSupportedFormatsInfo } from './config';
+import { CLIENT_CONFIG, isSupportedImageFormat, getSupportedFormatsInfo } from './clientConfig';
 import { aiLogger } from './logger';
 
 /**
@@ -21,7 +21,7 @@ const compressAndResizeImage = async (file: File): Promise<File> => {
       format: file.type,
     });
 
-    const compressedFile = await imageCompression(file, AI_CONFIG.image.compression);
+    const compressedFile = await imageCompression(file, CLIENT_CONFIG.image.compression);
 
     aiLogger.info('图片压缩完成', {
       originalSize: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
@@ -32,7 +32,7 @@ const compressAndResizeImage = async (file: File): Promise<File> => {
     return compressedFile;
   } catch (error) {
     aiLogger.error('图片压缩失败:', error);
-    throw new Error(AI_CONFIG.errors.processingFailed);
+    throw new Error(CLIENT_CONFIG.errors.processingFailed);
   }
 };
 
@@ -43,8 +43,8 @@ const preprocessImage = async (file: File): Promise<File> => {
   let processedFile = file;
 
   // 检查文件大小
-  if (file.size > AI_CONFIG.image.maxFileSize) {
-    throw new Error(AI_CONFIG.errors.fileTooLarge);
+  if (file.size > CLIENT_CONFIG.image.maxFileSize) {
+    throw new Error(CLIENT_CONFIG.errors.fileTooLarge);
   }
 
   // HEIC 格式现在由后端处理转换
@@ -57,11 +57,11 @@ const preprocessImage = async (file: File): Promise<File> => {
 
   // 检查是否为支持的格式
   if (!isSupportedImageFormat(processedFile.type)) {
-    throw new Error(AI_CONFIG.errors.unsupportedFormat);
+    throw new Error(CLIENT_CONFIG.errors.unsupportedFormat);
   }
 
   // 压缩图片（如果需要）
-  if (processedFile.size > AI_CONFIG.image.maxFileSize) {
+  if (processedFile.size > CLIENT_CONFIG.image.maxFileSize) {
     processedFile = await compressAndResizeImage(processedFile);
   }
 
@@ -77,10 +77,11 @@ const callRecognitionAPI = async (file: File, locale: string = 'zh'): Promise<AI
     formData.append('file', file);
     formData.append('locale', locale);
 
-    // 根据配置选择 API 端点
-    const apiEndpoint = AI_CONFIG.provider === 'groq' ? '/api/groq/recognize' : '/api/claude/recognize';
+    // 根据配置选择 API 端点 - 客户端默认使用 Claude
+    const provider = AI_CONFIG.provider || 'claude';
+    const apiEndpoint = provider === 'groq' ? '/api/groq/recognize' : '/api/claude/recognize';
     
-    aiLogger.info(`使用 ${AI_CONFIG.provider} 服务进行识别，语言: ${locale}`);
+    aiLogger.info(`使用 ${provider} 服务进行识别，语言: ${locale}`);
 
     const response = await fetch(apiEndpoint, {
       method: 'POST',
