@@ -12,10 +12,13 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",
     "browser-image-compression": "^2.0.2",
+    "dotenv": "^17.2.0",
+    "groq-sdk": "^0.26.0",
     "heic-convert": "^2.1.0",
     "loglevel": "^1.9.2",
     "lucide-react": "^0.288.0",
     "next": "^14.0.0",
+    "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.47.0",
