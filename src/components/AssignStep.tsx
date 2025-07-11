@@ -1,15 +1,18 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useAppStore } from '../store';
 import { CheckCircle } from 'lucide-react';
 
 const AssignStep: React.FC = () => {
+  const t = useTranslations('assignStep');
+  const tCommon = useTranslations('common');
   const { people, receipts, updateItemAssignment, setCurrentStep } = useAppStore();
   
   const allItems = receipts.flatMap(r => r.items);
 
   if (allItems.length === 0 || !people.length) {
     // 应该由 App.tsx 中的逻辑处理，这里做个兜底
-    return <div>加载中...</div>;
+    return <div>{tCommon('loading')}</div>;
   }
 
   const handlePersonToggle = (itemId: string, personId: string) => {
@@ -55,9 +58,9 @@ const AssignStep: React.FC = () => {
     <div className="max-w-4xl mx-auto">
       <div className="card mb-8">
         <div className="card-header">
-          <h2 className="card-title">分配条目</h2>
+          <h2 className="card-title">{t('title')}</h2>
           <p className="text-description">
-            为每个条目选择付费的人员。每个条目可以由多人分摊。
+            {t('description')}
           </p>
         </div>
         
@@ -68,12 +71,12 @@ const AssignStep: React.FC = () => {
               <div className="flex items-center">
                 <CheckCircle className="h-6 w-6 text-blue-600 mr-3" />
                 <span className="text-base font-semibold text-blue-800">
-                  已分配 {getAssignedItemsCount()} / {allItems.length} 个条目
+                  {t('progressText', { assigned: getAssignedItemsCount(), total: allItems.length })}
                 </span>
               </div>
               {getAssignedItemsCount() === allItems.length && (
                 <span className="text-sm text-green-600 font-semibold bg-green-100 px-3 py-1 rounded-full">
-                  ✓ 所有条目已分配
+                  {t('allAssigned')}
                 </span>
               )}
             </div>
@@ -81,7 +84,7 @@ const AssignStep: React.FC = () => {
 
           {/* 人员预览 */}
           <div className="mb-8">
-            <h3 className="text-xl font-bold mb-4">人员预览</h3>
+            <h3 className="text-xl font-bold mb-4">{t('peoplePreview')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {people.map(person => {
                 const info = getPersonAssignmentInfo(person.id);
@@ -95,7 +98,7 @@ const AssignStep: React.FC = () => {
                       <span className="font-semibold">{person.name}</span>
                     </div>
                     <div className="text-sm text-gray-600">
-                      {info.count} 个条目 • <span className="font-semibold text-blue-600">${info.total.toFixed(2)}</span>
+                      {t('itemsCount', { count: info.count })} • <span className="font-semibold text-blue-600">${info.total.toFixed(2)}</span>
                     </div>
                   </div>
                 );
@@ -109,7 +112,7 @@ const AssignStep: React.FC = () => {
               <div key={receipt.id}>
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{receipt.name}</h3>
-                  <p className="text-subtitle mt-1">共 {receipt.items.length} 个条目</p>
+                  <p className="text-subtitle mt-1">{t('itemsCount', { count: receipt.items.length })}</p>
                 </div>
                 <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/40 border border-gray-200/60 overflow-hidden">
                   <div className="divide-y divide-gray-200/60">
@@ -119,10 +122,10 @@ const AssignStep: React.FC = () => {
                           <div className="flex-1">
                             <h4 className="font-medium text-lg">{item.name}</h4>
                             <div className="text-sm text-gray-600">
-                              原价: ${item.originalPrice?.toFixed(2) || 'N/A'}
+                              {t('originalPrice')}: ${item.originalPrice?.toFixed(2) || 'N/A'}
                               {item.originalPrice && item.finalPrice > item.originalPrice && (
                                 <span className="ml-2 text-blue-600">
-                                  含税费: ${item.finalPrice.toFixed(2)}
+                                  {t('includingTax')}: ${item.finalPrice.toFixed(2)}
                                 </span>
                               )}
                             </div>
@@ -131,17 +134,17 @@ const AssignStep: React.FC = () => {
                             <div className="text-sm text-gray-600">
                               {item.assignedTo.length > 0 ? (
                                 <span className="text-green-600 font-semibold">
-                                  已分配给 {item.assignedTo.length} 人
+                                  {t('assigned', { count: item.assignedTo.length })}
                                 </span>
                               ) : (
                                 <span className="text-red-600 font-semibold">
-                                  未分配
+                                  {t('unassigned')}
                                 </span>
                               )}
                             </div>
                             {item.assignedTo.length > 0 && (
                               <div className="text-sm font-medium">
-                                每人: ${(item.finalPrice / item.assignedTo.length).toFixed(2)}
+                                {t('perPerson')}: ${(item.finalPrice / item.assignedTo.length).toFixed(2)}
                               </div>
                             )}
                           </div>
@@ -189,15 +192,15 @@ const AssignStep: React.FC = () => {
           onClick={handleBack}
           className="btn btn-secondary btn-lg order-2 sm:order-1"
         >
-          上一步
+          {tCommon('previous')}
         </button>
         <button
           onClick={handleNext}
           className="btn btn-primary btn-lg order-1 sm:order-2"
           disabled={getAssignedItemsCount() !== allItems.length}
         >
-          <span className="hidden sm:inline">下一步：费用汇总</span>
-          <span className="sm:hidden">费用汇总</span>
+          <span className="hidden sm:inline">{t('nextButton')}</span>
+          <span className="sm:hidden">{t('costSummary')}</span>
         </button>
       </div>
     </div>

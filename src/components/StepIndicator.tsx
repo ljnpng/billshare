@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Check, Users, FileText, UserCheck, Calculator } from 'lucide-react';
 import { AppState } from '../types';
 
@@ -6,14 +7,16 @@ interface StepIndicatorProps {
   currentStep: AppState['currentStep'];
 }
 
-const steps = [
-  { id: 'setup', label: '设置人员', icon: Users },
-  { id: 'input', label: '输入账单', icon: FileText },
-  { id: 'assign', label: '分配条目', icon: UserCheck },
-  { id: 'summary', label: '费用汇总', icon: Calculator }
-];
-
 const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep }) => {
+  const t = useTranslations('steps');
+  
+  const steps = [
+    { id: 'setup', label: t('setup'), icon: Users },
+    { id: 'input', label: t('input'), icon: FileText },
+    { id: 'assign', label: t('assign'), icon: UserCheck },
+    { id: 'summary', label: t('summary'), icon: Calculator }
+  ];
+
   const getCurrentStepIndex = () => {
     return steps.findIndex(step => step.id === currentStep);
   };

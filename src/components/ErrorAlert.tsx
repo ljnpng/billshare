@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { AlertTriangle, X } from 'lucide-react';
 import { useAppStore } from '../store';
 
@@ -7,6 +8,7 @@ interface ErrorAlertProps {
 }
 
 const ErrorAlert: React.FC<ErrorAlertProps> = ({ message }) => {
+  const t = useTranslations('errorAlert');
   const { setError } = useAppStore();
 
   return (
@@ -15,7 +17,7 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({ message }) => {
         <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 mr-3" />
         <div className="flex-1">
           <h3 className="text-sm font-medium text-red-800 mb-1">
-            出现错误
+            {t('title')}
           </h3>
           <p className="text-sm text-red-700">
             {message}

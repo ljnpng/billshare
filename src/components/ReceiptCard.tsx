@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Edit, Save, X, Trash2, PlusCircle, DollarSign } from 'lucide-react';
 import { Receipt } from '../types';
 import { useAppStore } from '../store';
@@ -9,6 +10,8 @@ interface ReceiptCardProps {
 }
 
 export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
+  const t = useTranslations('receiptCard');
+  const tCommon = useTranslations('common');
   const { 
     updateReceiptName, 
     removeReceipt,
@@ -119,7 +122,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
         )}
         <button onClick={() => removeReceipt(receipt.id)} className="btn btn-ghost btn-sm text-red-500 hover:bg-red-50 hover:text-red-600">
           <Trash2 className="h-4 w-4 mr-2" />
-          删除
+          {t('deleteReceipt')}
         </button>
       </div>
       <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-5 gap-6 sm:gap-8">
@@ -131,9 +134,9 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                 type="text"
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
-                placeholder="项目名称 (例如: 披萨)"
+                placeholder={t('addItemPlaceholder')}
                 className="input flex-1"
-                aria-label="项目名称"
+                aria-label={tCommon('name')}
               />
               <div className="flex gap-3">
                 <div className="relative flex-1 sm:flex-none">
@@ -142,16 +145,16 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                     type="number"
                     value={newItemPrice}
                     onChange={(e) => setNewItemPrice(e.target.value)}
-                    placeholder="价格"
+                    placeholder={t('pricePlaceholder')}
                     className="input w-full sm:w-32 pl-9"
                     step="0.01"
                     min="0"
-                    aria-label="价格"
+                    aria-label={tCommon('price')}
                   />
                 </div>
-                <button type="submit" className="btn btn-primary btn-sm" disabled={!newItemName.trim() || !newItemPrice} aria-label="添加项目">
+                <button type="submit" className="btn btn-primary btn-sm" disabled={!newItemName.trim() || !newItemPrice} aria-label={t('addItemButton')}>
                   <PlusCircle className="h-4 w-4 sm:mr-2" aria-hidden="true" />
-                  <span className="hidden sm:inline">添加</span>
+                  <span className="hidden sm:inline">{t('addItemButton')}</span>
                 </button>
               </div>
             </div>
@@ -193,9 +196,9 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   <>
                     <span className="font-medium">{item.name}</span>
                     <div className="flex items-center gap-3">
-                      <span className={`text-sm font-semibold ${item.originalPrice !== null ? 'text-gray-700' : 'text-red-500'}`}>
-                        {item.originalPrice !== null ? `$${item.originalPrice.toFixed(2)}` : '需要填写价格'}
-                      </span>
+                                          <span className={`text-sm font-semibold ${item.originalPrice !== null ? 'text-gray-700' : 'text-red-500'}`}>
+                      {item.originalPrice !== null ? `$${item.originalPrice.toFixed(2)}` : t('needsPriceMessage')}
+                    </span>
                       <button 
                         onClick={() => handleEditItem(item.id, item.name, item.originalPrice)} 
                         className="btn btn-ghost btn-xs text-gray-400 hover:text-blue-600"
@@ -209,14 +212,14 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   </>
                 )}
               </div>
-            )) : <p className="text-description text-center py-8">暂无项目</p>}
+            )) : <p className="text-description text-center py-8">{t('noItemsMessage')}</p>}
           </div>
         </div>
         {/* Right: Tax, Tip, Summary */}
         <div className="md:col-span-2 md:border-l md:pl-6">
           <div className="space-y-6">
             <div>
-              <label htmlFor={`tax-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">税费 (Tax)</label>
+              <label htmlFor={`tax-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">{t('taxLabel')}</label>
               <div className="relative">
                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
                  <input
@@ -231,10 +234,10 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   aria-describedby={`tax-help-${receipt.id}`}
                 />
               </div>
-              <div id={`tax-help-${receipt.id}`} className="sr-only">输入此收据的税费金额</div>
+              <div id={`tax-help-${receipt.id}`} className="sr-only">{t('taxHelpText')}</div>
             </div>
             <div>
-              <label htmlFor={`tip-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">小费 (Tip)</label>
+              <label htmlFor={`tip-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">{t('tipLabel')}</label>
               <div className="relative">
                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
                  <input
@@ -249,16 +252,16 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   aria-describedby={`tip-help-${receipt.id}`}
                 />
               </div>
-              <div id={`tip-help-${receipt.id}`} className="sr-only">输入此收据的小费金额</div>
+              <div id={`tip-help-${receipt.id}`} className="sr-only">{t('tipHelpText')}</div>
             </div>
           </div>
           <div className="bg-gray-50 rounded-xl p-4 mt-6">
             <div className="space-y-3">
-              <div className="flex justify-between text-sm"><span className="text-gray-600">小计:</span> <span className="font-semibold">${receipt.subtotal.toFixed(2)}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-gray-600">税费:</span> <span className="font-semibold">${receipt.tax.toFixed(2)}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-gray-600">小费:</span> <span className="font-semibold">${receipt.tip.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-gray-600">{tCommon('subtotal')}:</span> <span className="font-semibold">${receipt.subtotal.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-gray-600">{tCommon('tax')}:</span> <span className="font-semibold">${receipt.tax.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm"><span className="text-gray-600">{tCommon('tip')}:</span> <span className="font-semibold">${receipt.tip.toFixed(2)}</span></div>
               <div className="h-px bg-gray-200 my-2"></div>
-              <div className="flex justify-between font-bold text-lg"><span>总计:</span> <span className="text-blue-600">${receipt.total.toFixed(2)}</span></div>
+              <div className="flex justify-between font-bold text-lg"><span>{tCommon('total')}:</span> <span className="text-blue-600">${receipt.total.toFixed(2)}</span></div>
             </div>
           </div>
         </div>

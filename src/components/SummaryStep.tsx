@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { RotateCcw, Copy, Check, ChevronDown } from 'lucide-react';
 import { useAppStore } from '../store';
 
 const SummaryStep: React.FC = () => {
+  const t = useTranslations('summaryStep');
+  const tCommon = useTranslations('common');
+  const tCopy = useTranslations('copySuccess');
   const { getBillSummary, reset, setCurrentStep } = useAppStore();
   const [copySuccess, setCopySuccess] = useState(false);
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
@@ -20,19 +24,19 @@ const SummaryStep: React.FC = () => {
   const handleCopyToClipboard = () => {
     if (!billSummary) return;
 
-    let text = '费用分摊汇总\n\n';
-    text += `总计: $${billSummary.grandTotal.toFixed(2)}\n`;
-    text += `小计: $${billSummary.totalSubtotal.toFixed(2)}\n`;
-    text += `税费: $${billSummary.totalTax.toFixed(2)}\n`;
-    text += `小费: $${billSummary.totalTip.toFixed(2)}\n\n`;
+    let text = `${tCopy('title')}\n\n`;
+    text += `${tCopy('totalLabel')}: $${billSummary.grandTotal.toFixed(2)}\n`;
+    text += `${tCopy('subtotalLabel')}: $${billSummary.totalSubtotal.toFixed(2)}\n`;
+    text += `${tCopy('taxLabel')}: $${billSummary.totalTax.toFixed(2)}\n`;
+    text += `${tCopy('tipLabel')}: $${billSummary.totalTip.toFixed(2)}\n\n`;
     
-    text += '--- 各人应付 ---\n';
+    text += `${tCopy('personalBillsHeader')}\n`;
     billSummary.personalBills.forEach(bill => {
       text += `${bill.personName}: $${bill.totalFinal.toFixed(2)}\n`;
     });
     text += '\n';
 
-    text += '--- 收据详情 ---\n';
+    text += `${tCopy('receiptDetailsHeader')}\n`;
     billSummary.receipts.forEach(receipt => {
       text += `${receipt.name}: $${receipt.total.toFixed(2)}\n`;
     });
@@ -59,12 +63,12 @@ const SummaryStep: React.FC = () => {
         <div className="card">
           <div className="card-content">
             <div className="text-center py-8">
-              <p className="text-gray-500">无法生成费用汇总</p>
+              <p className="text-gray-500">{t('cannotGenerate')}</p>
               <button
                 onClick={() => setCurrentStep('setup')}
                 className="btn btn-primary btn-md mt-4"
               >
-                重新开始
+                {t('restartButton')}
               </button>
             </div>
           </div>
@@ -78,9 +82,9 @@ const SummaryStep: React.FC = () => {
       {/* 总览卡片 */}
       <div className="card mb-6">
         <div className="card-header">
-          <h2 className="card-title">费用汇总</h2>
+          <h2 className="card-title">{t('title')}</h2>
           <p className="text-sm text-gray-600">
-            以下是每个人需要支付的最终金额
+            {t('description')}
           </p>
         </div>
         
@@ -88,22 +92,22 @@ const SummaryStep: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* 账单总览 */}
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-medium mb-3">账单总览</h3>
+              <h3 className="font-medium mb-3">{t('billOverview')}</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">小计:</span>
+                  <span className="text-gray-600">{tCommon('subtotal')}:</span>
                   <span>${billSummary.totalSubtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">税费:</span>
+                  <span className="text-gray-600">{tCommon('tax')}:</span>
                   <span>${billSummary.totalTax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">小费:</span>
+                  <span className="text-gray-600">{tCommon('tip')}:</span>
                   <span>${billSummary.totalTip.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold border-t pt-2">
-                  <span>总计:</span>
+                  <span>{tCommon('total')}:</span>
                   <span>${billSummary.grandTotal.toFixed(2)}</span>
                 </div>
               </div>
@@ -111,7 +115,7 @@ const SummaryStep: React.FC = () => {
 
             {/* 人员分摊 */}
             <div className="p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-medium mb-3">人员分摊</h3>
+              <h3 className="font-medium mb-3">{t('personalSplit')}</h3>
               <div className="space-y-2">
                 {billSummary.personalBills.map(bill => (
                   <div key={bill.personId} className="flex justify-between">
@@ -136,7 +140,7 @@ const SummaryStep: React.FC = () => {
       {/* 收据明细 */}
       <div className="card mb-6">
         <div className="card-header">
-            <h2 className="card-title">收据明细</h2>
+            <h2 className="card-title">{t('receiptDetails')}</h2>
         </div>
         <div className="card-content">
             <div className="space-y-2">
@@ -168,15 +172,15 @@ const SummaryStep: React.FC = () => {
                                         { (receipt.tax > 0 || receipt.tip > 0) &&
                                         <div className="border-t pt-2 mt-2">
                                             <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">小计</span>
+                                            <span className="text-gray-500">{tCommon('subtotal')}</span>
                                             <span>${receipt.subtotal.toFixed(2)}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">税费</span>
+                                            <span className="text-gray-500">{tCommon('tax')}</span>
                                             <span>${receipt.tax.toFixed(2)}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">小费</span>
+                                            <span className="text-gray-500">{tCommon('tip')}</span>
                                             <span>${receipt.tip.toFixed(2)}</span>
                                             </div>
                                         </div>
@@ -215,21 +219,21 @@ const SummaryStep: React.FC = () => {
                     <div className="flex-1">
                       <div className="font-medium">{item.itemName}</div>
                       <div className="text-sm text-gray-600">
-                        {item.share > 1 ? `与 ${item.share - 1} 人分摊` : '独享'}
+                        {item.share > 1 ? t('sharedWith', { count: item.share - 1 }) : t('exclusive')}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">${item.finalShare.toFixed(2)}</div>
-                      <div className="text-sm text-gray-600">
-                        原价: ${item.originalShare.toFixed(2)}
-                      </div>
+                                              <div className="text-sm text-gray-600">
+                          {t('originalPrice')}: ${item.originalShare.toFixed(2)}
+                        </div>
                     </div>
                   </div>
                 ))}
                 
                 <div className="border-t pt-3">
                   <div className="flex justify-between text-lg font-bold">
-                    <span>总计:</span>
+                    <span>{tCommon('total')}:</span>
                     <span>${bill.totalFinal.toFixed(2)}</span>
                   </div>
                 </div>
@@ -247,7 +251,7 @@ const SummaryStep: React.FC = () => {
             className="btn btn-secondary btn-md"
           >
             <RotateCcw className="h-4 w-4 mr-2" />
-            修改分配
+            {t('modifyAssignments')}
           </button>
           <button
             onClick={handleCopyToClipboard}
@@ -259,7 +263,7 @@ const SummaryStep: React.FC = () => {
             ) : (
               <Copy className="h-4 w-4 mr-2" />
             )}
-            {copySuccess ? '已复制' : '复制汇总'}
+            {copySuccess ? tCommon('copied') : t('copyToClipboard')}
           </button>
         </div>
         
@@ -268,7 +272,7 @@ const SummaryStep: React.FC = () => {
           className="btn btn-primary btn-md"
         >
           <RotateCcw className="h-4 w-4 mr-2" />
-          重新开始
+          {t('startOver')}
         </button>
       </div>
     </div>
