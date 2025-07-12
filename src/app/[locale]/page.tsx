@@ -138,26 +138,26 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <header className="text-center mb-8 sm:mb-12">
-          <div className="mb-4 sm:mb-6">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-              {t('app.title')}
-            </h1>
-            <div className="mt-3 sm:mt-4 mx-auto w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
-          </div>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
-            {t('app.description')}
-          </p>
-          <div className="mt-6">
+    <div className="min-h-screen font-sans p-3 sm:p-4 lg:p-6">
+      <div className="max-w-5xl mx-auto">
+        <header className="relative text-center mb-6 sm:mb-8">
+          <div className="absolute top-0 right-0 z-10">
             <LanguageSwitcher />
           </div>
+          <div className="mb-4 sm:mb-6 pt-8 sm:pt-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+              {t('app.title')}
+            </h1>
+            <div className="mt-2 sm:mt-3 mx-auto w-12 sm:w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+          </div>
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
+            {t('app.description')}
+          </p>
         </header>
 
         {error && <ErrorAlert message={error} />}
         
-        <div className="mb-12">
+        <div className="mb-6 sm:mb-8">
           <StepIndicator currentStep={currentStep} />
         </div>
 
