@@ -1,10 +1,14 @@
 # AAPay 智能费用分摊
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue)](https://www.typescriptlang.org/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deploy-black)](https://vercel.com)
-[![AI Powered](https://img.shields.io/badge/AI-Claude%20%2B%20Groq-purple)](https://www.anthropic.com)
+[![Next.js](https://img.shields.io/badge/Next.js-14.0-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000?logo=vercel&logoColor=white)](https://vercel.com)
+[![AI Powered](https://img.shields.io/badge/AI-Claude%20%2B%20Groq-8A2BE2)](https://www.anthropic.com)
+[![Upstash Redis](https://img.shields.io/badge/Upstash-Redis-00DDB3?logo=redis&logoColor=white)](https://upstash.com/)
+[![Version](https://img.shields.io/badge/Version-2.0.0-blue)](https://github.com/ljnpng/aapay/releases)
 
 
 基于 Next.js 全栈架构的现代化费用分摊应用，利用 AI 图像识别技术自动解析收据，智能计算每个人的应付金额。支持税费、小费按比例分摊，让每个人都支付公平的份额。
@@ -91,17 +95,21 @@ graph TB
 ### 技术栈详情
 
 **前端**
-- **框架**: Next.js 14 (App Router)
-- **语言**: TypeScript
-- **状态管理**: Zustand
-- **样式**: Tailwind CSS
-- **国际化**: next-intl
-- **图标**: Lucide React
+- **框架**: Next.js 14.0 (App Router)
+- **语言**: TypeScript 5.2
+- **UI 框架**: React 18.2
+- **状态管理**: Zustand 4.4
+- **样式**: Tailwind CSS 3.3
+- **国际化**: next-intl 4.3
+- **图标**: Lucide React 0.288
+- **性能监控**: Vercel Speed Insights 1.2
 
 **后端**
 - **API**: Next.js API Routes
-- **AI 集成**: Anthropic Claude, Groq
-- **图像处理**: browser-image-compression, heic-convert
+- **数据存储**: Upstash Redis 1.35
+- **AI 集成**: Anthropic Claude 0.56, Groq SDK 0.26
+- **图像处理**: browser-image-compression 2.0, heic-convert 2.1
+- **工具链**: concurrently 9.2, puppeteer 24.12
 
 **核心模块**
 - `src/lib/aiService.ts`: AI 服务客户端逻辑
@@ -112,8 +120,10 @@ graph TB
 ## 🚀 快速开始
 
 ### 环境要求
-- Node.js 18+
-- npm 或 yarn
+- **Node.js**: 18+ (推荐 20+)
+- **包管理器**: npm 或 yarn
+- **浏览器**: 支持现代 ES6+ 语法的浏览器
+- **AI 服务**: Claude API 或 Groq API
 
 ### 一键安装
 
