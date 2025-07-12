@@ -1,6 +1,6 @@
 const createNextIntlPlugin = require('next-intl/plugin');
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -17,6 +17,7 @@ const nextConfig = {
   // 环境变量配置
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
+    NEXT_LOCALE: process.env.NEXT_LOCALE || 'zh',
   },
   // 压缩配置
   compress: true,

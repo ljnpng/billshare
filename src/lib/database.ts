@@ -5,12 +5,19 @@ let redis: Redis | null = null;
 
 export function getRedis(): Redis {
   if (!redis) {
-    const url = process.env.UPSTASH_REDIS_REST_URL;
-    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+    const url = process.env.UPSTASH_REDIS_REST_URL?.trim();
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
     
     if (!url || !token) {
       throw new Error(
         'Missing Upstash Redis configuration. Please set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables.'
+      );
+    }
+    
+    // 验证 URL 格式
+    if (!url.startsWith('https://')) {
+      throw new Error(
+        `Invalid Upstash Redis URL format. Expected URL starting with https://, received: "${url}"`
       );
     }
     
