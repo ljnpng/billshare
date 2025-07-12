@@ -137,6 +137,10 @@
       @apply h-14 px-4 text-base;
     }
     
+    .input-sm {
+      @apply h-12 px-3 text-base;
+    }
+    
     .card {
       @apply rounded-xl;
     }
@@ -166,6 +170,10 @@
   
   .input:invalid {
     @apply border-red-300 text-red-700;
+  }
+
+  .input-sm {
+    @apply h-10 px-3 py-2 text-sm;
   }
   
   .input:focus {
