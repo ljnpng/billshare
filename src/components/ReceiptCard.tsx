@@ -296,7 +296,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   // 显示模式
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{item.name}</span>
-                    <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="flex items-center gap-0.5">
                       <span className={`text-sm font-semibold mr-2 ${item.originalPrice !== null ? 'text-gray-700' : 'text-red-500'}`}>
                         {item.originalPrice !== null ? `$${item.originalPrice.toFixed(2)}` : t('needsPriceMessage')}
                       </span>
