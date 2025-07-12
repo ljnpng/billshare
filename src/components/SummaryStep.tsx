@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { RotateCcw, Copy, Check, ChevronDown } from 'lucide-react';
+import { RotateCcw, Share2, Check, ChevronDown, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../store';
+import confetti from 'canvas-confetti';
 
 const SummaryStep: React.FC = () => {
   const params = useParams();
@@ -10,6 +11,7 @@ const SummaryStep: React.FC = () => {
   const t = useTranslations('summaryStep');
   const tCommon = useTranslations('common');
   const tCopy = useTranslations('copySuccess');
+  const tAssign = useTranslations('assignStep');
   const { getBillSummary, reset, setCurrentStep, setSessionId, sessionId } = useAppStore();
   const [copySuccess, setCopySuccess] = useState(false);
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
@@ -33,7 +35,18 @@ const SummaryStep: React.FC = () => {
     
     navigator.clipboard.writeText(previewUrl).then(() => {
       setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
+      
+      // 触发confetti特效
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#3B82F6', '#8B5CF6', '#06B6D4', '#10B981'],
+        shapes: ['square', 'circle'],
+        scalar: 0.8
+      });
+      
+      setTimeout(() => setCopySuccess(false), 3000);
     }).catch(() => {
       // 如果复制失败，显示链接供用户手动复制
       alert(`分享链接: ${previewUrl}`);
@@ -93,8 +106,9 @@ const SummaryStep: React.FC = () => {
               <button
                 onClick={() => setCurrentStep('setup')}
                 className="btn btn-primary btn-md mt-4"
+                title={t('restartButton')}
               >
-                {t('restartButton')}
+                <RotateCcw className="h-5 w-5" />
               </button>
             </div>
           </div>
@@ -245,13 +259,13 @@ const SummaryStep: React.FC = () => {
                     <div className="flex-1">
                       <div className="font-medium">{item.itemName}</div>
                       <div className="text-sm text-gray-600">
-                        {item.share > 1 ? t('sharedWith', { count: item.share - 1 }) : t('exclusive')}
+                        {item.share > 1 ? tAssign('sharedWith', { count: item.share - 1 }) : tAssign('exclusive')}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="font-medium">${item.finalShare.toFixed(2)}</div>
                                               <div className="text-sm text-gray-600">
-                          {t('originalPrice')}: ${item.originalShare.toFixed(2)}
+                          {tAssign('originalPrice')}: ${item.originalShare.toFixed(2)}
                         </div>
                     </div>
                   </div>
@@ -270,36 +284,36 @@ const SummaryStep: React.FC = () => {
       </div>
 
       {/* 操作按钮 */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between">
+      <div className="flex justify-between items-center gap-2">
         <div className="flex gap-2">
           <button
             onClick={handleEditAssignments}
-            className="btn btn-secondary btn-md"
+            className="btn btn-secondary btn-sm sm:btn-md"
+            title={t('modifyAssignments')}
           >
-            <RotateCcw className="h-4 w-4 mr-2" />
-            {t('modifyAssignments')}
+            <ArrowLeft className="h-5 w-5" />
           </button>
           <button
             onClick={handleShareLink}
-            className={`btn btn-md ${copySuccess ? 'btn-success' : 'btn-secondary'}`}
+            className={`btn btn-sm sm:btn-md transition-all duration-300 ${copySuccess ? 'btn-success scale-110' : 'btn-secondary hover:scale-105'}`}
             disabled={copySuccess || !sessionId}
+            title={copySuccess ? tCommon('copied') : t('shareLink')}
           >
             {copySuccess ? (
-              <Check className="h-4 w-4 mr-2" />
+              <Check className="h-5 w-5 animate-bounce" />
             ) : (
-              <Copy className="h-4 w-4 mr-2" />
+              <Share2 className="h-5 w-5" />
             )}
-            {copySuccess ? tCommon('copied') : t('shareLink')}
           </button>
         </div>
         
         <button
           onClick={handleStartOver}
-          className="btn btn-primary btn-md"
+          className="btn btn-primary btn-sm sm:btn-md"
           disabled={isCreatingSession}
+          title={isCreatingSession ? tCommon('loading') : t('startOver')}
         >
-          <RotateCcw className={`h-4 w-4 mr-2 ${isCreatingSession ? 'animate-spin' : ''}`} />
-          {isCreatingSession ? tCommon('loading') : t('startOver')}
+          <RotateCcw className={`h-5 w-5 ${isCreatingSession ? 'animate-spin' : ''}`} />
         </button>
       </div>
     </div>

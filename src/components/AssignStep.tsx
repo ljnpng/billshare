@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { useAppStore } from '../store';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 
 const AssignStep: React.FC = () => {
   const t = useTranslations('assignStep');
@@ -187,20 +187,21 @@ const AssignStep: React.FC = () => {
       </div>
 
       {/* 导航按钮 */}
-      <div className="flex flex-col sm:flex-row gap-4 sm:justify-between">
+      <div className="flex justify-between gap-3">
         <button
           onClick={handleBack}
-          className="btn btn-secondary btn-lg order-2 sm:order-1"
+          className="btn btn-secondary btn-md sm:btn-lg"
+          title={tCommon('previous')}
         >
-          {tCommon('previous')}
+          <ArrowLeft className="h-5 w-5" />
         </button>
         <button
           onClick={handleNext}
-          className="btn btn-primary btn-lg order-1 sm:order-2"
+          className="btn btn-primary btn-md sm:btn-lg"
           disabled={getAssignedItemsCount() !== allItems.length}
+          title={t('nextButton')}
         >
-          <span className="hidden sm:inline">{t('nextButton')}</span>
-          <span className="sm:hidden">{t('costSummary')}</span>
+          <ArrowRight className="h-5 w-5" />
         </button>
       </div>
     </div>

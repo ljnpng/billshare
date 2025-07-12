@@ -14,6 +14,7 @@ export default function PreviewPage({}: PreviewPageProps) {
   const t = useTranslations('summaryStep')
   const tCommon = useTranslations('common')
   const tPreview = useTranslations('preview')
+  const tAssign = useTranslations('assignStep')
   const params = useParams()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
@@ -160,9 +161,6 @@ export default function PreviewPage({}: PreviewPageProps) {
               <h1 className="text-xl font-semibold text-gray-900">
                 账单分摊预览
               </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                只读模式 · 分享链接
-              </p>
             </div>
             <div className="flex items-center gap-3">
               <LanguageSwitcher />
@@ -318,13 +316,13 @@ export default function PreviewPage({}: PreviewPageProps) {
                       <div className="flex-1">
                         <div className="font-medium">{item.itemName}</div>
                         <div className="text-sm text-gray-600">
-                          {item.share > 1 ? t('sharedWith', { count: item.share - 1 }) : t('exclusive')}
+                          {item.share > 1 ? tAssign('sharedWith', { count: item.share - 1 }) : tAssign('exclusive')}
                         </div>
                       </div>
                       <div className="text-right">
                         <div className="font-medium">${item.finalShare.toFixed(2)}</div>
                         <div className="text-sm text-gray-600">
-                            {t('originalPrice')}: ${item.originalShare.toFixed(2)}
+                            {tAssign('originalPrice')}: ${item.originalShare.toFixed(2)}
                           </div>
                       </div>
                     </div>
@@ -342,19 +340,6 @@ export default function PreviewPage({}: PreviewPageProps) {
           ))}
         </div>
 
-        {/* 底部信息 */}
-        <div className="text-center py-8">
-          <p className="text-gray-500 text-sm mb-4">
-            这是一个只读的账单分摊预览页面
-          </p>
-          <button
-            onClick={handleEditSession}
-            className="btn btn-primary btn-md"
-          >
-            <Edit3 className="h-4 w-4 mr-2" />
-            编辑这个账单
-          </button>
-        </div>
       </div>
     </div>
   )

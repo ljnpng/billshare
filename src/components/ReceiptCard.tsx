@@ -49,6 +49,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     });
   }, [receipt.id, receipt.tax, receipt.tip, receipt.name]);
 
+
   const handleNameSave = () => {
     if (name.trim() !== receipt.name) {
       updateReceiptName(receipt.id, name.trim());
@@ -200,9 +201,8 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
             </button>
           </div>
         )}
-        <button onClick={() => removeReceipt(receipt.id)} className="btn btn-ghost btn-sm text-red-500 hover:bg-red-50 hover:text-red-600">
-          <Trash2 className="h-4 w-4 mr-2" />
-          {t('deleteReceipt')}
+        <button onClick={() => removeReceipt(receipt.id)} className="btn btn-ghost btn-sm text-red-500 hover:bg-red-50 hover:text-red-600" title={t('deleteReceipt')}>
+          <Trash2 className="h-5 w-5" />
         </button>
       </div>
       <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-5 gap-6 sm:gap-8">
@@ -232,16 +232,15 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                     aria-label={tCommon('price')}
                   />
                 </div>
-                <button type="submit" className="btn btn-primary btn-sm" disabled={!newItemName.trim() || !newItemPrice} aria-label={t('addItemButton')}>
-                  <PlusCircle className="h-4 w-4 sm:mr-2" aria-hidden="true" />
-                  <span className="hidden sm:inline">{t('addItemButton')}</span>
+                <button type="submit" className="btn btn-primary h-12 w-12 flex-shrink-0 p-0" disabled={!newItemName.trim() || !newItemPrice} title={t('addItemButton')}>
+                  <PlusCircle className="h-5 w-5" />
                 </button>
               </div>
             </div>
           </form>
           <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
-            {receipt.items.length > 0 ? receipt.items.map(item => (
-              <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors">
+            {receipt.items.length > 0 ? receipt.items.map((item) => (
+              <div key={item.id} className="bg-gray-50 p-3 rounded-xl hover:bg-gray-100 transition-colors">
                 {editingItemId === item.id ? (
                   // 编辑模式
                   <div className="flex items-center gap-3 flex-1">
@@ -295,23 +294,28 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   </div>
                 ) : (
                   // 显示模式
-                  <>
+                  <div className="flex items-center justify-between">
                     <span className="font-medium">{item.name}</span>
-                    <div className="flex items-center gap-3">
-                                          <span className={`text-sm font-semibold ${item.originalPrice !== null ? 'text-gray-700' : 'text-red-500'}`}>
-                      {item.originalPrice !== null ? `$${item.originalPrice.toFixed(2)}` : t('needsPriceMessage')}
-                    </span>
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <span className={`text-sm font-semibold mr-2 ${item.originalPrice !== null ? 'text-gray-700' : 'text-red-500'}`}>
+                        {item.originalPrice !== null ? `$${item.originalPrice.toFixed(2)}` : t('needsPriceMessage')}
+                      </span>
                       <button 
                         onClick={() => handleEditItem(item.id, item.name, item.originalPrice)} 
-                        className="btn btn-ghost btn-xs text-gray-400 hover:text-blue-600"
+                        className="btn btn-ghost btn-xs text-gray-400 hover:text-blue-600 min-h-0 h-8 w-8 p-0"
+                        title="编辑"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button onClick={() => removeItem(receipt.id, item.id)} className="btn btn-ghost btn-xs text-gray-400 hover:text-red-600">
+                      <button 
+                        onClick={() => removeItem(receipt.id, item.id)} 
+                        className="btn btn-ghost btn-xs text-gray-400 hover:text-red-600 min-h-0 h-8 w-8 p-0"
+                        title="删除"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             )) : <p className="text-description text-center py-8">{t('noItemsMessage')}</p>}

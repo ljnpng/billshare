@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus, Trash2, User } from 'lucide-react';
+import { Plus, Trash2, User, ArrowRight } from 'lucide-react';
 import { useAppStore } from '../store';
 
 const SetupStep: React.FC = () => {
@@ -49,10 +49,9 @@ const SetupStep: React.FC = () => {
                 type="submit"
                 className="btn btn-primary btn-md whitespace-nowrap"
                 disabled={!newPersonName.trim()}
+                title={t('addButton')}
               >
-                <Plus className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">{t('addButton')}</span>
-                <span className="sm:hidden">添加</span>
+                <Plus className="h-5 w-5" />
               </button>
             </div>
           </form>
@@ -80,8 +79,9 @@ const SetupStep: React.FC = () => {
                   </div>
                   <button
                     onClick={() => removePerson(person.id)}
-                    className="btn btn-danger btn-sm ml-3 flex-shrink-0"
+                    className="btn btn-ghost btn-sm ml-3 flex-shrink-0 text-red-500 hover:bg-red-50 hover:text-red-600"
                     disabled={people.length <= 1}
+                    title={tCommon('delete')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -105,8 +105,9 @@ const SetupStep: React.FC = () => {
               onClick={handleNext}
               className="btn btn-primary btn-lg"
               disabled={people.length < 2}
+              title={t('nextButton')}
             >
-              {t('nextButton')}
+              <ArrowRight className="h-5 w-5" />
             </button>
           </div>
         </div>

@@ -201,34 +201,51 @@ export default function SessionPage({}: SessionPageProps) {
   }
 
   return (
-    <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <header className="text-center mb-8 sm:mb-12">
-          <div className="mb-4 sm:mb-6">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-              {t('app.title')}
-            </h1>
-            <div className="mt-3 sm:mt-4 mx-auto w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
-          </div>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
-            {t('app.description')}
-          </p>
-          <div className="mt-6 flex items-center justify-center gap-4">
-            <LanguageSwitcher />
-            <AutoSaveIndicator />
-            <div className="text-sm text-gray-500">
-              会话ID: {uuid.substring(0, 8)}...
+    <div className="min-h-screen bg-gray-50">
+      {/* 固定头部 */}
+      <div className="bg-white border-b sticky top-0 z-20">
+        <div className="max-w-5xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900">
+                {t('app.title')}
+              </h1>
+              <div className="flex items-center gap-4 mt-1">
+                <div className="text-sm text-gray-500">
+                  会话ID: {uuid.substring(0, 8)}...
+                </div>
+                <AutoSaveIndicator />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher />
             </div>
           </div>
-        </header>
+        </div>
+      </div>
 
-        {error && <ErrorAlert message={error} />}
-        
-        <div className="mb-12">
+      {/* 悬浮步骤指示器 */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-10 hidden lg:block">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200/60 p-3">
+          <StepIndicator currentStep={currentStep} variant="vertical" />
+        </div>
+      </div>
+
+      {/* 移动端步骤指示器 */}
+      <div className="lg:hidden bg-white border-b">
+        <div className="max-w-5xl mx-auto px-4 py-4">
           <StepIndicator currentStep={currentStep} />
         </div>
+      </div>
 
-        <main className="animation-fade-in">
+      <div className="max-w-5xl mx-auto px-4">
+        {error && (
+          <div className="py-4">
+            <ErrorAlert message={error} />
+          </div>
+        )}
+        
+        <main className="animation-fade-in py-8">
           {renderStep()}
         </main>
       </div>
