@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { RotateCcw, Share2, Check, ChevronDown, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../store';
 import confetti from 'canvas-confetti';
+import ShareModal from './ShareModal';
 
 const SummaryStep: React.FC = () => {
   const params = useParams();
@@ -16,6 +17,7 @@ const SummaryStep: React.FC = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   
   const billSummary = getBillSummary();
 
@@ -27,13 +29,67 @@ const SummaryStep: React.FC = () => {
     );
   };
 
-  const handleShareLink = () => {
-    if (!sessionId) return;
-
+  const getShareUrl = () => {
+    if (!sessionId) return '';
     const locale = params.locale as string;
-    const previewUrl = `${window.location.origin}/${locale}/preview/${sessionId}`;
+    return `${window.location.origin}/${locale}/preview/${sessionId}`;
+  };
+
+  const handleShareClick = () => {
+    setShowShareModal(true);
+  };
+
+  const handleModalCopyLink = async () => {
+    const shareUrl = getShareUrl();
+    if (!shareUrl) return;
+
+    // iOS Safari 兼容性处理
+    const copyToClipboard = async (text: string) => {
+      // 首先尝试现代 Clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (error) {
+          console.warn('Clipboard API failed:', error);
+        }
+      }
+
+      // 降级方案：创建临时textarea元素
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.width = '2em';
+        textArea.style.height = '2em';
+        textArea.style.padding = '0';
+        textArea.style.border = 'none';
+        textArea.style.outline = 'none';
+        textArea.style.boxShadow = 'none';
+        textArea.style.background = 'transparent';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+          return true;
+        }
+      } catch (error) {
+        console.warn('Fallback copy failed:', error);
+      }
+
+      return false;
+    };
+
+    const success = await copyToClipboard(shareUrl);
     
-    navigator.clipboard.writeText(previewUrl).then(() => {
+    if (success) {
       setCopySuccess(true);
       
       // 触发confetti特效
@@ -47,10 +103,30 @@ const SummaryStep: React.FC = () => {
       });
       
       setTimeout(() => setCopySuccess(false), 3000);
-    }).catch(() => {
-      // 如果复制失败，显示链接供用户手动复制
-      alert(`分享链接: ${previewUrl}`);
-    });
+    } else {
+      // 复制失败时显示链接让用户手动复制
+      const fallbackMessage = `${t('copyManually')}: ${shareUrl}`;
+      
+      // 在iOS Safari中使用prompt让用户可以长按复制
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        const userSelection = window.prompt(t('copyManually'), shareUrl);
+        // 即使用户取消，我们也认为他们看到了链接
+        if (userSelection !== null) {
+          setCopySuccess(true);
+          setTimeout(() => setCopySuccess(false), 2000);
+        }
+      } else {
+        alert(fallbackMessage);
+      }
+    }
+  };
+
+
+  const handleOpenInBrowser = () => {
+    const shareUrl = getShareUrl();
+    if (shareUrl) {
+      window.open(shareUrl, '_blank');
+    }
   };
 
   const handleStartOver = async () => {
@@ -294,16 +370,12 @@ const SummaryStep: React.FC = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <button
-            onClick={handleShareLink}
-            className={`btn btn-sm sm:btn-md transition-all duration-300 ${copySuccess ? 'btn-success scale-110' : 'btn-secondary hover:scale-105'}`}
-            disabled={copySuccess || !sessionId}
-            title={copySuccess ? tCommon('copied') : t('shareLink')}
+            onClick={handleShareClick}
+            className="btn btn-secondary btn-sm sm:btn-md hover:scale-105 transition-all"
+            disabled={!sessionId}
+            title={t('shareLink')}
           >
-            {copySuccess ? (
-              <Check className="h-5 w-5 animate-bounce" />
-            ) : (
-              <Share2 className="h-5 w-5" />
-            )}
+            <Share2 className="h-5 w-5" />
           </button>
         </div>
         
@@ -316,6 +388,16 @@ const SummaryStep: React.FC = () => {
           <RotateCcw className={`h-5 w-5 ${isCreatingSession ? 'animate-spin' : ''}`} />
         </button>
       </div>
+
+      {/* 分享弹窗 */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        shareUrl={getShareUrl()}
+        onCopyLink={handleModalCopyLink}
+        onOpenInBrowser={handleOpenInBrowser}
+        copySuccess={copySuccess}
+      />
     </div>
   );
 };
