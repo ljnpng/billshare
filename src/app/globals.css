@@ -377,4 +377,16 @@
 
 .loading-spinner {
   @apply inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600;
+}
+
+/* Sticky 步骤指示器样式 */
+.sticky-step-container {
+  @apply w-full;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* iOS Safari 兼容性优化 */
+.sticky-step-container {
+  -webkit-transform: translateZ(0);
+  will-change: transform;
 } 
