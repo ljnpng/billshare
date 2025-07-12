@@ -16,6 +16,7 @@ export default function Home() {
   const params = useParams()
   const router = useRouter()
   const [isCreatingSession, setIsCreatingSession] = useState(false)
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false)
   
   const locale = params.locale as string
   const t = useTranslations()
@@ -138,10 +139,11 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen font-sans p-3 sm:p-4 lg:p-6">
+    <div className="min-h-screen font-sans bg-gray-50">
       <div className="max-w-5xl mx-auto">
-        <header className="relative text-center mb-6 sm:mb-8">
-          <div className="absolute top-0 right-0 z-10">
+        {/* 主页header - 简化版，不使用CollapsibleHeader */}
+        <header className="relative text-center mb-6 sm:mb-8 p-6 bg-white">
+          <div className="absolute top-4 right-4 z-10">
             <LanguageSwitcher />
           </div>
           <div className="mb-4 sm:mb-6 pt-8 sm:pt-0">
@@ -157,11 +159,21 @@ export default function Home() {
 
         {error && <ErrorAlert message={error} />}
         
-        <div className="mb-6 sm:mb-8">
-          <StepIndicator currentStep={currentStep} />
+        {/* Sticky 步骤指示器 - 内容区域顶部固定 */}
+        <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200/60 mb-6 sm:mb-8">
+          <div className="py-3 sm:py-4">
+            {/* 移动端紧凑版本 */}
+            <div className="block sm:hidden px-4">
+              <StepIndicator currentStep={currentStep} variant="compact" />
+            </div>
+            {/* 桌面端完整版本 */}
+            <div className="hidden sm:block px-4">
+              <StepIndicator currentStep={currentStep} variant="sticky" />
+            </div>
+          </div>
         </div>
 
-        <main className="animation-fade-in">
+        <main className="animation-fade-in px-4">
           {renderStep()}
         </main>
       </div>

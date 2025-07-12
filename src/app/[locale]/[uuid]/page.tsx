@@ -10,8 +10,7 @@ import InputStep from '../../../components/InputStep'
 import AssignStep from '../../../components/AssignStep'
 import SummaryStep from '../../../components/SummaryStep'
 import ErrorAlert from '../../../components/ErrorAlert'
-import LanguageSwitcher from '../../../components/LanguageSwitcher'
-import AutoSaveIndicator from '../../../components/AutoSaveIndicator'
+import CollapsibleHeader from '../../../components/CollapsibleHeader'
 
 interface SessionPageProps {}
 
@@ -21,6 +20,7 @@ export default function SessionPage({}: SessionPageProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [sessionError, setSessionError] = useState<string | null>(null)
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false)
   
   const { 
     currentStep, 
@@ -202,39 +202,28 @@ export default function SessionPage({}: SessionPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 固定头部 */}
-      <div className="bg-white border-b sticky top-0 z-20">
-        <div className="max-w-5xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">
-                {t('app.title')}
-              </h1>
-              <div className="flex items-center gap-4 mt-1">
-                <div className="text-sm text-gray-500">
-                  会话ID: {uuid.substring(0, 8)}...
-                </div>
-                <AutoSaveIndicator />
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <LanguageSwitcher />
-            </div>
+      {/* 可折叠头部 */}
+      <CollapsibleHeader
+        uuid={uuid}
+        isCollapsed={isHeaderCollapsed}
+        onToggle={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+        autoCollapse={true}
+        currentStep={currentStep}
+      />
+
+      {/* Sticky 步骤指示器 - 内容区域顶部固定 */}
+      <div className={`sticky z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200/60 transition-all duration-300 ${
+        isHeaderCollapsed ? 'top-12' : 'top-[84px]'
+      }`}>
+        <div className="max-w-5xl mx-auto px-4 py-3 sm:py-4">
+          {/* 移动端紧凑版本 */}
+          <div className="block sm:hidden">
+            <StepIndicator currentStep={currentStep} variant="compact" />
           </div>
-        </div>
-      </div>
-
-      {/* 悬浮步骤指示器 */}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-10 hidden lg:block">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200/60 p-3">
-          <StepIndicator currentStep={currentStep} variant="vertical" />
-        </div>
-      </div>
-
-      {/* 移动端步骤指示器 */}
-      <div className="lg:hidden bg-white border-b">
-        <div className="max-w-5xl mx-auto px-4 py-4">
-          <StepIndicator currentStep={currentStep} />
+          {/* 桌面端完整版本 */}
+          <div className="hidden sm:block">
+            <StepIndicator currentStep={currentStep} variant="sticky" />
+          </div>
         </div>
       </div>
 
@@ -245,7 +234,7 @@ export default function SessionPage({}: SessionPageProps) {
           </div>
         )}
         
-        <main className="animation-fade-in py-8">
+        <main className="animation-fade-in py-6">
           {renderStep()}
         </main>
       </div>
