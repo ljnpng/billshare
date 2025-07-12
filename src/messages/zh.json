@@ -92,6 +92,7 @@
     "modifyAssignments": "修改分配",
     "startOver": "重新开始",
     "copyToClipboard": "复制到剪贴板",
+    "shareLink": "分享链接",
     "shareResults": "分享结果"
   },
   "receiptCard": {
@@ -123,5 +124,21 @@
     "tipLabel": "小费",
     "personalBillsHeader": "--- 各人应付 ---",
     "receiptDetailsHeader": "--- 收据详情 ---"
+  },
+  "preview": {
+    "title": "账单分摊预览",
+    "readOnlyMode": "只读模式 · 分享链接",
+    "editBill": "编辑账单",
+    "invalidLink": "无效的分享链接格式",
+    "notFound": "分享的账单不存在或已过期",
+    "loadFailed": "加载分享内容失败",
+    "networkError": "网络连接失败，请稍后重试",
+    "invalidData": "分享的账单数据无效",
+    "incompleteData": "账单数据不完整",
+    "missingInfo": "这个分享的账单缺少必要的信息",
+    "createNew": "创建新账单",
+    "loading": "正在加载分享内容...",
+    "cannotLoad": "无法加载分享内容",
+    "readOnlyInfo": "这是一个只读的账单分摊预览页面"
   }
 } 
