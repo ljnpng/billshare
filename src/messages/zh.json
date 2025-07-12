@@ -93,7 +93,17 @@
     "startOver": "重新开始",
     "copyToClipboard": "复制到剪贴板",
     "shareLink": "分享链接",
-    "shareResults": "分享结果"
+    "shareResults": "分享结果",
+    "shareTitle": "费用分摊汇总",
+    "shareText": "查看这份费用分摊汇总",
+    "shareUrlFallback": "分享链接",
+    "copyManually": "手动复制链接",
+    "shareDescription": "分享这个账单分摊结果给其他人",
+    "shareUrl": "分享链接",
+    "copyLink": "复制链接",
+    "shareToWeChat": "分享到微信",
+    "openInBrowser": "在浏览器中打开",
+    "shareInWeChatTip": "请点击右上角菜单，选择「分享给朋友」或「分享到朋友圈」"
   },
   "receiptCard": {
     "deleteReceipt": "删除",

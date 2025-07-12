@@ -93,7 +93,17 @@
     "startOver": "Start Over",
     "copyToClipboard": "Copy to Clipboard",
     "shareLink": "Share Link",
-    "shareResults": "Share Results"
+    "shareResults": "Share Results",
+    "shareTitle": "Bill Splitting Summary",
+    "shareText": "Check out this bill splitting summary",
+    "shareUrlFallback": "Share link",
+    "copyManually": "Copy link manually",
+    "shareDescription": "Share this bill splitting result with others",
+    "shareUrl": "Share URL",
+    "copyLink": "Copy Link",
+    "shareToWeChat": "Share to WeChat",
+    "openInBrowser": "Open in Browser",
+    "shareInWeChatTip": "Please tap the menu button in the top-right corner and select \"Share with Friends\" or \"Share to Moments\""
   },
   "receiptCard": {
     "deleteReceipt": "Delete",
