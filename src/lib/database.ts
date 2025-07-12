@@ -78,7 +78,7 @@ export class SessionService {
       const createdAt = existingSession 
         ? (typeof existingSession === 'string' 
             ? JSON.parse(existingSession).createdAt 
-            : existingSession.createdAt)
+            : (existingSession as any).createdAt)
         : now.toISOString();
       
       const sessionData = {
