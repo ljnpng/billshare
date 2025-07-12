@@ -1,11 +1,20 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { AppState, Person, Receipt } from '../types';
 import { dataProcessor } from '../lib/dataProcessor';
 import { recognizeReceipt } from '../lib/aiService';
 import { storeLogger } from '../lib/logger';
-
 interface AppStore extends AppState {
+  // Session state
+  sessionId: string | null;
+  isSessionLoaded: boolean;
+  
+  // Session methods
+  saveSession: () => Promise<boolean>;
+  loadSession: (uuid: string) => Promise<boolean>;
+  setSessionId: (uuid: string) => void;
+  loadSessionData: (data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>) => void;
+  
   // Actions
   setPeople: (people: Person[]) => void;
   addPerson: (name: string) => void;
@@ -61,16 +70,105 @@ const assignColor = (peopleCount: number) => {
   return colorPalette[peopleCount % colorPalette.length];
 };
 
+// Auto-save debounce delay in milliseconds
+const AUTO_SAVE_DELAY = 1000;
+
 export const useAppStore = create<AppStore>()(
   devtools(
-    (set, get) => ({
-      // Initial state
+    subscribeWithSelector(
+      (set, get) => ({
+        // Initial state
       people: [],
       receipts: [],
       currentStep: 'setup',
       isLoading: false,
       error: null,
       isAiProcessing: false,
+      
+      // Session state
+      sessionId: null,
+      isSessionLoaded: false,
+      
+      // Session methods
+      saveSession: async () => {
+        const state = get();
+        const sessionId = state.sessionId;
+        
+        if (!sessionId) {
+          console.warn('No session ID available for saving');
+          return false;
+        }
+        
+        try {
+          const persistData = {
+            people: state.people || [],
+            receipts: state.receipts || [],
+            currentStep: state.currentStep || 'setup'
+          };
+          
+          const response = await fetch(`/api/session/${sessionId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ data: persistData }),
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to save session');
+          }
+          
+          const result = await response.json();
+          return result.success;
+        } catch (error) {
+          console.error('Session save error:', error);
+          return false;
+        }
+      },
+      
+      loadSession: async (uuid: string) => {
+        try {
+          const response = await fetch(`/api/session/${uuid}`);
+          
+          if (response.status === 404) {
+            console.warn('Session not found:', uuid);
+            return false;
+          }
+          
+          if (!response.ok) {
+            throw new Error('Failed to load session');
+          }
+          
+          const result = await response.json();
+          
+          if (result.success && result.data) {
+            // Load session data to store
+            get().loadSessionData(result.data);
+            get().setSessionId(uuid);
+            
+            console.log('Session loaded successfully:', uuid);
+            return true;
+          }
+          
+          return false;
+        } catch (error) {
+          console.error('Session load error:', error);
+          return false;
+        }
+      },
+      
+      setSessionId: (uuid: string) => {
+        set({ sessionId: uuid });
+      },
+      
+      loadSessionData: (data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>) => {
+        set({
+          people: data.people || [],
+          receipts: data.receipts || [],
+          currentStep: data.currentStep || 'setup',
+          isSessionLoaded: true,
+        });
+      },
 
       // Actions
       setPeople: (people) => set({ people }),
@@ -373,11 +471,79 @@ export const useAppStore = create<AppStore>()(
         currentStep: 'setup',
         isLoading: false,
         error: null,
-        isAiProcessing: false
+        isAiProcessing: false,
+        sessionId: null,
+        isSessionLoaded: false
       })
-    }),
+    })
+    ),
     {
       name: 'aapay-store'
     }
   )
+);
+
+// Auto-save functionality
+let autoSaveTimeoutId: NodeJS.Timeout | null = null;
+
+// Subscribe to state changes for auto-save
+useAppStore.subscribe(
+  (state) => ({
+    people: state.people,
+    receipts: state.receipts,
+    currentStep: state.currentStep,
+    sessionId: state.sessionId,
+    isSessionLoaded: state.isSessionLoaded
+  }),
+  (newState, prevState) => {
+    // Don't auto-save if session is not loaded yet or no session ID
+    if (!newState.sessionId || !newState.isSessionLoaded) {
+      return;
+    }
+
+    // Don't auto-save if only sessionId or isSessionLoaded changed
+    const dataChanged = 
+      newState.people !== prevState.people ||
+      newState.receipts !== prevState.receipts ||
+      newState.currentStep !== prevState.currentStep;
+
+    if (!dataChanged) {
+      return;
+    }
+
+    // Clear existing timeout
+    if (autoSaveTimeoutId) {
+      clearTimeout(autoSaveTimeoutId);
+    }
+
+    // Set new timeout for auto-save
+    autoSaveTimeoutId = setTimeout(async () => {
+      try {
+        const success = await useAppStore.getState().saveSession();
+        if (success) {
+          storeLogger.info('自动保存成功', { 
+            sessionId: newState.sessionId,
+            peopleCount: newState.people.length,
+            receiptsCount: newState.receipts.length,
+            currentStep: newState.currentStep
+          });
+        } else {
+          storeLogger.warn('自动保存失败', { sessionId: newState.sessionId });
+        }
+      } catch (error) {
+        storeLogger.error('自动保存异常', { 
+          sessionId: newState.sessionId,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }, AUTO_SAVE_DELAY);
+  },
+  {
+    equalityFn: (a, b) => 
+      a.people === b.people &&
+      a.receipts === b.receipts &&
+      a.currentStep === b.currentStep &&
+      a.sessionId === b.sessionId &&
+      a.isSessionLoaded === b.isSessionLoaded
+  }
 ); 

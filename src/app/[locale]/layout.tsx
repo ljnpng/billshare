@@ -49,12 +49,8 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html lang={locale}>
-      <body className={inter.className}>
-        <IntlProvider messages={messages} locale={locale}>
-          {children}
-        </IntlProvider>
-      </body>
-    </html>
+    <IntlProvider messages={messages} locale={locale}>
+      {children}
+    </IntlProvider>
   );
 } 

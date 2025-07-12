@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN">
+    <html>
       <body className={inter.className}>
         {children}
         <SpeedInsights />
