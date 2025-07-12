@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Edit, Save, X, Trash2, PlusCircle, DollarSign } from 'lucide-react';
+import { Edit, Save, X, Trash2, PlusCircle, DollarSign, Check } from 'lucide-react';
 import { Receipt } from '../types';
 import { useAppStore } from '../store';
 import { uiLogger } from '../lib/logger';
@@ -29,6 +29,11 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editingItemName, setEditingItemName] = useState('');
   const [editingItemPrice, setEditingItemPrice] = useState('');
+  
+  // 防抖定时器引用
+  const [nameDebounceTimer, setNameDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+  const [taxDebounceTimer, setTaxDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+  const [tipDebounceTimer, setTipDebounceTimer] = useState<NodeJS.Timeout | null>(null);
 
   // 监听receipt的税费和小费变化，同步更新本地状态
   useEffect(() => {
@@ -65,6 +70,53 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     const tip = parseFloat(tipAmount) || 0;
     updateTaxAndTip(receipt.id, tax, tip);
   };
+
+  // 即时更新税费，带防抖
+  const handleTaxChange = (value: string) => {
+    setTaxAmount(value);
+    
+    // 清除之前的定时器
+    if (taxDebounceTimer) {
+      clearTimeout(taxDebounceTimer);
+    }
+    
+    // 设置新的防抖定时器
+    const timer = setTimeout(() => {
+      const tax = parseFloat(value) || 0;
+      const tip = parseFloat(tipAmount) || 0;
+      updateTaxAndTip(receipt.id, tax, tip);
+    }, 800);
+    
+    setTaxDebounceTimer(timer);
+  };
+
+  // 即时更新小费，带防抖
+  const handleTipChange = (value: string) => {
+    setTipAmount(value);
+    
+    // 清除之前的定时器
+    if (tipDebounceTimer) {
+      clearTimeout(tipDebounceTimer);
+    }
+    
+    // 设置新的防抖定时器
+    const timer = setTimeout(() => {
+      const tax = parseFloat(taxAmount) || 0;
+      const tip = parseFloat(value) || 0;
+      updateTaxAndTip(receipt.id, tax, tip);
+    }, 800);
+    
+    setTipDebounceTimer(timer);
+  };
+
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (nameDebounceTimer) clearTimeout(nameDebounceTimer);
+      if (taxDebounceTimer) clearTimeout(taxDebounceTimer);
+      if (tipDebounceTimer) clearTimeout(tipDebounceTimer);
+    };
+  }, [nameDebounceTimer, taxDebounceTimer, tipDebounceTimer]);
 
   const handleEditItem = (itemId: string, itemName: string, itemPrice: number | null) => {
     setEditingItemId(itemId);
@@ -106,17 +158,45 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                
+                // 清除之前的定时器
+                if (nameDebounceTimer) {
+                  clearTimeout(nameDebounceTimer);
+                }
+                
+                // 即时保存名称变化
+                if (e.target.value.trim() && e.target.value.trim() !== receipt.name) {
+                  const timer = setTimeout(() => {
+                    updateReceiptName(receipt.id, e.target.value.trim());
+                  }, 800); // 800ms 防抖
+                  
+                  setNameDebounceTimer(timer);
+                }
+              }}
               className="input input-sm"
               autoFocus
-              onBlur={handleNameSave}
-              onKeyDown={(e) => e.key === 'Enter' && handleNameSave()}
+              onBlur={() => {
+                if (name.trim() !== receipt.name) {
+                  handleNameSave();
+                }
+                setIsEditingName(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleNameSave();
+                  setIsEditingName(false);
+                }
+                if (e.key === 'Escape') {
+                  setName(receipt.name);
+                  setIsEditingName(false);
+                }
+              }}
+              placeholder="输入收据名称..."
             />
-            <button onClick={handleNameSave} className="ml-2 btn btn-ghost btn-sm text-blue-600 hover:text-blue-700">
-              <Save className="h-4 w-4" />
-            </button>
-            <button onClick={() => setIsEditingName(false)} className="ml-2 btn btn-ghost btn-sm text-gray-400 hover:text-gray-600">
-                <X className="h-4 w-4" />
+            <button onClick={() => setIsEditingName(false)} className="ml-2 btn btn-ghost btn-sm text-gray-400 hover:text-gray-600" title="完成编辑">
+                <Check className="h-4 w-4" />
             </button>
           </div>
         )}
@@ -171,6 +251,14 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                       onChange={(e) => setEditingItemName(e.target.value)}
                       className="input input-sm flex-1"
                       placeholder="商品名称"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSaveEdit();
+                        }
+                        if (e.key === 'Escape') {
+                          handleCancelEdit();
+                        }
+                      }}
                     />
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -182,12 +270,26 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                         placeholder="价格"
                         step="0.01"
                         min="0"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSaveEdit();
+                          }
+                          if (e.key === 'Escape') {
+                            handleCancelEdit();
+                          }
+                        }}
+                        onBlur={() => {
+                          // 失焦时自动保存（如果有内容）
+                          if (editingItemName.trim() && editingItemPrice.trim()) {
+                            setTimeout(handleSaveEdit, 100);
+                          }
+                        }}
                       />
                     </div>
-                    <button onClick={handleSaveEdit} className="btn btn-ghost btn-xs text-blue-600 hover:text-blue-700">
-                      <Save className="h-4 w-4" />
+                    <button onClick={handleSaveEdit} className="btn btn-ghost btn-xs text-green-600 hover:text-green-700" title="保存 (Enter)">
+                      <Check className="h-4 w-4" />
                     </button>
-                    <button onClick={handleCancelEdit} className="btn btn-ghost btn-xs text-gray-400 hover:text-gray-600">
+                    <button onClick={handleCancelEdit} className="btn btn-ghost btn-xs text-gray-400 hover:text-gray-600" title="取消 (Esc)">
                       <X className="h-4 w-4" />
                     </button>
                   </div>
@@ -226,12 +328,12 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   id={`tax-${receipt.id}`}
                   type="number"
                   value={taxAmount}
-                  onChange={(e) => setTaxAmount(e.target.value)}
-                  onBlur={handleTaxTipUpdate}
+                  onChange={(e) => handleTaxChange(e.target.value)}
                   className="input w-full pl-9"
                   step="0.01"
                   min="0"
                   aria-describedby={`tax-help-${receipt.id}`}
+                  placeholder="0.00"
                 />
               </div>
               <div id={`tax-help-${receipt.id}`} className="sr-only">{t('taxHelpText')}</div>
@@ -244,12 +346,12 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   id={`tip-${receipt.id}`}
                   type="number"
                   value={tipAmount}
-                  onChange={(e) => setTipAmount(e.target.value)}
-                  onBlur={handleTaxTipUpdate}
+                  onChange={(e) => handleTipChange(e.target.value)}
                   className="input w-full pl-9"
                   step="0.01"
                   min="0"
                   aria-describedby={`tip-help-${receipt.id}`}
+                  placeholder="0.00"
                 />
               </div>
               <div id={`tip-help-${receipt.id}`} className="sr-only">{t('tipHelpText')}</div>

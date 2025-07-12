@@ -27,8 +27,8 @@ const SetupStep: React.FC = () => {
     <div className="max-w-2xl mx-auto">
       <div className="card">
         <div className="card-header">
-          <h2 className="card-title">{t('title')}</h2>
-          <p className="text-sm text-gray-600">
+          <h2 className="card-title text-xl sm:text-2xl">{t('title')}</h2>
+          <p className="text-sm sm:text-base text-gray-600">
             {t('description')}
           </p>
         </div>
@@ -36,22 +36,23 @@ const SetupStep: React.FC = () => {
         <div className="card-content">
           {/* 添加人员表单 */}
           <form onSubmit={handleAddPerson} className="mb-6">
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
               <input
                 type="text"
                 value={newPersonName}
                 onChange={(e) => setNewPersonName(e.target.value)}
                 placeholder={t('addPersonPlaceholder')}
-                className="input flex-1"
+                className="input flex-1 text-base"
                 maxLength={20}
               />
               <button
                 type="submit"
-                className="btn btn-primary btn-md"
+                className="btn btn-primary btn-md whitespace-nowrap"
                 disabled={!newPersonName.trim()}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {t('addButton')}
+                <span className="hidden sm:inline">{t('addButton')}</span>
+                <span className="sm:hidden">添加</span>
               </button>
             </div>
           </form>
@@ -59,27 +60,27 @@ const SetupStep: React.FC = () => {
           {/* 人员列表 */}
           <div className="space-y-3">
             {people.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <User className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>{t('noPeopleMessage')}</p>
-                <p className="text-sm">{t('noPeopleSubMessage')}</p>
+              <div className="text-center py-6 sm:py-8 text-gray-500">
+                <User className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 text-gray-300" />
+                <p className="text-sm sm:text-base">{t('noPeopleMessage')}</p>
+                <p className="text-xs sm:text-sm">{t('noPeopleSubMessage')}</p>
               </div>
             ) : (
               people.map((person) => (
                 <div
                   key={person.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg"
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-center min-w-0 flex-1">
                     <div 
                       className="person-color"
                       style={{ backgroundColor: person.color }}
                     />
-                    <span className="font-medium">{person.name}</span>
+                    <span className="font-medium text-sm sm:text-base truncate">{person.name}</span>
                   </div>
                   <button
                     onClick={() => removePerson(person.id)}
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm ml-3 flex-shrink-0"
                     disabled={people.length <= 1}
                   >
                     <Trash2 className="h-4 w-4" />

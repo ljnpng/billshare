@@ -29,8 +29,8 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep }) => {
   };
 
   return (
-    <div className="mb-8">
-      <div className="bg-white rounded-2xl p-6 shadow-xl shadow-gray-200/40 border border-gray-200/60">
+    <div className="mb-6 sm:mb-8">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-xl shadow-gray-200/40 border border-gray-200/60">
         <div className="flex items-center justify-between">
           {steps.map((step, index) => {
             const status = getStepStatus(index);
@@ -38,23 +38,24 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep }) => {
             
             return (
               <React.Fragment key={step.id}>
-                <div className="flex flex-col items-center group">
+                <div className="flex flex-col items-center group min-w-0 flex-1">
                   <div className={`step-indicator ${status} group-hover:scale-105 transition-transform`}>
                     {status === 'completed' ? (
-                      <Check className="h-5 w-5" />
+                      <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                     ) : (
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                     )}
                   </div>
-                  <span className={`mt-3 text-sm font-semibold transition-colors ${
+                  <span className={`mt-2 sm:mt-3 text-xs sm:text-sm font-semibold transition-colors text-center ${
                     status === 'active' ? 'text-blue-600' : 
                     status === 'completed' ? 'text-green-600' : 
                     'text-gray-500'
                   }`}>
-                    {step.label}
+                    <span className="hidden sm:inline">{step.label}</span>
+                    <span className="sm:hidden">{step.label.substring(0, 4)}</span>
                   </span>
                   {status === 'active' && (
-                    <div className="mt-2 w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                    <div className="mt-1 sm:mt-2 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-600 rounded-full animate-pulse"></div>
                   )}
                 </div>
                 

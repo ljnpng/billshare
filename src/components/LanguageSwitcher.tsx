@@ -20,29 +20,28 @@ const LanguageSwitcher: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Globe className="h-4 w-4 text-gray-500" />
-      <span className="text-sm text-gray-600">{t('switchLanguage')}:</span>
-      <div className="flex gap-2">
+    <div className="flex items-center gap-1">
+      <Globe className="h-3 w-3 text-gray-400" />
+      <div className="flex gap-1">
         <button
           onClick={() => switchLanguage('zh')}
-          className={`px-3 py-1 text-sm rounded-md transition-colors ${
+          className={`px-2 py-1 text-xs rounded transition-colors ${
             currentLocale === 'zh'
               ? 'bg-blue-100 text-blue-700 font-medium'
-              : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
           }`}
         >
-          {t('chinese')}
+          中
         </button>
         <button
           onClick={() => switchLanguage('en')}
-          className={`px-3 py-1 text-sm rounded-md transition-colors ${
+          className={`px-2 py-1 text-xs rounded transition-colors ${
             currentLocale === 'en'
               ? 'bg-blue-100 text-blue-700 font-medium'
-              : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
           }`}
         >
-          {t('english')}
+          EN
         </button>
       </div>
     </div>

@@ -129,6 +129,10 @@
       min-width: 40px;
     }
     
+    .btn-lg {
+      @apply h-14 px-8 text-base;
+    }
+    
     .input {
       @apply h-14 px-4 text-base;
     }
@@ -138,11 +142,11 @@
     }
     
     .card-header {
-      @apply p-6;
+      @apply p-4;
     }
     
     .card-content {
-      @apply p-6 pt-0;
+      @apply p-4 pt-0;
     }
   }
   

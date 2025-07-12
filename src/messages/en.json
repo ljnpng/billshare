@@ -92,6 +92,7 @@
     "modifyAssignments": "Modify Assignments",
     "startOver": "Start Over",
     "copyToClipboard": "Copy to Clipboard",
+    "shareLink": "Share Link",
     "shareResults": "Share Results"
   },
   "receiptCard": {
@@ -123,5 +124,21 @@
     "tipLabel": "Tip",
     "personalBillsHeader": "--- Personal Bills ---",
     "receiptDetailsHeader": "--- Receipt Details ---"
+  },
+  "preview": {
+    "title": "Bill Splitting Preview",
+    "readOnlyMode": "Read-only Mode · Shared Link",
+    "editBill": "Edit Bill",
+    "invalidLink": "Invalid share link format",
+    "notFound": "Shared bill not found or expired",
+    "loadFailed": "Failed to load shared content",
+    "networkError": "Network connection failed, please try again later",
+    "invalidData": "Invalid shared bill data",
+    "incompleteData": "Incomplete bill data",
+    "missingInfo": "This shared bill is missing required information",
+    "createNew": "Create New Bill",
+    "loading": "Loading shared content...",
+    "cannotLoad": "Cannot load shared content",
+    "readOnlyInfo": "This is a read-only bill splitting preview page"
   }
 } 

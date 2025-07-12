@@ -43,32 +43,32 @@ const InputStep: React.FC = () => {
     <div className="max-w-4xl mx-auto">
       <div className="card">
         <div className="card-header">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col gap-4">
             <div className="flex-1">
-              <h2 className="card-title">{t('title')}</h2>
-              <p className="text-description">
+              <h2 className="card-title text-xl sm:text-2xl">{t('title')}</h2>
+              <p className="text-description text-sm sm:text-base">
                 {t('description')}
               </p>
             </div>
             {receipts.length > 0 && (
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={handleUploadClick}
                   disabled={isAiProcessing}
-                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium text-sm shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium text-sm shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">{isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}</span>
-                  <span className="sm:hidden">{isAiProcessing ? tCommon('loading') : 'AI'}</span>
+                  <span className="sm:hidden">{isAiProcessing ? '识别中...' : 'AI识别'}</span>
                 </button>
                 <button 
                   onClick={() => addReceipt(tCommon('receipt'))} 
-                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium text-sm shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transform hover:scale-105 transition-all duration-200"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium text-sm shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transform hover:scale-105 transition-all duration-200"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">{t('manualAdd')}</span>
-                  <span className="sm:hidden">{tCommon('add')}</span>
+                  <span className="sm:hidden">手动添加</span>
                 </button>
               </div>
             )}
@@ -92,24 +92,24 @@ const InputStep: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 border-2 border-dashed border-gray-300 rounded-2xl bg-gray-50/50">
-              <Receipt className="h-16 w-16 mx-auto mb-6 text-gray-400" />
-              <h3 className="text-xl font-bold text-gray-700 mb-2">{t('emptyStateTitle')}</h3>
-              <p className="text-description mb-8">{t('emptyStateDescription')}</p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="text-center py-12 sm:py-20 border-2 border-dashed border-gray-300 rounded-2xl bg-gray-50/50">
+              <Receipt className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 sm:mb-6 text-gray-400" />
+              <h3 className="text-lg sm:text-xl font-bold text-gray-700 mb-2">{t('emptyStateTitle')}</h3>
+              <p className="text-description text-sm sm:text-base mb-6 sm:mb-8 px-4">{t('emptyStateDescription')}</p>
+              <div className="flex flex-col gap-4 sm:gap-6 justify-center px-4">
                 <button
                   onClick={handleUploadClick}
                   disabled={isAiProcessing}
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold text-lg shadow-xl shadow-purple-500/30 hover:shadow-purple-500/50 transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold text-base sm:text-lg shadow-xl shadow-purple-500/30 hover:shadow-purple-500/50 transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  <Sparkles className="h-6 w-6 mr-3" />
+                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
                   {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
                 </button>
                 <button 
                   onClick={() => addReceipt(tCommon('receipt'))} 
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold text-lg shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-200"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold text-base sm:text-lg shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-200"
                 >
-                  <Plus className="h-6 w-6 mr-3" />
+                  <Plus className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
                   {t('manualAdd')}
                 </button>
               </div>
@@ -119,7 +119,7 @@ const InputStep: React.FC = () => {
       </div>
 
       {/* 导航按钮 */}
-      <div className="flex flex-col sm:flex-row gap-4 sm:justify-between mt-6">
+      <div className="flex flex-col sm:flex-row gap-3 sm:justify-between mt-6">
         <button onClick={handleBack} className="btn btn-secondary btn-lg order-2 sm:order-1">
           {tCommon('previous')}
         </button>
@@ -129,7 +129,7 @@ const InputStep: React.FC = () => {
           disabled={totalItems === 0}
         >
           <span className="hidden sm:inline">{t('nextButton')}</span>
-          <span className="sm:hidden">{t('assignItems')}</span>
+          <span className="sm:hidden">分配物品</span>
           <ArrowRight className="h-4 w-4 ml-2" />
         </button>
       </div>
