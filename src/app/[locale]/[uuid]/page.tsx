@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { useParams, useRouter } from 'next/navigation'
 import { useAppStore } from '../../../store'
@@ -43,13 +43,42 @@ export default function SessionPage({}: SessionPageProps) {
     return uuidRegex.test(uuid)
   }
 
+  // 创建新会话并重定向
+  const createNewSession = useCallback(async () => {
+    try {
+      const response = await fetch('/api/session/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (!response.ok) {
+        throw new Error('创建会话失败')
+      }
+      
+      const result = await response.json()
+      
+      if (result.success && result.uuid) {
+        // 重定向到新的有效UUID
+        router.replace(`/${locale}/${result.uuid}`)
+      } else {
+        throw new Error('创建会话失败')
+      }
+    } catch (error) {
+      console.error('创建新会话错误:', error)
+      setSessionError('创建新会话失败，请刷新页面重试')
+      setIsLoading(false)
+    }
+  }, [router, locale])
+
   useEffect(() => {
     if (!uuid) return
 
-    // 验证UUID格式
+    // 验证UUID格式，如果无效则创建新会话
     if (!isValidUUID(uuid)) {
-      setSessionError('无效的会话ID格式')
-      setIsLoading(false)
+      console.log('Invalid UUID format, creating new session:', uuid)
+      createNewSession()
       return
     }
 
@@ -65,7 +94,9 @@ export default function SessionPage({}: SessionPageProps) {
         const success = await loadSession(uuid)
         
         if (!success) {
-          setSessionError('会话不存在或已过期')
+          console.log('Session not found or expired, creating new session')
+          createNewSession()
+          return
         } else {
           // 会话加载成功，设置sessionId以启用自动保存
           setSessionId(uuid)
@@ -79,7 +110,7 @@ export default function SessionPage({}: SessionPageProps) {
     }
 
     loadSessionData()
-  }, [uuid, sessionId, isSessionLoaded, loadSession, setSessionId])
+  }, [uuid, sessionId, isSessionLoaded, loadSession, setSessionId, createNewSession])
 
   // 步骤逻辑保持与原页面一致
   useEffect(() => {
