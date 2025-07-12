@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useParams, useRouter } from 'next/navigation';
 import { RotateCcw, Copy, Check, ChevronDown } from 'lucide-react';
 import { useAppStore } from '../store';
 
 const SummaryStep: React.FC = () => {
+  const params = useParams();
+  const router = useRouter();
   const t = useTranslations('summaryStep');
   const tCommon = useTranslations('common');
   const tCopy = useTranslations('copySuccess');
-  const { getBillSummary, reset, setCurrentStep } = useAppStore();
+  const { getBillSummary, reset, setCurrentStep, setSessionId } = useAppStore();
   const [copySuccess, setCopySuccess] = useState(false);
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
   
   const billSummary = getBillSummary();
 
@@ -48,9 +52,43 @@ const SummaryStep: React.FC = () => {
     });
   };
 
-  const handleStartOver = () => {
-    reset();
-    setCurrentStep('setup');
+  const handleStartOver = async () => {
+    if (isCreatingSession) return;
+    
+    setIsCreatingSession(true);
+    const locale = params.locale as string;
+    
+    try {
+      const response = await fetch('/api/session/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('创建会话失败');
+      }
+      
+      const result = await response.json();
+      
+      if (result.success && result.uuid) {
+        // 重置状态并设置新的sessionId
+        reset();
+        setSessionId(result.uuid);
+        // 重定向到新的UUID URL
+        router.replace(`/${locale}/${result.uuid}`);
+      } else {
+        throw new Error('创建会话失败');
+      }
+    } catch (error) {
+      console.error('创建新会话错误:', error);
+      // 如果创建新会话失败，回退到原来的重置逻辑
+      reset();
+      setCurrentStep('setup');
+    } finally {
+      setIsCreatingSession(false);
+    }
   };
 
   const handleEditAssignments = () => {
@@ -270,9 +308,10 @@ const SummaryStep: React.FC = () => {
         <button
           onClick={handleStartOver}
           className="btn btn-primary btn-md"
+          disabled={isCreatingSession}
         >
-          <RotateCcw className="h-4 w-4 mr-2" />
-          {t('startOver')}
+          <RotateCcw className={`h-4 w-4 mr-2 ${isCreatingSession ? 'animate-spin' : ''}`} />
+          {isCreatingSession ? tCommon('loading') : t('startOver')}
         </button>
       </div>
     </div>
