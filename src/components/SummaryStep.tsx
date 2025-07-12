@@ -10,7 +10,7 @@ const SummaryStep: React.FC = () => {
   const t = useTranslations('summaryStep');
   const tCommon = useTranslations('common');
   const tCopy = useTranslations('copySuccess');
-  const { getBillSummary, reset, setCurrentStep, setSessionId } = useAppStore();
+  const { getBillSummary, reset, setCurrentStep, setSessionId, sessionId } = useAppStore();
   const [copySuccess, setCopySuccess] = useState(false);
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
@@ -25,30 +25,18 @@ const SummaryStep: React.FC = () => {
     );
   };
 
-  const handleCopyToClipboard = () => {
-    if (!billSummary) return;
+  const handleShareLink = () => {
+    if (!sessionId) return;
 
-    let text = `${tCopy('title')}\n\n`;
-    text += `${tCopy('totalLabel')}: $${billSummary.grandTotal.toFixed(2)}\n`;
-    text += `${tCopy('subtotalLabel')}: $${billSummary.totalSubtotal.toFixed(2)}\n`;
-    text += `${tCopy('taxLabel')}: $${billSummary.totalTax.toFixed(2)}\n`;
-    text += `${tCopy('tipLabel')}: $${billSummary.totalTip.toFixed(2)}\n\n`;
+    const locale = params.locale as string;
+    const previewUrl = `${window.location.origin}/${locale}/preview/${sessionId}`;
     
-    text += `${tCopy('personalBillsHeader')}\n`;
-    billSummary.personalBills.forEach(bill => {
-      text += `${bill.personName}: $${bill.totalFinal.toFixed(2)}\n`;
-    });
-    text += '\n';
-
-    text += `${tCopy('receiptDetailsHeader')}\n`;
-    billSummary.receipts.forEach(receipt => {
-      text += `${receipt.name}: $${receipt.total.toFixed(2)}\n`;
-    });
-
-
-    navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(previewUrl).then(() => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
+    }).catch(() => {
+      // 如果复制失败，显示链接供用户手动复制
+      alert(`分享链接: ${previewUrl}`);
     });
   };
 
@@ -292,16 +280,16 @@ const SummaryStep: React.FC = () => {
             {t('modifyAssignments')}
           </button>
           <button
-            onClick={handleCopyToClipboard}
+            onClick={handleShareLink}
             className={`btn btn-md ${copySuccess ? 'btn-success' : 'btn-secondary'}`}
-            disabled={copySuccess}
+            disabled={copySuccess || !sessionId}
           >
             {copySuccess ? (
               <Check className="h-4 w-4 mr-2" />
             ) : (
               <Copy className="h-4 w-4 mr-2" />
             )}
-            {copySuccess ? tCommon('copied') : t('copyToClipboard')}
+            {copySuccess ? tCommon('copied') : t('shareLink')}
           </button>
         </div>
         
