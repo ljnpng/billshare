@@ -1,42 +1,26 @@
-import Database from 'better-sqlite3';
-import { join } from 'path';
+import { Redis } from '@upstash/redis';
 import { AppState } from '../types';
 
-let db: Database.Database | null = null;
+let redis: Redis | null = null;
 
-export function getDatabase(): Database.Database {
-  if (!db) {
-    const dbPath = join(process.cwd(), 'data', 'aapay.db');
-    db = new Database(dbPath);
+export function getRedis(): Redis {
+  if (!redis) {
+    const url = process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
     
-    // 启用 WAL 模式提高并发性能
-    db.pragma('journal_mode = WAL');
+    if (!url || !token) {
+      throw new Error(
+        'Missing Upstash Redis configuration. Please set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables.'
+      );
+    }
     
-    // 初始化数据库结构
-    initializeDatabase(db);
+    redis = new Redis({
+      url,
+      token,
+    });
   }
   
-  return db;
-}
-
-function initializeDatabase(database: Database.Database) {
-  // 创建 sessions 表
-  const createSessionsTable = `
-    CREATE TABLE IF NOT EXISTS sessions (
-      uuid TEXT PRIMARY KEY,
-      data TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  
-  const createUpdatedAtIndex = `
-    CREATE INDEX IF NOT EXISTS idx_sessions_updated_at 
-    ON sessions(updated_at)
-  `;
-  
-  database.exec(createSessionsTable);
-  database.exec(createUpdatedAtIndex);
+  return redis;
 }
 
 export interface SessionData {
@@ -47,47 +31,36 @@ export interface SessionData {
 }
 
 export class SessionService {
-  private db: Database.Database;
-  private getSessionStmt: Database.Statement;
-  private upsertSessionStmt: Database.Statement;
-  private deleteSessionStmt: Database.Statement;
+  private redis: Redis;
+  private readonly SESSION_TTL = 30 * 24 * 60 * 60; // 30天，秒为单位
   
   constructor() {
-    this.db = getDatabase();
-    
-    // 预编译语句提高性能
-    this.getSessionStmt = this.db.prepare(`
-      SELECT uuid, data, created_at, updated_at 
-      FROM sessions 
-      WHERE uuid = ?
-    `);
-    
-    this.upsertSessionStmt = this.db.prepare(`
-      INSERT INTO sessions (uuid, data, updated_at) 
-      VALUES (?, ?, CURRENT_TIMESTAMP)
-      ON CONFLICT(uuid) DO UPDATE SET 
-        data = excluded.data,
-        updated_at = CURRENT_TIMESTAMP
-    `);
-    
-    this.deleteSessionStmt = this.db.prepare(`
-      DELETE FROM sessions WHERE uuid = ?
-    `);
+    this.redis = getRedis();
+  }
+  
+  private getSessionKey(uuid: string): string {
+    return `session:${uuid}`;
   }
   
   async getSession(uuid: string): Promise<SessionData | null> {
     try {
-      const row = this.getSessionStmt.get(uuid) as any;
+      const sessionKey = this.getSessionKey(uuid);
+      const sessionData = await this.redis.get(sessionKey);
       
-      if (!row) {
+      if (!sessionData) {
         return null;
       }
       
+      // Redis 可能返回对象或字符串，统一处理
+      const parsed = typeof sessionData === 'string' 
+        ? JSON.parse(sessionData) 
+        : sessionData;
+        
       return {
-        uuid: row.uuid,
-        data: JSON.parse(row.data),
-        createdAt: new Date(row.created_at),
-        updatedAt: new Date(row.updated_at)
+        uuid,
+        data: parsed.data,
+        createdAt: new Date(parsed.createdAt),
+        updatedAt: new Date(parsed.updatedAt)
       };
     } catch (error) {
       console.error('Failed to get session:', error);
@@ -97,7 +70,25 @@ export class SessionService {
   
   async saveSession(uuid: string, data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>): Promise<boolean> {
     try {
-      this.upsertSessionStmt.run(uuid, JSON.stringify(data));
+      const sessionKey = this.getSessionKey(uuid);
+      const now = new Date();
+      
+      // 检查是否是新会话
+      const existingSession = await this.redis.get(sessionKey);
+      const createdAt = existingSession 
+        ? (typeof existingSession === 'string' 
+            ? JSON.parse(existingSession).createdAt 
+            : existingSession.createdAt)
+        : now.toISOString();
+      
+      const sessionData = {
+        data,
+        createdAt,
+        updatedAt: now.toISOString()
+      };
+      
+      // 设置数据并自动过期
+      await this.redis.setex(sessionKey, this.SESSION_TTL, JSON.stringify(sessionData));
       return true;
     } catch (error) {
       console.error('Failed to save session:', error);
@@ -107,8 +98,9 @@ export class SessionService {
   
   async deleteSession(uuid: string): Promise<boolean> {
     try {
-      const result = this.deleteSessionStmt.run(uuid);
-      return result.changes > 0;
+      const sessionKey = this.getSessionKey(uuid);
+      const result = await this.redis.del(sessionKey);
+      return result > 0;
     } catch (error) {
       console.error('Failed to delete session:', error);
       return false;
@@ -116,35 +108,12 @@ export class SessionService {
   }
   
   async cleanupOldSessions(daysOld: number = 30): Promise<number> {
-    try {
-      const cleanupStmt = this.db.prepare(`
-        DELETE FROM sessions 
-        WHERE updated_at < datetime('now', '-${daysOld} days')
-      `);
-      
-      const result = cleanupStmt.run();
-      return result.changes;
-    } catch (error) {
-      console.error('Failed to cleanup old sessions:', error);
-      return 0;
-    }
+    // Redis 自动处理过期，无需手动清理
+    // 此方法保留兼容性，但实际上不执行任何操作
+    console.log(`Redis automatically handles session expiration after ${daysOld} days`);
+    return 0;
   }
 }
 
 // 单例实例
 export const sessionService = new SessionService();
-
-// 优雅关闭数据库连接
-export function closeDatabase() {
-  if (db) {
-    db.close();
-    db = null;
-  }
-}
-
-// 处理进程退出
-process.on('exit', closeDatabase);
-process.on('SIGINT', () => {
-  closeDatabase();
-  process.exit(0);
-});

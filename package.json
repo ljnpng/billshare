@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",
+    "@upstash/redis": "^1.35.1",
     "@vercel/speed-insights": "^1.2.0",
-    "better-sqlite3": "^12.2.0",
     "browser-image-compression": "^2.0.2",
     "dotenv": "^17.2.0",
     "groq-sdk": "^0.26.0",
@@ -28,7 +28,6 @@
     "zustand": "^4.4.4"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
     "@types/heic-convert": "^2.1.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.37",
