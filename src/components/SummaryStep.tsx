@@ -299,9 +299,29 @@ const SummaryStep: React.FC = () => {
                                 <div className="p-4 border-t">
                                     <div className="space-y-2">
                                         {receipt.items.map(item => (
-                                            <div key={item.id} className="flex justify-between">
-                                                <span className="text-gray-600">{item.name}</span>
-                                                <CurrencyDisplay usdAmount={item.finalPrice} />
+                                            <div key={item.id} className="space-y-1">
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">{item.name}</span>
+                                                    <CurrencyDisplay usdAmount={item.finalPrice} />
+                                                </div>
+                                                {/* 显示分配的人员 */}
+                                                <div className="flex flex-wrap gap-1">
+                                                    {item.assignedTo.map(personId => {
+                                                        const person = billSummary.people.find(p => p.id === personId);
+                                                        return person ? (
+                                                            <div 
+                                                                key={personId}
+                                                                className="flex items-center gap-1 px-2 py-1 bg-white rounded-full text-xs border"
+                                                            >
+                                                                <div 
+                                                                    className="w-2 h-2 rounded-full"
+                                                                    style={{ backgroundColor: person.color }}
+                                                                />
+                                                                <span className="text-gray-700">{person.name}</span>
+                                                            </div>
+                                                        ) : null;
+                                                    })}
+                                                </div>
                                             </div>
                                         ))}
                                         { (receipt.tax > 0 || receipt.tip > 0) &&
