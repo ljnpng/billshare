@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronDown, ExternalLink, Edit3 } from 'lucide-react'
+import { ChevronDown, ExternalLink, Edit3, Plus } from 'lucide-react'
 import { AppState } from '../../../../types'
 import { dataProcessor } from '../../../../lib/dataProcessor'
 import LanguageSwitcher from '../../../../components/LanguageSwitcher'
@@ -23,6 +23,7 @@ export default function PreviewPage({}: PreviewPageProps) {
   const [sessionData, setSessionData] = useState<AppState | null>(null)
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([])
   const [exchangeRate, setExchangeRate] = useState(7.2) // Default fallback rate
+  const [isCreatingSession, setIsCreatingSession] = useState(false)
   
   const uuid = params.uuid as string
   const locale = params.locale as string
@@ -44,6 +45,39 @@ export default function PreviewPage({}: PreviewPageProps) {
   const handleEditSession = () => {
     router.push(`/${locale}/${uuid}`)
   }
+
+  // 创建新会话的处理函数
+  const handleCreateNewBill = useCallback(async () => {
+    if (isCreatingSession) return;
+    
+    setIsCreatingSession(true);
+    
+    try {
+      const response = await fetch('/api/session/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('创建会话失败');
+      }
+      
+      const result = await response.json();
+      
+      if (result.success && result.uuid) {
+        // 重定向到新的UUID URL
+        router.replace(`/${locale}/${result.uuid}`);
+      } else {
+        throw new Error('创建会话失败');
+      }
+    } catch (error) {
+      console.error('创建新会话错误:', error);
+    } finally {
+      setIsCreatingSession(false);
+    }
+  }, [isCreatingSession, locale, router]);
 
   // Currency display component
   const CurrencyDisplay = ({ usdAmount }: { usdAmount: number }) => {
@@ -139,10 +173,11 @@ export default function PreviewPage({}: PreviewPageProps) {
               {error || '分享的账单数据无效'}
             </p>
             <button
-              onClick={() => router.push(`/${locale}`)}
+              onClick={handleCreateNewBill}
+              disabled={isCreatingSession}
               className="btn btn-primary btn-md"
             >
-              创建新账单
+              {isCreatingSession ? tCommon('loading') : tCommon('newBill')}
             </button>
           </div>
         </div>
@@ -168,10 +203,11 @@ export default function PreviewPage({}: PreviewPageProps) {
               这个分享的账单缺少必要的信息
             </p>
             <button
-              onClick={() => router.push(`/${locale}`)}
+              onClick={handleCreateNewBill}
+              disabled={isCreatingSession}
               className="btn btn-primary btn-md"
             >
-              创建新账单
+              {isCreatingSession ? tCommon('loading') : tCommon('newBill')}
             </button>
           </div>
         </div>
@@ -194,10 +230,20 @@ export default function PreviewPage({}: PreviewPageProps) {
               <LanguageSwitcher />
               <button
                 onClick={handleEditSession}
-                className="btn btn-primary btn-sm"
+                className="btn btn-secondary btn-sm"
+                title={tPreview('editBill')}
               >
                 <Edit3 className="h-4 w-4 mr-2" />
-                编辑账单
+                {tPreview('editBill')}
+              </button>
+              <button
+                onClick={handleCreateNewBill}
+                disabled={isCreatingSession}
+                className="btn btn-primary btn-sm"
+                title={tCommon('newBill')}
+              >
+                <Plus className={`h-4 w-4 mr-2 ${isCreatingSession ? 'animate-spin' : ''}`} />
+                {tCommon('newBill')}
               </button>
             </div>
           </div>
@@ -379,6 +425,7 @@ export default function PreviewPage({}: PreviewPageProps) {
             </div>
           ))}
         </div>
+
 
       </div>
     </div>
