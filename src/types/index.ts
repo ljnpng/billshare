@@ -34,6 +34,8 @@ export interface PersonalBill {
   items: {
     itemId: string;
     itemName: string;
+    receiptId: string; // 新增：所属收据ID
+    receiptName: string; // 新增：所属收据名称
     share: number; // 这个人应该支付的份额
     originalShare: number; // 原价份额
     finalShare: number; // 含税含小费份额

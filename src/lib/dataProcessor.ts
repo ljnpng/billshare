@@ -117,6 +117,8 @@ export class BillDataProcessor {
           personalBill.items.push({
             itemId: item.id,
             itemName: item.name,
+            receiptId: receipt.id,
+            receiptName: receipt.name,
             share: shareCount,
             originalShare: Math.round(originalShare * 100) / 100,
             finalShare: Math.round(finalShare * 100) / 100
