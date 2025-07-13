@@ -48,13 +48,13 @@ const AutoSaveIndicator: React.FC = () => {
   const getStatusText = () => {
     switch (saveStatus) {
       case 'saving':
-        return '正在保存...';
+        return t('saving');
       case 'saved':
-        return '已保存';
+        return t('saved');
       case 'error':
-        return '保存失败';
+        return t('failed');
       default:
-        return lastSaved ? `上次保存: ${lastSaved.toLocaleTimeString()}` : '自动保存已启用';
+        return lastSaved ? `${t('lastSaved')}: ${lastSaved.toLocaleTimeString()}` : t('enabled');
     }
   };
 
@@ -89,7 +89,7 @@ const AutoSaveIndicator: React.FC = () => {
       {getStatusIcon()}
       <span className="hidden sm:inline">{getStatusText()}</span>
       <span className="sm:hidden">
-        {saveStatus === 'saving' ? '保存中...' : saveStatus === 'saved' ? '已保存' : '自动保存'}
+        {saveStatus === 'saving' ? t('savingShort') : saveStatus === 'saved' ? t('savedShort') : t('autoSave')}
       </span>
     </div>
   );

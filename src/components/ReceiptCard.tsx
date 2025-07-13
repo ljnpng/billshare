@@ -194,9 +194,9 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   setIsEditingName(false);
                 }
               }}
-              placeholder="输入收据名称..."
+              placeholder={t('receiptNamePlaceholder')}
             />
-            <button onClick={() => setIsEditingName(false)} className="ml-2 btn btn-ghost btn-sm text-gray-400 hover:text-gray-600" title="完成编辑">
+            <button onClick={() => setIsEditingName(false)} className="ml-2 btn btn-ghost btn-sm text-gray-400 hover:text-gray-600" title={t('finishEdit')}>
                 <Check className="h-4 w-4" />
             </button>
           </div>
@@ -249,7 +249,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                       value={editingItemName}
                       onChange={(e) => setEditingItemName(e.target.value)}
                       className="input input-sm flex-1"
-                      placeholder="商品名称"
+                      placeholder={t('itemNamePlaceholder')}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           handleSaveEdit();
@@ -266,7 +266,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                         value={editingItemPrice}
                         onChange={(e) => setEditingItemPrice(e.target.value)}
                         className="input input-sm w-24 pl-9"
-                        placeholder="价格"
+                        placeholder={t('priceEditPlaceholder')}
                         step="0.01"
                         min="0"
                         onKeyDown={(e) => {
@@ -285,10 +285,10 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                         }}
                       />
                     </div>
-                    <button onClick={handleSaveEdit} className="btn btn-ghost btn-xs text-green-600 hover:text-green-700" title="保存 (Enter)">
+                    <button onClick={handleSaveEdit} className="btn btn-ghost btn-xs text-green-600 hover:text-green-700" title={t('saveEditTitle')}>
                       <Check className="h-4 w-4" />
                     </button>
-                    <button onClick={handleCancelEdit} className="btn btn-ghost btn-xs text-gray-400 hover:text-gray-600" title="取消 (Esc)">
+                    <button onClick={handleCancelEdit} className="btn btn-ghost btn-xs text-gray-400 hover:text-gray-600" title={t('cancelEditTitle')}>
                       <X className="h-4 w-4" />
                     </button>
                   </div>
@@ -303,14 +303,14 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                       <button 
                         onClick={() => handleEditItem(item.id, item.name, item.originalPrice)} 
                         className="btn btn-ghost btn-xs text-gray-400 hover:text-blue-600 min-h-0 h-8 w-8 p-0"
-                        title="编辑"
+                        title={t('editTitle')}
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button 
                         onClick={() => removeItem(receipt.id, item.id)} 
                         className="btn btn-ghost btn-xs text-gray-400 hover:text-red-600 min-h-0 h-8 w-8 p-0"
-                        title="删除"
+                        title={t('deleteTitle')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
