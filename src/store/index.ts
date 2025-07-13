@@ -372,25 +372,42 @@ export const useAppStore = create<AppStore>()(
           }
 
           const aiData = result.data;
-          const receipt = get().receipts.find(r => r.id === receiptId);
-          if (!receipt) {
-            storeLogger.error('未找到指定的收据', { receiptId });
-            set({ 
-              error: '未找到指定的收据',
-              isAiProcessing: false 
+          
+          // 如果没有提供 receiptId 或 receiptId 为空，创建新收据
+          let receipt: Receipt;
+          let isNewReceipt = false;
+          
+          if (!receiptId) {
+            const newReceiptId = get().addReceipt(aiData.businessName || '新收据');
+            receipt = get().receipts.find(r => r.id === newReceiptId)!;
+            isNewReceipt = true;
+            storeLogger.info('AI识别成功，创建新收据', {
+              newReceiptId,
+              businessName: aiData.businessName
             });
-            return false;
+          } else {
+            const foundReceipt = get().receipts.find(r => r.id === receiptId);
+            if (!foundReceipt) {
+              storeLogger.error('未找到指定的收据', { receiptId });
+              set({ 
+                error: '未找到指定的收据',
+                isAiProcessing: false 
+              });
+              return false;
+            }
+            receipt = foundReceipt;
           }
 
           storeLogger.info('AI识别成功', { 
-            receiptId,
+            receiptId: receipt.id,
             businessName: aiData.businessName,
             itemCount: aiData.items.length,
             subtotal: aiData.subtotal,
             tax: aiData.tax,
             tip: aiData.tip,
             total: aiData.total,
-            confidence: aiData.confidence
+            confidence: aiData.confidence,
+            isNewReceipt
           });
 
           // 创建更新后的收据对象，包含AI识别的名称
@@ -401,15 +418,15 @@ export const useAppStore = create<AppStore>()(
             updatedAt: new Date()
           };
 
-          if (aiData.businessName) {
+          if (aiData.businessName && !isNewReceipt) {
             storeLogger.info('收据名称已自动更新', { 
-              receiptId,
+              receiptId: receipt.id,
               oldName: receipt.name,
               newName: aiData.businessName
             });
-          } else {
+          } else if (!aiData.businessName && !isNewReceipt) {
             storeLogger.warn('AI未识别到商家名称，保持原名称', { 
-              receiptId,
+              receiptId: receipt.id,
               currentName: receipt.name
             });
           }
@@ -428,14 +445,15 @@ export const useAppStore = create<AppStore>()(
 
           // 更新store中的receipt
           set(state => ({
-            receipts: state.receipts.map(r => r.id === receiptId ? finalReceipt : r),
+            receipts: state.receipts.map(r => r.id === receipt.id ? finalReceipt : r),
             isAiProcessing: false
           }));
 
           storeLogger.info('收据处理完成', { 
-            receiptId,
+            receiptId: receipt.id,
             finalItemCount: finalReceipt.items.length,
-            finalTotal: finalReceipt.total
+            finalTotal: finalReceipt.total,
+            isNewReceipt
           });
 
           return true;
@@ -444,6 +462,21 @@ export const useAppStore = create<AppStore>()(
             receiptId, 
             error: error instanceof Error ? error.message : 'Unknown error'
           });
+          
+          // 如果在处理过程中创建了新收据但出现异常，移除这个空收据
+          if (!receiptId && error instanceof Error) {
+            const receipts = get().receipts;
+            // 找到最近创建的可能为空的收据并移除
+            const lastReceipt = receipts[receipts.length - 1];
+            if (lastReceipt && lastReceipt.items.length === 0) {
+              get().removeReceipt(lastReceipt.id);
+              storeLogger.info('移除失败创建的空收据', { 
+                removedReceiptId: lastReceipt.id,
+                receiptName: lastReceipt.name
+              });
+            }
+          }
+          
           set({ 
             error: error instanceof Error ? error.message : 'AI识别处理失败',
             isAiProcessing: false 
