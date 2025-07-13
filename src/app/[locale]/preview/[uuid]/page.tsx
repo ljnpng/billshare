@@ -7,6 +7,7 @@ import { ChevronDown, ExternalLink, Edit3 } from 'lucide-react'
 import { AppState } from '../../../../types'
 import { dataProcessor } from '../../../../lib/dataProcessor'
 import LanguageSwitcher from '../../../../components/LanguageSwitcher'
+import { getCachedExchangeRate, convertUsdToCny } from '../../../../lib/currencyService'
 
 interface PreviewPageProps {}
 
@@ -21,6 +22,7 @@ export default function PreviewPage({}: PreviewPageProps) {
   const [error, setError] = useState<string | null>(null)
   const [sessionData, setSessionData] = useState<AppState | null>(null)
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([])
+  const [exchangeRate, setExchangeRate] = useState(7.2) // Default fallback rate
   
   const uuid = params.uuid as string
   const locale = params.locale as string
@@ -42,6 +44,32 @@ export default function PreviewPage({}: PreviewPageProps) {
   const handleEditSession = () => {
     router.push(`/${locale}/${uuid}`)
   }
+
+  // Currency display component
+  const CurrencyDisplay = ({ usdAmount }: { usdAmount: number }) => {
+    const cnyAmount = convertUsdToCny(usdAmount, exchangeRate);
+    return (
+      <div className="text-right">
+        <div className="font-medium">${usdAmount.toFixed(2)}</div>
+        <div className="text-sm text-gray-600">≈ ¥{cnyAmount.toFixed(2)}</div>
+      </div>
+    );
+  };
+
+  // Load exchange rate
+  useEffect(() => {
+    const loadExchangeRate = async () => {
+      try {
+        const rate = await getCachedExchangeRate();
+        setExchangeRate(rate);
+      } catch (error) {
+        console.error('Failed to load exchange rate:', error);
+        // Keep default fallback rate
+      }
+    };
+    
+    loadExchangeRate();
+  }, []);
 
   useEffect(() => {
     if (!uuid) return
@@ -194,19 +222,19 @@ export default function PreviewPage({}: PreviewPageProps) {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">{tCommon('subtotal')}:</span>
-                    <span>${billSummary.totalSubtotal.toFixed(2)}</span>
+                    <CurrencyDisplay usdAmount={billSummary.totalSubtotal} />
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">{tCommon('tax')}:</span>
-                    <span>${billSummary.totalTax.toFixed(2)}</span>
+                    <CurrencyDisplay usdAmount={billSummary.totalTax} />
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">{tCommon('tip')}:</span>
-                    <span>${billSummary.totalTip.toFixed(2)}</span>
+                    <CurrencyDisplay usdAmount={billSummary.totalTip} />
                   </div>
                   <div className="flex justify-between text-lg font-bold border-t pt-2">
                     <span>{tCommon('total')}:</span>
-                    <span>${billSummary.grandTotal.toFixed(2)}</span>
+                    <CurrencyDisplay usdAmount={billSummary.grandTotal} />
                   </div>
                 </div>
               </div>
@@ -226,7 +254,7 @@ export default function PreviewPage({}: PreviewPageProps) {
                         />
                         <span>{bill.personName}</span>
                       </div>
-                      <span className="font-medium">${bill.totalFinal.toFixed(2)}</span>
+                      <CurrencyDisplay usdAmount={bill.totalFinal} />
                     </div>
                   ))}
                 </div>
@@ -252,7 +280,9 @@ export default function PreviewPage({}: PreviewPageProps) {
                               >
                                   <span className="font-medium">{receipt.name}</span>
                                   <div className="flex items-center">
-                                      <span className="mr-4 font-medium">${receipt.total.toFixed(2)}</span>
+                                      <div className="mr-4">
+                                        <CurrencyDisplay usdAmount={receipt.total} />
+                                      </div>
                                       <ChevronDown
                                           className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                                       />
@@ -264,22 +294,31 @@ export default function PreviewPage({}: PreviewPageProps) {
                                           {receipt.items.map(item => (
                                               <div key={item.id} className="flex justify-between">
                                                   <span className="text-gray-600">{item.name}</span>
-                                                  <span>${item.finalPrice.toFixed(2)}</span>
+                                                  <CurrencyDisplay usdAmount={item.finalPrice} />
                                               </div>
                                           ))}
                                           { (receipt.tax > 0 || receipt.tip > 0) &&
                                           <div className="border-t pt-2 mt-2">
                                               <div className="flex justify-between text-sm">
                                               <span className="text-gray-500">{tCommon('subtotal')}</span>
-                                              <span>${receipt.subtotal.toFixed(2)}</span>
+                                              <div className="text-sm">
+                                                <div className="font-medium">${receipt.subtotal.toFixed(2)}</div>
+                                                <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.subtotal, exchangeRate).toFixed(2)}</div>
+                                              </div>
                                               </div>
                                               <div className="flex justify-between text-sm">
                                               <span className="text-gray-500">{tCommon('tax')}</span>
-                                              <span>${receipt.tax.toFixed(2)}</span>
+                                              <div className="text-sm">
+                                                <div className="font-medium">${receipt.tax.toFixed(2)}</div>
+                                                <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tax, exchangeRate).toFixed(2)}</div>
+                                              </div>
                                               </div>
                                               <div className="flex justify-between text-sm">
                                               <span className="text-gray-500">{tCommon('tip')}</span>
-                                              <span>${receipt.tip.toFixed(2)}</span>
+                                              <div className="text-sm">
+                                                <div className="font-medium">${receipt.tip.toFixed(2)}</div>
+                                                <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tip, exchangeRate).toFixed(2)}</div>
+                                              </div>
                                               </div>
                                           </div>
                                           }
@@ -321,7 +360,8 @@ export default function PreviewPage({}: PreviewPageProps) {
                       </div>
                       <div className="text-right">
                         <div className="font-medium">${item.finalShare.toFixed(2)}</div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600">≈ ¥{convertUsdToCny(item.finalShare, exchangeRate).toFixed(2)}</div>
+                        <div className="text-xs text-gray-500">
                             {tAssign('originalPrice')}: ${item.originalShare.toFixed(2)}
                           </div>
                       </div>
@@ -331,7 +371,7 @@ export default function PreviewPage({}: PreviewPageProps) {
                   <div className="border-t pt-3">
                     <div className="flex justify-between text-lg font-bold">
                       <span>{tCommon('total')}:</span>
-                      <span>${bill.totalFinal.toFixed(2)}</span>
+                      <CurrencyDisplay usdAmount={bill.totalFinal} />
                     </div>
                   </div>
                 </div>

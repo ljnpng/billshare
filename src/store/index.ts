@@ -4,16 +4,25 @@ import { AppState, Person, Receipt } from '../types';
 import { dataProcessor } from '../lib/dataProcessor';
 import { recognizeReceipt } from '../lib/aiService';
 import { storeLogger } from '../lib/logger';
+import { getCachedExchangeRate } from '../lib/currencyService';
 interface AppStore extends AppState {
   // Session state
   sessionId: string | null;
   isSessionLoaded: boolean;
+  
+  // Exchange rate state
+  exchangeRate: number;
+  isLoadingExchangeRate: boolean;
   
   // Session methods
   saveSession: () => Promise<boolean>;
   loadSession: (uuid: string) => Promise<boolean>;
   setSessionId: (uuid: string) => void;
   loadSessionData: (data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>) => void;
+  
+  // Exchange rate methods
+  loadExchangeRate: () => Promise<void>;
+  setExchangeRate: (rate: number) => void;
   
   // Actions
   setPeople: (people: Person[]) => void;
@@ -88,6 +97,10 @@ export const useAppStore = create<AppStore>()(
       // Session state
       sessionId: null,
       isSessionLoaded: false,
+      
+      // Exchange rate state
+      exchangeRate: 7.2, // Default fallback rate
+      isLoadingExchangeRate: false,
       
       // Session methods
       saveSession: async () => {
@@ -168,6 +181,24 @@ export const useAppStore = create<AppStore>()(
           currentStep: data.currentStep || 'setup',
           isSessionLoaded: true,
         });
+      },
+      
+      // Exchange rate methods
+      loadExchangeRate: async () => {
+        set({ isLoadingExchangeRate: true });
+        try {
+          const rate = await getCachedExchangeRate();
+          set({ exchangeRate: rate, isLoadingExchangeRate: false });
+          storeLogger.info('汇率加载成功', { rate });
+        } catch (error) {
+          storeLogger.error('汇率加载失败', { error });
+          set({ isLoadingExchangeRate: false });
+        }
+      },
+      
+      setExchangeRate: (rate: number) => {
+        set({ exchangeRate: rate });
+        storeLogger.info('汇率已更新', { rate });
       },
 
       // Actions
@@ -473,7 +504,9 @@ export const useAppStore = create<AppStore>()(
         error: null,
         isAiProcessing: false,
         sessionId: null,
-        isSessionLoaded: false
+        isSessionLoaded: false,
+        exchangeRate: 7.2,
+        isLoadingExchangeRate: false
       })
     })
     ),

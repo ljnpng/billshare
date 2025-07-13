@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { RotateCcw, Share2, Check, ChevronDown, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../store';
 import confetti from 'canvas-confetti';
 import ShareModal from './ShareModal';
+import { convertUsdToCny } from '../lib/currencyService';
 
 const SummaryStep: React.FC = () => {
   const params = useParams();
@@ -13,13 +14,29 @@ const SummaryStep: React.FC = () => {
   const tCommon = useTranslations('common');
   const tCopy = useTranslations('copySuccess');
   const tAssign = useTranslations('assignStep');
-  const { getBillSummary, reset, setCurrentStep, setSessionId, sessionId } = useAppStore();
+  const { getBillSummary, reset, setCurrentStep, setSessionId, sessionId, exchangeRate, loadExchangeRate } = useAppStore();
   const [copySuccess, setCopySuccess] = useState(false);
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   
   const billSummary = getBillSummary();
+
+  // Load exchange rate on component mount
+  useEffect(() => {
+    loadExchangeRate();
+  }, [loadExchangeRate]);
+
+  // Currency display component
+  const CurrencyDisplay = ({ usdAmount }: { usdAmount: number }) => {
+    const cnyAmount = convertUsdToCny(usdAmount, exchangeRate);
+    return (
+      <div className="text-right">
+        <div className="font-medium">${usdAmount.toFixed(2)}</div>
+        <div className="text-sm text-gray-600">≈ ¥{cnyAmount.toFixed(2)}</div>
+      </div>
+    );
+  };
 
   const toggleReceipt = (receiptId: string) => {
     setExpandedReceipts(prev =>
@@ -212,19 +229,19 @@ const SummaryStep: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600">{tCommon('subtotal')}:</span>
-                  <span>${billSummary.totalSubtotal.toFixed(2)}</span>
+                  <CurrencyDisplay usdAmount={billSummary.totalSubtotal} />
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">{tCommon('tax')}:</span>
-                  <span>${billSummary.totalTax.toFixed(2)}</span>
+                  <CurrencyDisplay usdAmount={billSummary.totalTax} />
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">{tCommon('tip')}:</span>
-                  <span>${billSummary.totalTip.toFixed(2)}</span>
+                  <CurrencyDisplay usdAmount={billSummary.totalTip} />
                 </div>
                 <div className="flex justify-between text-lg font-bold border-t pt-2">
                   <span>{tCommon('total')}:</span>
-                  <span>${billSummary.grandTotal.toFixed(2)}</span>
+                  <CurrencyDisplay usdAmount={billSummary.grandTotal} />
                 </div>
               </div>
             </div>
@@ -244,7 +261,7 @@ const SummaryStep: React.FC = () => {
                       />
                       <span>{bill.personName}</span>
                     </div>
-                    <span className="font-medium">${bill.totalFinal.toFixed(2)}</span>
+                    <CurrencyDisplay usdAmount={bill.totalFinal} />
                   </div>
                 ))}
               </div>
@@ -270,7 +287,9 @@ const SummaryStep: React.FC = () => {
                             >
                                 <span className="font-medium">{receipt.name}</span>
                                 <div className="flex items-center">
-                                    <span className="mr-4 font-medium">${receipt.total.toFixed(2)}</span>
+                                    <div className="mr-4">
+                                        <CurrencyDisplay usdAmount={receipt.total} />
+                                    </div>
                                     <ChevronDown
                                         className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                                     />
@@ -282,22 +301,31 @@ const SummaryStep: React.FC = () => {
                                         {receipt.items.map(item => (
                                             <div key={item.id} className="flex justify-between">
                                                 <span className="text-gray-600">{item.name}</span>
-                                                <span>${item.finalPrice.toFixed(2)}</span>
+                                                <CurrencyDisplay usdAmount={item.finalPrice} />
                                             </div>
                                         ))}
                                         { (receipt.tax > 0 || receipt.tip > 0) &&
                                         <div className="border-t pt-2 mt-2">
                                             <div className="flex justify-between text-sm">
                                             <span className="text-gray-500">{tCommon('subtotal')}</span>
-                                            <span>${receipt.subtotal.toFixed(2)}</span>
+                                            <div className="text-sm">
+                                              <div className="font-medium">${receipt.subtotal.toFixed(2)}</div>
+                                              <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.subtotal, exchangeRate).toFixed(2)}</div>
+                                            </div>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                             <span className="text-gray-500">{tCommon('tax')}</span>
-                                            <span>${receipt.tax.toFixed(2)}</span>
+                                            <div className="text-sm">
+                                              <div className="font-medium">${receipt.tax.toFixed(2)}</div>
+                                              <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tax, exchangeRate).toFixed(2)}</div>
+                                            </div>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                             <span className="text-gray-500">{tCommon('tip')}</span>
-                                            <span>${receipt.tip.toFixed(2)}</span>
+                                            <div className="text-sm">
+                                              <div className="font-medium">${receipt.tip.toFixed(2)}</div>
+                                              <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tip, exchangeRate).toFixed(2)}</div>
+                                            </div>
                                             </div>
                                         </div>
                                         }
@@ -340,9 +368,10 @@ const SummaryStep: React.FC = () => {
                     </div>
                     <div className="text-right">
                       <div className="font-medium">${item.finalShare.toFixed(2)}</div>
-                                              <div className="text-sm text-gray-600">
-                          {tAssign('originalPrice')}: ${item.originalShare.toFixed(2)}
-                        </div>
+                      <div className="text-sm text-gray-600">≈ ¥{convertUsdToCny(item.finalShare, exchangeRate).toFixed(2)}</div>
+                      <div className="text-xs text-gray-500">
+                        {tAssign('originalPrice')}: ${item.originalShare.toFixed(2)}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -350,7 +379,7 @@ const SummaryStep: React.FC = () => {
                 <div className="border-t pt-3">
                   <div className="flex justify-between text-lg font-bold">
                     <span>{tCommon('total')}:</span>
-                    <span>${bill.totalFinal.toFixed(2)}</span>
+                    <CurrencyDisplay usdAmount={bill.totalFinal} />
                   </div>
                 </div>
               </div>
