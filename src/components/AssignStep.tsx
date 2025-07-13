@@ -151,7 +151,7 @@ const AssignStep: React.FC = () => {
                         </div>
                         
                         {/* 人员选择 */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 pt-4" role="group" aria-label={`为 ${item.name} 选择付费人员`}>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 pt-4" role="group" aria-label={t('selectPayersFor', { itemName: item.name })}>
                           {people.map(person => (
                             <button
                               key={person.id}
@@ -162,7 +162,11 @@ const AssignStep: React.FC = () => {
                                   : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-sm'
                               }`}
                               aria-pressed={item.assignedTo.includes(person.id)}
-                              aria-label={`${item.assignedTo.includes(person.id) ? '取消' : '选择'} ${person.name} 为 ${item.name} 付费`}
+                              aria-label={t('togglePersonFor', { 
+                                action: item.assignedTo.includes(person.id) ? t('unselect') : t('select'),
+                                personName: person.name,
+                                itemName: item.name 
+                              })}
                             >
                               <div 
                                 className="person-color-sm"

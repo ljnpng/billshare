@@ -19,6 +19,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
 }) => {
   const t = useTranslations('app');
   const tCommon = useTranslations('common');
+  const tHeader = useTranslations('header');
   const params = useParams();
   const router = useRouter();
   const { reset, setSessionId } = useAppStore();
@@ -116,7 +117,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
                 <button
                   onClick={onToggle}
                   className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-800"
-                  title="折叠头部"
+                  title={tHeader('collapseTitle')}
                 >
                   <ChevronUp className="h-4 w-4" />
                 </button>
