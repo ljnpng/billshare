@@ -22,6 +22,27 @@ const nextConfig = {
   optimizeFonts: true,
   // 性能优化
   poweredByHeader: false,
+  // Webpack configuration to handle HEIC dependencies
+  webpack: (config, { dev, isServer }) => {
+    // Ignore warnings from libheif-js WASM bundle
+    config.ignoreWarnings = [
+      {
+        module: /libheif-js\/libheif-wasm\/libheif-bundle\.js/,
+        message: /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/,
+      },
+    ];
+
+    // Configure externals for server-side rendering
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        'heic-convert': 'heic-convert',
+        'libheif-js': 'libheif-js',
+      });
+    }
+
+    return config;
+  },
 }
 
 module.exports = withNextIntl(nextConfig); 
