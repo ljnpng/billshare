@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { Plus, Receipt, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
+import { Plus, Receipt, ArrowRight, ArrowLeft, Sparkles, AlertCircle, RotateCcw } from 'lucide-react';
 import { useAppStore } from '../store';
 import { ReceiptCard } from './ReceiptCard';
 
@@ -10,7 +10,8 @@ const InputStep: React.FC = () => {
   const tCommon = useTranslations('common');
   const params = useParams();
   const locale = params.locale as string;
-  const { receipts, addReceipt, setCurrentStep, processReceiptImage, isAiProcessing } = useAppStore();
+  const { receipts, addReceipt, setCurrentStep, processReceiptImage, isAiProcessing, error, setError } = useAppStore();
+  const tAI = useTranslations('aiRecognition');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleNext = () => {
@@ -25,8 +26,11 @@ const InputStep: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const newReceiptId = addReceipt(t('aiRecognizing'));
-    await processReceiptImage(newReceiptId, file, locale);
+    // 直接进行 AI 识别，不先创建空收据
+    const success = await processReceiptImage('', file, locale);
+    
+    // 如果识别失败，processReceiptImage 会自动设置错误状态
+    // 用户会看到错误提示，可以重试
     
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -35,6 +39,27 @@ const InputStep: React.FC = () => {
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleRetry = () => {
+    setError(null);
+    handleUploadClick();
+  };
+
+  const handleDismissError = () => {
+    setError(null);
+  };
+
+  // 获取国际化的错误消息
+  const getErrorMessage = (errorType: string) => {
+    // 如果错误类型在我们的错误消息中存在，使用国际化消息
+    const errorKey = `errors.${errorType}`;
+    try {
+      return tAI(errorKey);
+    } catch (e) {
+      // 如果国际化键不存在，返回原始错误消息
+      return errorType;
+    }
   };
   
   const totalItems = receipts.reduce((sum, r) => sum + r.items.length, 0);
@@ -79,6 +104,35 @@ const InputStep: React.FC = () => {
             className="hidden"
           />
         </div>
+        
+        {/* 错误提示和重试组件 */}
+        {error && (
+          <div className="mx-6 mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-red-800 mb-1">{tAI('errorTitle')}</h4>
+                <p className="text-sm text-red-700 mb-3">{getErrorMessage(error)}</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleRetry}
+                    disabled={isAiProcessing}
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-200 text-red-800 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <RotateCcw className="h-4 w-4 mr-1.5" />
+                    {tAI('retry')}
+                  </button>
+                  <button
+                    onClick={handleDismissError}
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition-colors"
+                  >
+                    {tAI('dismiss')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="card-content">
           {receipts.length > 0 ? (
