@@ -20,7 +20,7 @@ export default function SessionPage({}: SessionPageProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [sessionError, setSessionError] = useState<string | null>(null)
-  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false)
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(true)
   
   const { 
     currentStep, 
@@ -212,8 +212,6 @@ export default function SessionPage({}: SessionPageProps) {
         uuid={uuid}
         isCollapsed={isHeaderCollapsed}
         onToggle={handleHeaderToggle}
-        autoCollapse={true}
-        currentStep={currentStep}
       />
 
       {/* Sticky 步骤指示器 - 内容区域顶部固定 */}
