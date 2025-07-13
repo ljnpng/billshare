@@ -143,17 +143,35 @@ export const parseAIResponse = (responseText: string): any => {
     const recognizedData = JSON.parse(responseText);
     aiLogger.info('JSON 直接解析成功');
     return recognizedData;
-  } catch (e) {
+  } catch (directParseError) {
     // 如果直接解析失败，尝试提取 JSON 部分
-    aiLogger.warn('JSON 直接解析失败，尝试提取 JSON 部分');
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      const recognizedData = JSON.parse(jsonMatch[0]);
-      aiLogger.info('JSON 提取解析成功');
-      return recognizedData;
-    } else {
-      aiLogger.error('无法解析 JSON 响应');
-      throw new Error('无法解析识别结果');
+    aiLogger.warn('JSON 直接解析失败，尝试提取 JSON 部分', {
+      directParseError: directParseError instanceof Error ? directParseError.message : 'Unknown error',
+      responseLength: responseText.length,
+      responsePreview: responseText.substring(0, 200)
+    });
+    
+    try {
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const recognizedData = JSON.parse(jsonMatch[0]);
+        aiLogger.info('JSON 提取解析成功');
+        return recognizedData;
+      } else {
+        aiLogger.error('无法在响应中找到 JSON 结构', {
+          responseText: responseText.substring(0, 500), // 记录前500字符用于调试
+          responseLength: responseText.length
+        });
+        throw new Error('formatError');
+      }
+    } catch (extractParseError) {
+      aiLogger.error('JSON 提取解析也失败', {
+        extractParseError: extractParseError instanceof Error ? extractParseError.message : 'Unknown error',
+        directParseError: directParseError instanceof Error ? directParseError.message : 'Unknown error',
+        responseText: responseText.substring(0, 500),
+        responseLength: responseText.length
+      });
+      throw new Error('parseError');
     }
   }
 }; 
