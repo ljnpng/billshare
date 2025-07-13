@@ -221,20 +221,20 @@ export default function PreviewPage({}: PreviewPageProps) {
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">
+            <div className="flex items-center">
+              <LanguageSwitcher />
+              <h1 className="text-xl font-semibold text-gray-900 hidden md:block md:ml-4">
                 账单分摊预览
               </h1>
             </div>
             <div className="flex items-center gap-3">
-              <LanguageSwitcher />
               <button
                 onClick={handleEditSession}
                 className="btn btn-secondary btn-sm"
                 title={tPreview('editBill')}
               >
-                <Edit3 className="h-4 w-4 mr-2" />
-                {tPreview('editBill')}
+                <Edit3 className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">{tPreview('editBill')}</span>
               </button>
               <button
                 onClick={handleCreateNewBill}
@@ -242,8 +242,8 @@ export default function PreviewPage({}: PreviewPageProps) {
                 className="btn btn-primary btn-sm"
                 title={tCommon('newBill')}
               >
-                <Plus className={`h-4 w-4 mr-2 ${isCreatingSession ? 'animate-spin' : ''}`} />
-                {tCommon('newBill')}
+                <Plus className={`h-4 w-4 md:mr-2 ${isCreatingSession ? 'animate-spin' : ''}`} />
+                <span className="hidden md:inline">{tCommon('newBill')}</span>
               </button>
             </div>
           </div>
