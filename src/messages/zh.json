@@ -32,6 +32,50 @@
     "receipt": "收据",
     "receipts": "收据"
   },
+  "receiptCard": {
+    "receiptNamePlaceholder": "输入收据名称...",
+    "finishEdit": "完成编辑",
+    "itemNamePlaceholder": "商品名称",
+    "priceEditPlaceholder": "价格",
+    "saveEditTitle": "保存 (Enter)",
+    "cancelEditTitle": "取消 (Esc)",
+    "editTitle": "编辑",
+    "deleteTitle": "删除"
+  },
+  "autoSave": {
+    "saving": "正在保存...",
+    "saved": "已保存",
+    "failed": "保存失败",
+    "lastSaved": "上次保存",
+    "enabled": "自动保存已启用",
+    "savingShort": "保存中...",
+    "savedShort": "已保存",
+    "autoSave": "自动保存"
+  },
+  "languageSwitcher": {
+    "chineseShort": "中",
+    "englishShort": "EN",
+    "switchLanguage": "切换语言",
+    "chinese": "中文",
+    "english": "English"
+  },
+  "header": {
+    "collapseTitle": "折叠头部"
+  },
+  "errors": {
+    "fileUploadFailed": "文件上传失败，请检查网络连接或稍后重试",
+    "unsupportedFormat": "不支持的图片格式，请使用 JPG、PNG、GIF、WebP 或 HEIC 格式",
+    "fileTooLarge": "文件太大，请选择小于 25MB 的图片",
+    "imageTooLarge": "图片尺寸过大，请选择小于 8000x8000 像素的图片",
+    "processingFailed": "图片处理失败",
+    "heicConversionFailed": "HEIC 格式在浏览器环境中不支持，请转换为 JPG 格式",
+    "recognitionFailed": "识别失败",
+    "invalidResponse": "API 响应格式错误",
+    "emptyResponse": "API 响应内容为空",
+    "parseError": "无法解析 AI 识别结果",
+    "invalidFormat": "AI 识别结果格式错误：缺少 items 数组",
+    "noValidItems": "未识别到任何有效的商品项目（商品名称不能为空）"
+  },
   "app": {
     "title": "AAP费用分摊",
     "description": "智能分摊餐费、税费和小费，让每个人都支付合理的份额"
@@ -78,7 +122,11 @@
     "nextButton": "下一步：费用汇总",
     "costSummary": "费用汇总",
     "sharedWith": "与 {count} 人分摊",
-    "exclusive": "独享"
+    "exclusive": "独享",
+    "selectPayersFor": "为 {itemName} 选择付费人员",
+    "togglePersonFor": "{action} {personName} 为 {itemName} 付费",
+    "select": "选择",
+    "unselect": "取消"
   },
   "summaryStep": {
     "title": "费用汇总",
@@ -121,11 +169,6 @@
   },
   "errorAlert": {
     "title": "出现错误"
-  },
-  "languageSwitcher": {
-    "switchLanguage": "切换语言",
-    "chinese": "中文",
-    "english": "English"
   },
   "copySuccess": {
     "title": "费用分摊汇总",
