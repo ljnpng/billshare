@@ -395,21 +395,41 @@ export default function PreviewPage({}: PreviewPageProps) {
               </div>
               
               <div className="card-content">
-                <div className="space-y-3">
-                  {bill.items.map(item => (
-                    <div key={item.itemId} className="flex justify-between items-center">
-                      <div className="flex-1">
-                        <div className="font-medium">{item.itemName}</div>
-                        <div className="text-sm text-gray-600">
-                          {item.share > 1 ? tAssign('sharedWith', { count: item.share - 1 }) : tAssign('exclusive')}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">${item.finalShare.toFixed(2)}</div>
-                        <div className="text-sm text-gray-600">≈ ¥{convertUsdToCny(item.finalShare, exchangeRate).toFixed(2)}</div>
-                        <div className="text-xs text-gray-500">
-                            {tAssign('originalPrice')}: ${item.originalShare.toFixed(2)}
+                <div className="space-y-4">
+                  {/* 按收据分组显示条目 */}
+                  {Object.entries(
+                    bill.items.reduce((groups, item) => {
+                      const receiptId = item.receiptId;
+                      if (!groups[receiptId]) {
+                        groups[receiptId] = {
+                          receiptName: item.receiptName,
+                          items: []
+                        };
+                      }
+                      groups[receiptId].items.push(item);
+                      return groups;
+                    }, {} as Record<string, { receiptName: string; items: typeof bill.items }>)
+                  ).map(([receiptId, group]) => (
+                    <div key={receiptId} className="border rounded-lg p-3 bg-gray-50">
+                      <h4 className="font-medium text-sm text-gray-700 mb-2">{group.receiptName}</h4>
+                      <div className="space-y-2">
+                        {group.items.map(item => (
+                          <div key={item.itemId} className="flex justify-between items-center">
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">{item.itemName}</div>
+                              <div className="text-xs text-gray-600">
+                                {item.share > 1 ? tAssign('sharedWith', { count: item.share - 1 }) : tAssign('exclusive')}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-medium text-sm">${item.finalShare.toFixed(2)}</div>
+                              <div className="text-xs text-gray-600">≈ ¥{convertUsdToCny(item.finalShare, exchangeRate).toFixed(2)}</div>
+                              <div className="text-xs text-gray-500">
+                                {tAssign('originalPrice')}: ${item.originalShare.toFixed(2)}
+                              </div>
+                            </div>
                           </div>
+                        ))}
                       </div>
                     </div>
                   ))}
