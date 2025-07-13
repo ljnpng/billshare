@@ -194,5 +194,20 @@
     "loading": "正在加载分享内容...",
     "cannotLoad": "无法加载分享内容",
     "readOnlyInfo": "这是一个只读的账单分摊预览页面"
+  },
+  "aiRecognition": {
+    "errorTitle": "AI 识别失败",
+    "retry": "重新尝试",
+    "dismiss": "忽略",
+    "errors": {
+      "formatError": "AI 识别结果格式有误，请重试上传",
+      "noItemsFound": "图片中未识别到有效的商品信息，请确认图片清晰度或重新拍照",
+      "networkError": "网络连接失败，请检查网络后重试",
+      "recognitionFailed": "识别失败，请重试",
+      "parseError": "AI 响应格式错误，请重试",
+      "invalidFile": "文件格式不支持或文件过大",
+      "processingFailed": "图片处理失败",
+      "apiError": "AI 服务暂时不可用，请稍后重试"
+    }
   }
 } 

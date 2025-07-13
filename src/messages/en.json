@@ -194,5 +194,20 @@
     "loading": "Loading shared content...",
     "cannotLoad": "Cannot load shared content",
     "readOnlyInfo": "This is a read-only bill splitting preview page"
+  },
+  "aiRecognition": {
+    "errorTitle": "AI Recognition Failed",
+    "retry": "Try Again",
+    "dismiss": "Dismiss",
+    "errors": {
+      "formatError": "AI recognition result format error, please try uploading again",
+      "noItemsFound": "No valid items found in the image, please check image clarity or retake photo",
+      "networkError": "Network connection failed, please check your connection and try again",
+      "recognitionFailed": "Recognition failed, please try again",
+      "parseError": "AI response format error, please try again",
+      "invalidFile": "Unsupported file format or file too large",
+      "processingFailed": "Image processing failed",
+      "apiError": "AI service temporarily unavailable, please try again later"
+    }
   }
 } 
