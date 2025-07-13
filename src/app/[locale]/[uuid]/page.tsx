@@ -37,6 +37,11 @@ export default function SessionPage({}: SessionPageProps) {
   const uuid = params.uuid as string
   const locale = params.locale as string
 
+  // 使用 useCallback 包装 toggle 函数避免重复创建
+  const handleHeaderToggle = useCallback(() => {
+    setIsHeaderCollapsed(!isHeaderCollapsed)
+  }, [isHeaderCollapsed])
+
   // 验证UUID格式
   const isValidUUID = (uuid: string): boolean => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -206,7 +211,7 @@ export default function SessionPage({}: SessionPageProps) {
       <CollapsibleHeader
         uuid={uuid}
         isCollapsed={isHeaderCollapsed}
-        onToggle={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+        onToggle={handleHeaderToggle}
         autoCollapse={true}
         currentStep={currentStep}
       />
