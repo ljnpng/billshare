@@ -8,39 +8,16 @@ interface CollapsibleHeaderProps {
   uuid?: string;
   isCollapsed: boolean;
   onToggle: () => void;
-  autoCollapse?: boolean;
-  currentStep?: string;
 }
 
 const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ 
   uuid, 
   isCollapsed, 
-  onToggle, 
-  autoCollapse = false,
-  currentStep
+  onToggle
 }) => {
   const t = useTranslations('app');
 
-  // 自动折叠/展开逻辑
-  useEffect(() => {
-    if (autoCollapse) {
-      let timer: NodeJS.Timeout;
-      
-      if (currentStep === 'input' && !isCollapsed) {
-        // 从设置人员到输入账单时自动折叠
-        timer = setTimeout(() => {
-          onToggle();
-        }, 300);
-      } else if (currentStep === 'setup' && isCollapsed) {
-        // 回退到设置人员时立即展开
-        onToggle();
-      }
-      
-      return () => {
-        if (timer) clearTimeout(timer);
-      };
-    }
-  }, [currentStep, autoCollapse, isCollapsed, onToggle]);
+  // 移除自动折叠逻辑，完全由用户控制
 
   return (
     <div className={`bg-white border-b sticky top-0 z-20 transition-all duration-300 ${
@@ -56,8 +33,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
               className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors text-sm text-blue-700 hover:text-blue-800 shadow-sm"
             >
               <ChevronDown className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('title')}</span>
-              <span className="sm:hidden">展开</span>
+              <span>{t('title')}</span>
             </button>
             <div className="flex-1"></div>
           </div>
@@ -68,11 +44,8 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
           <div className="py-4">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  {t('title')}
-                </h1>
                 {uuid && (
-                  <div className="flex items-center gap-4 mt-1">
+                  <div className="flex items-center gap-4">
                     <div className="text-sm text-gray-500">
                       会话ID: {uuid.substring(0, 8)}...
                     </div>
