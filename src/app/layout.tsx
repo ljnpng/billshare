@@ -6,8 +6,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AAP费用分摊',
-  description: '智能分摊餐费、税费和小费，让每个人都支付合理的份额',
+  title: 'AAP Bill Splitter',
+  description: 'Smart bill splitting for meals, taxes, and tips - ensuring everyone pays their fair share',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
