@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useParams, useRouter } from 'next/navigation';
+import { useAppStore } from '../store';
 import LanguageSwitcher from './LanguageSwitcher';
 import AutoSaveIndicator from './AutoSaveIndicator';
 
@@ -16,6 +18,48 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
   onToggle
 }) => {
   const t = useTranslations('app');
+  const tCommon = useTranslations('common');
+  const params = useParams();
+  const router = useRouter();
+  const { reset, setSessionId } = useAppStore();
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
+
+  // 创建新会话的处理函数
+  const handleCreateNewBill = useCallback(async () => {
+    if (isCreatingSession) return;
+    
+    setIsCreatingSession(true);
+    const locale = params.locale as string;
+    
+    try {
+      const response = await fetch('/api/session/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('创建会话失败');
+      }
+      
+      const result = await response.json();
+      
+      if (result.success && result.uuid) {
+        // 重置状态并设置新的sessionId
+        reset();
+        setSessionId(result.uuid);
+        // 重定向到新的UUID URL
+        router.replace(`/${locale}/${result.uuid}`);
+      } else {
+        throw new Error('创建会话失败');
+      }
+    } catch (error) {
+      console.error('创建新会话错误:', error);
+    } finally {
+      setIsCreatingSession(false);
+    }
+  }, [isCreatingSession, params.locale, router, reset, setSessionId]);
 
   // 移除自动折叠逻辑，完全由用户控制
 
@@ -28,13 +72,23 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
         {isCollapsed && (
           <div className="flex items-center justify-between py-2">
             <div className="flex-1"></div>
-            <button
-              onClick={onToggle}
-              className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors text-sm text-blue-700 hover:text-blue-800 shadow-sm"
-            >
-              <ChevronDown className="h-4 w-4" />
-              <span>{t('title')}</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCreateNewBill}
+                disabled={isCreatingSession}
+                className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 hover:bg-green-200 transition-colors text-sm text-green-700 hover:text-green-800 shadow-sm disabled:opacity-50"
+                title={tCommon('newBill')}
+              >
+                <Plus className={`h-3 w-3 ${isCreatingSession ? 'animate-spin' : ''}`} />
+              </button>
+              <button
+                onClick={onToggle}
+                className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors text-sm text-blue-700 hover:text-blue-800 shadow-sm"
+              >
+                <ChevronDown className="h-4 w-4" />
+                <span>{t('title')}</span>
+              </button>
+            </div>
             <div className="flex-1"></div>
           </div>
         )}
@@ -45,15 +99,19 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
             <div className="flex justify-between items-center">
               <div>
                 {uuid && (
-                  <div className="flex items-center gap-4">
-                    <div className="text-sm text-gray-500">
-                      会话ID: {uuid.substring(0, 8)}...
-                    </div>
-                    <AutoSaveIndicator />
-                  </div>
+                  <AutoSaveIndicator />
                 )}
               </div>
               <div className="flex items-center gap-3">
+                <button
+                  onClick={handleCreateNewBill}
+                  disabled={isCreatingSession}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-100 hover:bg-green-200 transition-colors text-green-700 hover:text-green-800 disabled:opacity-50"
+                  title={tCommon('newBill')}
+                >
+                  <Plus className={`h-4 w-4 ${isCreatingSession ? 'animate-spin' : ''}`} />
+                  <span className="text-sm">{tCommon('newBill')}</span>
+                </button>
                 <LanguageSwitcher />
                 <button
                   onClick={onToggle}
