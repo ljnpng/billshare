@@ -146,6 +146,42 @@ export class BillDataProcessor {
   }
 
   /**
+   * 验证所有收据的付款人设置是否一致
+   */
+  validatePayerConsistency(receipts: Receipt[]): { isValid: boolean; message?: string } {
+    if (receipts.length === 0) return { isValid: true };
+
+    const hasAnyPayer = receipts.some(r => r.paidBy);
+    const hasAllPayers = receipts.every(r => r.paidBy);
+
+    if (hasAnyPayer && !hasAllPayers) {
+      return {
+        isValid: false,
+        message: '所有收据必须都设置付款人，或者都不设置付款人'
+      };
+    }
+
+    return { isValid: true };
+  }
+
+  /**
+   * 按付款人分组收据
+   */
+  groupReceiptsByPayer(receipts: Receipt[], people: Person[]): Map<string, Receipt[]> {
+    const grouped = new Map<string, Receipt[]>();
+    
+    receipts.forEach(receipt => {
+      const payerId = receipt.paidBy || 'unassigned';
+      if (!grouped.has(payerId)) {
+        grouped.set(payerId, []);
+      }
+      grouped.get(payerId)!.push(receipt);
+    });
+
+    return grouped;
+  }
+
+  /**
    * 生成最终账单汇总
    */
   generateBillSummary(receipts: Receipt[], people: Person[]): BillSummary {

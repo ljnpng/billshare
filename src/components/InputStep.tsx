@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { Plus, Receipt, ArrowRight, ArrowLeft, Sparkles, AlertCircle, RotateCcw } from 'lucide-react';
 import { useAppStore } from '../store';
 import { ReceiptCard } from './ReceiptCard';
+import { dataProcessor } from '../lib/dataProcessor';
 
 const InputStep: React.FC = () => {
   const t = useTranslations('inputStep');
@@ -15,6 +16,12 @@ const InputStep: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleNext = () => {
+    // 验证付款人设置一致性
+    const validation = dataProcessor.validatePayerConsistency(receipts);
+    if (!validation.isValid) {
+      setError(validation.message || '付款人设置不一致');
+      return;
+    }
     setCurrentStep('assign');
   };
 

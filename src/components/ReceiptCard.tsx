@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Edit, Save, X, Trash2, PlusCircle, DollarSign, Check } from 'lucide-react';
+import { Edit, Save, X, Trash2, PlusCircle, DollarSign, Check, User } from 'lucide-react';
 import { Receipt } from '../types';
 import { useAppStore } from '../store';
 import { uiLogger } from '../lib/logger';
 
 interface ReceiptCardProps {
   receipt: Receipt;
+  onPayerChange?: (receiptId: string, payerId?: string) => void;
 }
 
-export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
+export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt, onPayerChange }) => {
   const t = useTranslations('receiptCard');
   const tCommon = useTranslations('common');
   const { 
@@ -17,7 +18,9 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     removeReceipt,
     addItem, 
     removeItem, 
-    updateTaxAndTip
+    updateTaxAndTip,
+    updateReceiptPayer,
+    people
   } = useAppStore();
   
   const [isEditingName, setIsEditingName] = useState(false);
@@ -29,6 +32,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editingItemName, setEditingItemName] = useState('');
   const [editingItemPrice, setEditingItemPrice] = useState('');
+  const [selectedPayer, setSelectedPayer] = useState(receipt.paidBy || '');
   
   // 防抖定时器引用
   const [nameDebounceTimer, setNameDebounceTimer] = useState<NodeJS.Timeout | null>(null);
@@ -40,14 +44,16 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     setTaxAmount(receipt.tax.toString());
     setTipAmount(receipt.tip.toString());
     setName(receipt.name);
+    setSelectedPayer(receipt.paidBy || '');
     
     uiLogger.debug('收据信息同步到本地状态', {
       receiptId: receipt.id,
       tax: receipt.tax,
       tip: receipt.tip,
-      name: receipt.name
+      name: receipt.name,
+      paidBy: receipt.paidBy
     });
-  }, [receipt.id, receipt.tax, receipt.tip, receipt.name]);
+  }, [receipt.id, receipt.tax, receipt.tip, receipt.name, receipt.paidBy]);
 
 
   const handleNameSave = () => {
@@ -140,6 +146,12 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     setEditingItemId(null);
     setEditingItemName('');
     setEditingItemPrice('');
+  };
+
+  const handlePayerChange = (payerId: string) => {
+    setSelectedPayer(payerId);
+    updateReceiptPayer(receipt.id, payerId || undefined);
+    onPayerChange?.(receipt.id, payerId || undefined);
   };
 
 
@@ -359,6 +371,28 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                 />
               </div>
               <div id={`tip-help-${receipt.id}`} className="sr-only">{t('tipHelpText')}</div>
+            </div>
+            
+            <div>
+              <label htmlFor={`payer-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">{t('payerLabel')}</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
+                <select
+                  id={`payer-${receipt.id}`}
+                  value={selectedPayer}
+                  onChange={(e) => handlePayerChange(e.target.value)}
+                  className="input w-full pl-9 pr-3"
+                  aria-describedby={`payer-help-${receipt.id}`}
+                >
+                  <option value="">{t('selectPayerPlaceholder')}</option>
+                  {people.map((person) => (
+                    <option key={person.id} value={person.id}>
+                      {person.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div id={`payer-help-${receipt.id}`} className="sr-only">{t('payerHelpText')}</div>
             </div>
           </div>
           <div className="bg-gray-50 rounded-xl p-4 mt-6">

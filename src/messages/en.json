@@ -40,7 +40,10 @@
     "saveEditTitle": "Save (Enter)",
     "cancelEditTitle": "Cancel (Esc)",
     "editTitle": "Edit",
-    "deleteTitle": "Delete"
+    "deleteTitle": "Delete",
+    "payerLabel": "Paid By",
+    "selectPayerPlaceholder": "Select who paid...",
+    "payerHelpText": "Select the person who actually paid for this receipt"
   },
   "autoSave": {
     "saving": "Saving...",
@@ -152,7 +155,12 @@
     "copyLink": "Copy Link",
     "shareToWeChat": "Share to WeChat",
     "openInBrowser": "Open in Browser",
-    "shareInWeChatTip": "Please tap the menu button in the top-right corner and select \"Share with Friends\" or \"Share to Moments\""
+    "shareInWeChatTip": "Please tap the menu button in the top-right corner and select \"Share with Friends\" or \"Share to Moments\"",
+    "byReceipt": "By Receipt",
+    "byPayer": "By Payer",
+    "paidBy": "Paid by {name}",
+    "unassignedPayer": "Unassigned Payer",
+    "receipts": "receipts"
   },
   "receiptCard": {
     "deleteReceipt": "Delete",

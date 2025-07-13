@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { RotateCcw, Share2, Check, ChevronDown, ArrowLeft } from 'lucide-react';
+import { RotateCcw, Share2, Check, ChevronDown, ArrowLeft, Users, Receipt } from 'lucide-react';
 import { useAppStore } from '../store';
 import confetti from 'canvas-confetti';
 import ShareModal from './ShareModal';
 import { convertUsdToCny } from '../lib/currencyService';
+import { dataProcessor } from '../lib/dataProcessor';
 
 const SummaryStep: React.FC = () => {
   const params = useParams();
@@ -14,11 +15,12 @@ const SummaryStep: React.FC = () => {
   const tCommon = useTranslations('common');
   const tCopy = useTranslations('copySuccess');
   const tAssign = useTranslations('assignStep');
-  const { getBillSummary, reset, setCurrentStep, setSessionId, sessionId, exchangeRate, loadExchangeRate } = useAppStore();
+  const { getBillSummary, reset, setCurrentStep, setSessionId, sessionId, exchangeRate, loadExchangeRate, people } = useAppStore();
   const [copySuccess, setCopySuccess] = useState(false);
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [groupByPayer, setGroupByPayer] = useState(false);
   
   const billSummary = getBillSummary();
 
@@ -273,88 +275,186 @@ const SummaryStep: React.FC = () => {
       {/* 收据明细 */}
       <div className="card mb-6">
         <div className="card-header">
-            <h2 className="card-title">{t('receiptDetails')}</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <h2 className="card-title">{t('receiptDetails')}</h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setGroupByPayer(false)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    !groupByPayer
+                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                  }`}
+                >
+                  <Receipt className="h-4 w-4" />
+                  <span>{t('byReceipt')}</span>
+                </button>
+                <button
+                  onClick={() => setGroupByPayer(true)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    groupByPayer
+                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                  }`}
+                >
+                  <Users className="h-4 w-4" />
+                  <span>{t('byPayer')}</span>
+                </button>
+              </div>
+            </div>
         </div>
         <div className="card-content">
             <div className="space-y-2">
-                {billSummary.receipts.map(receipt => {
-                    const isExpanded = expandedReceipts.includes(receipt.id);
-                    return (
-                        <div key={receipt.id} className="bg-gray-50 rounded-lg">
-                            <button
-                                onClick={() => toggleReceipt(receipt.id)}
-                                className="w-full flex justify-between items-center p-4 text-left"
-                            >
-                                <span className="font-medium">{receipt.name}</span>
-                                <div className="flex items-center">
-                                    <div className="mr-4">
-                                        <CurrencyDisplay usdAmount={receipt.total} />
+                {!groupByPayer ? (
+                    // 按收据分组显示
+                    billSummary.receipts.map(receipt => {
+                        const isExpanded = expandedReceipts.includes(receipt.id);
+                        return (
+                            <div key={receipt.id} className="bg-gray-50 rounded-lg">
+                                <button
+                                    onClick={() => toggleReceipt(receipt.id)}
+                                    className="w-full flex justify-between items-center p-4 text-left"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="font-medium">{receipt.name}</span>
+                                        {receipt.paidBy && (
+                                            <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                                                {t('paidBy', { name: people.find(p => p.id === receipt.paidBy)?.name || 'Unknown' })}
+                                            </span>
+                                        )}
                                     </div>
-                                    <ChevronDown
-                                        className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                                    />
-                                </div>
-                            </button>
-                            {isExpanded && (
-                                <div className="p-4 border-t">
-                                    <div className="space-y-2">
-                                        {receipt.items.map(item => (
-                                            <div key={item.id} className="space-y-1">
-                                                <div className="flex justify-between">
-                                                    <span className="text-gray-600">{item.name}</span>
-                                                    <CurrencyDisplay usdAmount={item.finalPrice} />
-                                                </div>
-                                                {/* 显示分配的人员 */}
-                                                <div className="flex flex-wrap gap-1">
-                                                    {item.assignedTo.map(personId => {
-                                                        const person = billSummary.people.find(p => p.id === personId);
-                                                        return person ? (
-                                                            <div 
-                                                                key={personId}
-                                                                className="flex items-center gap-1 px-2 py-1 bg-white rounded-full text-xs border"
-                                                            >
+                                    <div className="flex items-center">
+                                        <div className="mr-4">
+                                            <CurrencyDisplay usdAmount={receipt.total} />
+                                        </div>
+                                        <ChevronDown
+                                            className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                        />
+                                    </div>
+                                </button>
+                                {isExpanded && (
+                                    <div className="p-4 border-t">
+                                        <div className="space-y-2">
+                                            {receipt.items.map(item => (
+                                                <div key={item.id} className="space-y-1">
+                                                    <div className="flex justify-between">
+                                                        <span className="text-gray-600">{item.name}</span>
+                                                        <CurrencyDisplay usdAmount={item.finalPrice} />
+                                                    </div>
+                                                    {/* 显示分配的人员 */}
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {item.assignedTo.map(personId => {
+                                                            const person = billSummary.people.find(p => p.id === personId);
+                                                            return person ? (
                                                                 <div 
-                                                                    className="w-2 h-2 rounded-full"
-                                                                    style={{ backgroundColor: person.color }}
-                                                                />
-                                                                <span className="text-gray-700">{person.name}</span>
-                                                            </div>
-                                                        ) : null;
-                                                    })}
+                                                                    key={personId}
+                                                                    className="flex items-center gap-1 px-2 py-1 bg-white rounded-full text-xs border"
+                                                                >
+                                                                    <div 
+                                                                        className="w-2 h-2 rounded-full"
+                                                                        style={{ backgroundColor: person.color }}
+                                                                    />
+                                                                    <span className="text-gray-700">{person.name}</span>
+                                                                </div>
+                                                            ) : null;
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            { (receipt.tax > 0 || receipt.tip > 0) &&
+                                            <div className="border-t pt-2 mt-2">
+                                                <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500">{tCommon('subtotal')}</span>
+                                                <div className="text-sm">
+                                                  <div className="font-medium">${receipt.subtotal.toFixed(2)}</div>
+                                                  <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.subtotal, exchangeRate).toFixed(2)}</div>
+                                                </div>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500">{tCommon('tax')}</span>
+                                                <div className="text-sm">
+                                                  <div className="font-medium">${receipt.tax.toFixed(2)}</div>
+                                                  <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tax, exchangeRate).toFixed(2)}</div>
+                                                </div>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500">{tCommon('tip')}</span>
+                                                <div className="text-sm">
+                                                  <div className="font-medium">${receipt.tip.toFixed(2)}</div>
+                                                  <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tip, exchangeRate).toFixed(2)}</div>
+                                                </div>
                                                 </div>
                                             </div>
-                                        ))}
-                                        { (receipt.tax > 0 || receipt.tip > 0) &&
-                                        <div className="border-t pt-2 mt-2">
-                                            <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">{tCommon('subtotal')}</span>
-                                            <div className="text-sm">
-                                              <div className="font-medium">${receipt.subtotal.toFixed(2)}</div>
-                                              <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.subtotal, exchangeRate).toFixed(2)}</div>
+                                            }
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })
+                ) : (
+                    // 按付款人分组显示
+                    (() => {
+                        const groupedReceipts = dataProcessor.groupReceiptsByPayer(billSummary.receipts, people);
+                        return Array.from(groupedReceipts.entries()).map(([payerId, receipts]) => {
+                            const payer = people.find(p => p.id === payerId);
+                            const payerName = payerId === 'unassigned' ? t('unassignedPayer') : (payer?.name || 'Unknown');
+                            const totalAmount = receipts.reduce((sum, r) => sum + r.total, 0);
+                            const isExpanded = expandedReceipts.includes(`payer-${payerId}`);
+                            
+                            return (
+                                <div key={`payer-${payerId}`} className="bg-gray-50 rounded-lg">
+                                    <button
+                                        onClick={() => toggleReceipt(`payer-${payerId}`)}
+                                        className="w-full flex justify-between items-center p-4 text-left"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            {payer && (
+                                                <div 
+                                                    className="w-3 h-3 rounded-full"
+                                                    style={{ backgroundColor: payer.color }}
+                                                />
+                                            )}
+                                            <span className="font-medium">
+                                                {payerName} {payerId === 'unassigned' ? '' : `(${receipts.length} ${t('receipts')})`}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <div className="mr-4">
+                                                <CurrencyDisplay usdAmount={totalAmount} />
                                             </div>
-                                            </div>
-                                            <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">{tCommon('tax')}</span>
-                                            <div className="text-sm">
-                                              <div className="font-medium">${receipt.tax.toFixed(2)}</div>
-                                              <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tax, exchangeRate).toFixed(2)}</div>
-                                            </div>
-                                            </div>
-                                            <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">{tCommon('tip')}</span>
-                                            <div className="text-sm">
-                                              <div className="font-medium">${receipt.tip.toFixed(2)}</div>
-                                              <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tip, exchangeRate).toFixed(2)}</div>
-                                            </div>
+                                            <ChevronDown
+                                                className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                            />
+                                        </div>
+                                    </button>
+                                    {isExpanded && (
+                                        <div className="p-4 border-t">
+                                            <div className="space-y-3">
+                                                {receipts.map(receipt => (
+                                                    <div key={receipt.id} className="bg-white rounded-lg p-3">
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <span className="font-medium text-gray-800">{receipt.name}</span>
+                                                            <CurrencyDisplay usdAmount={receipt.total} />
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            {receipt.items.map(item => (
+                                                                <div key={item.id} className="flex justify-between text-sm">
+                                                                    <span className="text-gray-600">{item.name}</span>
+                                                                    <span className="text-gray-800">${item.finalPrice.toFixed(2)}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
-                                        }
-                                    </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    );
-                })}
+                            );
+                        });
+                    })()
+                )}
             </div>
         </div>
       </div>

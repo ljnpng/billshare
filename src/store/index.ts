@@ -34,6 +34,7 @@ interface AppStore extends AppState {
   updateReceiptName: (receiptId: string, name: string) => void;
 
   updateTaxAndTip: (receiptId: string, tax: number, tip: number) => void;
+  updateReceiptPayer: (receiptId: string, payerId?: string) => void;
   addItem: (receiptId: string, name: string, price: number | null) => void;
   removeItem: (receiptId: string, itemId: string) => void;
   updateItemAssignment: (itemId: string, assignedTo: string[]) => void;
@@ -285,6 +286,14 @@ export const useAppStore = create<AppStore>()(
             error: error instanceof Error ? error.message : '更新税费失败' 
           });
         }
+      },
+
+      updateReceiptPayer: (receiptId, payerId) => {
+        set(state => ({
+          receipts: state.receipts.map(r => 
+            r.id === receiptId ? { ...r, paidBy: payerId, updatedAt: new Date() } : r
+          ),
+        }));
       },
       
       addItem: (receiptId, name, price) => {

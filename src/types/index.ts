@@ -24,6 +24,7 @@ export interface Receipt {
   tax: number; // 税额
   tip: number; // 小费
   total: number; // 总计
+  paidBy?: string; // 实际付款人ID，可选
   createdAt: Date;
   updatedAt: Date;
 }

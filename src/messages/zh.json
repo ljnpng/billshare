@@ -40,7 +40,10 @@
     "saveEditTitle": "保存 (Enter)",
     "cancelEditTitle": "取消 (Esc)",
     "editTitle": "编辑",
-    "deleteTitle": "删除"
+    "deleteTitle": "删除",
+    "payerLabel": "付款人",
+    "selectPayerPlaceholder": "选择付款人...",
+    "payerHelpText": "选择实际付款的人"
   },
   "autoSave": {
     "saving": "正在保存...",
@@ -152,7 +155,12 @@
     "copyLink": "复制链接",
     "shareToWeChat": "分享到微信",
     "openInBrowser": "在浏览器中打开",
-    "shareInWeChatTip": "请点击右上角菜单，选择「分享给朋友」或「分享到朋友圈」"
+    "shareInWeChatTip": "请点击右上角菜单，选择「分享给朋友」或「分享到朋友圈」",
+    "byReceipt": "按收据",
+    "byPayer": "按付款人",
+    "paidBy": "由{name}付款",
+    "unassignedPayer": "未指定付款人",
+    "receipts": "张收据"
   },
   "receiptCard": {
     "deleteReceipt": "删除",
