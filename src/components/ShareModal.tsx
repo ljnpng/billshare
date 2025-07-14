@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Copy, X, MessageCircle, ExternalLink, Check } from 'lucide-react';
+import { Copy, X, MessageCircle, ExternalLink, Check, Image, Download } from 'lucide-react';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -8,7 +8,10 @@ interface ShareModalProps {
   shareUrl: string;
   onCopyLink: () => void;
   onOpenInBrowser: () => void;
+  onGenerateImage: () => void;
+  onDownloadImage: () => void;
   copySuccess: boolean;
+  imageGenerating: boolean;
 }
 
 const ShareModal: React.FC<ShareModalProps> = ({
@@ -17,7 +20,10 @@ const ShareModal: React.FC<ShareModalProps> = ({
   shareUrl,
   onCopyLink,
   onOpenInBrowser,
-  copySuccess
+  onGenerateImage,
+  onDownloadImage,
+  copySuccess,
+  imageGenerating
 }) => {
   const t = useTranslations('summaryStep');
   const tCommon = useTranslations('common');
@@ -25,7 +31,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" data-share-modal>
       {/* 背景遮罩 */}
       <div 
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -41,6 +47,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             title={tCommon('close')}
+            data-close-modal
           >
             <X className="h-5 w-5 text-gray-500" />
           </button>
@@ -81,6 +88,38 @@ const ShareModal: React.FC<ShareModalProps> = ({
             </button>
             
             
+            {/* 生成图片 */}
+            <button
+              onClick={onGenerateImage}
+              className={`w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium transition-all ${
+                imageGenerating 
+                  ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                  : 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100'
+              }`}
+              disabled={imageGenerating}
+            >
+              {imageGenerating ? (
+                <div className="animate-spin h-5 w-5 border-2 border-green-500 border-t-transparent rounded-full" />
+              ) : (
+                <Image className="h-5 w-5" aria-hidden="true" />
+              )}
+              {imageGenerating ? t('generatingImage') : t('generateImage')}
+            </button>
+            
+            {/* 下载图片 */}
+            <button
+              onClick={onDownloadImage}
+              className={`w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium transition-all ${
+                imageGenerating 
+                  ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                  : 'bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100'
+              }`}
+              disabled={imageGenerating}
+            >
+              <Download className="h-5 w-5" />
+              {t('downloadImage')}
+            </button>
+
             {/* 浏览器打开 */}
             <button
               onClick={onOpenInBrowser}

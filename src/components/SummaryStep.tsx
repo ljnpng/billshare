@@ -6,6 +6,7 @@ import { useAppStore } from '../store';
 import confetti from 'canvas-confetti';
 import ShareModal from './ShareModal';
 import { convertUsdToCny } from '../lib/currencyService';
+import { copyBillImageToClipboard, downloadBillImage } from '../lib/imageGenerator';
 
 const SummaryStep: React.FC = () => {
   const params = useParams();
@@ -19,6 +20,7 @@ const SummaryStep: React.FC = () => {
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [imageGenerating, setImageGenerating] = useState(false);
   
   const billSummary = getBillSummary();
 
@@ -143,6 +145,51 @@ const SummaryStep: React.FC = () => {
     const shareUrl = getShareUrl();
     if (shareUrl) {
       window.open(shareUrl, '_blank');
+    }
+  };
+
+  const handleGenerateImage = async () => {
+    if (!billSummary) return;
+    
+    setImageGenerating(true);
+    try {
+      const locale = params.locale as string;
+      const shareUrl = getShareUrl();
+      const success = await copyBillImageToClipboard(billSummary, locale, shareUrl);
+      
+      if (success) {
+        // 触发成功特效
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#10B981', '#059669', '#047857', '#065F46'],
+          shapes: ['square', 'circle'],
+          scalar: 0.8
+        });
+        
+        // 自动关闭分享弹窗
+        setShowShareModal(false);
+      }
+    } catch (error) {
+      console.error('Failed to generate image:', error);
+    } finally {
+      setImageGenerating(false);
+    }
+  };
+
+  const handleDownloadImage = async () => {
+    if (!billSummary) return;
+    
+    setImageGenerating(true);
+    try {
+      const locale = params.locale as string;
+      const shareUrl = getShareUrl();
+      await downloadBillImage(billSummary, locale, undefined, shareUrl);
+    } catch (error) {
+      console.error('Failed to download image:', error);
+    } finally {
+      setImageGenerating(false);
     }
   };
 
@@ -284,6 +331,7 @@ const SummaryStep: React.FC = () => {
                             <button
                                 onClick={() => toggleReceipt(receipt.id)}
                                 className="w-full flex justify-between items-center p-4 text-left"
+                                data-receipt-toggle={receipt.id}
                             >
                                 <span className="font-medium">{receipt.name}</span>
                                 <div className="flex items-center">
@@ -465,7 +513,10 @@ const SummaryStep: React.FC = () => {
         shareUrl={getShareUrl()}
         onCopyLink={handleModalCopyLink}
         onOpenInBrowser={handleOpenInBrowser}
+        onGenerateImage={handleGenerateImage}
+        onDownloadImage={handleDownloadImage}
         copySuccess={copySuccess}
+        imageGenerating={imageGenerating}
       />
     </div>
   );
