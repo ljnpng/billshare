@@ -10,6 +10,8 @@ AI-powered receipt splitting application built with Next.js 14.
 
 Demo: https://billshare.amoy.day
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare&env=AI_PROVIDER,CLAUDE_API_KEY,GROQ_API_KEY,REDIS_HOST,REDIS_PORT,REDIS_PASSWORD&envDescription=Configure%20your%20AI%20provider%20and%20Redis%20credentials&envLink=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare%23environment-variables)
+
 ## Features
 
 - AI receipt recognition (Claude 3.5 Haiku / Groq Llama Vision)
