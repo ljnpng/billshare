@@ -77,7 +77,7 @@
     "noValidItems": "未识别到任何有效的商品项目（商品名称不能为空）"
   },
   "app": {
-    "title": "AAP费用分摊",
+    "title": "BillShare 智能费用分摊",
     "description": "智能分摊餐费、税费和小费，让每个人都支付合理的份额"
   },
   "steps": {

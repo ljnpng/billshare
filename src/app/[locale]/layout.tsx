@@ -23,7 +23,7 @@ export async function generateMetadata({
   }
   
   return {
-    title: messages.app?.title || 'AAP Bill Splitter',
+    title: messages.app?.title || 'BillShare',
     description: messages.app?.description || 'Smart bill splitting for meals, taxes, and tips',
   };
 }

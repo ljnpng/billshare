@@ -544,7 +544,7 @@ export const useAppStore = create<AppStore>()(
     })
     ),
     {
-      name: 'aapay-store'
+      name: 'billshare-store'
     }
   )
 );

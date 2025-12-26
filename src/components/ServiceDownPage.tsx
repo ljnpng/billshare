@@ -104,7 +104,7 @@ export default function ServiceDownPage({ message }: ServiceDownPageProps) {
         <div className="pt-6 border-t border-gray-200">
           <div className="text-xs text-gray-400 space-y-1">
             <p>如果问题持续存在，请联系技术支持</p>
-            <p>状态页面: <span className="text-blue-500">status.aapay.app</span></p>
+            <p>状态页面: <span className="text-blue-500">status.billshare.app</span></p>
           </div>
         </div>
       </div>

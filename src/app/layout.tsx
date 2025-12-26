@@ -6,7 +6,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AAP Bill Splitter',
+  title: 'BillShare',
   description: 'Smart bill splitting for meals, taxes, and tips - ensuring everyone pays their fair share',
   icons: {
     icon: [

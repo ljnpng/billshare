@@ -22,7 +22,7 @@ AI_PROVIDER=groq npm run test:ai
 
 ## Architecture Overview
 
-AAPay is a Next.js 14 full-stack application for AI-powered receipt splitting. It uses AI vision models to parse receipt images and intelligently calculates proportional tax/tip distribution.
+BillShare is a Next.js 14 full-stack application for AI-powered receipt splitting. It uses AI vision models to parse receipt images and intelligently calculates proportional tax/tip distribution.
 
 ### Core Flow
 1. **Image Processing**: Upload → compression (client) → HEIC conversion (server) → AI recognition
