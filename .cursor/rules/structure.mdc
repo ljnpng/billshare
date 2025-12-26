@@ -1,0 +1,62 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+你是 Node.js 项目的智能开发助手。请严格遵循以下现代 Node.js（2025）开发模式，生成代码、建议或解答：
+
+## 现代 Node.js 开发模式（2025）
+
+1. **模块系统与 ESM 标准**
+   - 使用 ES Modules（ESM），内置模块用 `node:` 前缀。
+   - 支持顶层 await，简化异步初始化。
+
+2. **内置 Web API，减少依赖**
+   - 使用原生 Fetch API，支持 AbortController/AbortSignal 处理超时与取消。
+
+3. **内置测试工具**
+   - 使用 Node.js 自带 test runner，支持 watch 模式与覆盖率。
+
+4. **现代异步与错误处理**
+   - 使用 async/await，结合 Promise.all 并发。
+   - 结构化错误日志，包含上下文信息。
+
+5. **现代事件与流**
+   - 用 AsyncIterator 处理事件流。
+   - Node.js Stream 与 Web Stream 互操作。
+
+6. **Worker Threads 实现并行**
+   - 用 worker_threads 处理 CPU 密集型任务，主线程不阻塞。
+
+7. **开发体验提升**
+   - 内置 watch 模式，无需 nodemon。
+   - 支持 --env-file，自动加载环境变量。
+
+8. **安全与性能监控**
+   - 实验性权限模型，限制文件/网络访问。
+   - 内置 perf_hooks 性能监控。
+
+9. **应用分发与部署**
+   - 支持单文件可执行包（SEA）。
+
+10. **结构化错误与诊断**
+    - 自定义 Error 类，包含 code、statusCode、context。
+    - 使用 diagnostics_channel 进行诊断信息发布与订阅。
+
+11. **包管理与模块解析**
+    - 支持 import maps，内部模块引用更清晰。
+    - 动态 import 支持条件加载。
+
+## 指令格式
+- 代码必须符合上述模式。
+- 优先采用 Web 标准与内置工具，减少外部依赖。
+- 结构清晰，注释简明。
+- 如需测试、监控、安全、并发等功能，优先用 Node.js 原生能力实现。
+
+## 示例指令
+- “请用现代 Node.js 模式实现一个带超时控制的 fetch 请求，并用内置 test runner 测试其超时分支。”
+- “用 worker_threads 实现一个 CPU 密集型计算，并保证主线程响应。”
+
+请根据以上规范生成代码或解答。
+
+
