@@ -133,16 +133,12 @@
       @apply h-12 px-3 text-base;
     }
 
-    .card {
-      @apply rounded;
-    }
-
     .card-header {
-      @apply p-4;
+      @apply pb-3;
     }
 
     .card-content {
-      @apply p-4 pt-0;
+      @apply pt-4;
     }
   }
   
@@ -204,20 +200,15 @@
   }
   
   .card {
-    @apply rounded border border-gray-200 bg-white;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .card:hover {
-    @apply border-gray-300;
+    @apply bg-transparent;
   }
 
   .card-header {
-    @apply flex flex-col space-y-2 p-6;
+    @apply flex flex-col space-y-2 pb-4 border-b border-gray-200;
   }
 
   .card-content {
-    @apply p-6 pt-0;
+    @apply pt-6;
   }
 
   .card-title {
