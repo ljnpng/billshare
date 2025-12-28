@@ -66,7 +66,7 @@ const AssignStep: React.FC = () => {
         
         <div className="card-content">
           {/* 进度指示 */}
-          <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-200/60">
+          <div className="mb-8 p-6 bg-blue-50 rounded border border-blue-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <CheckCircle className="h-6 w-6 text-blue-600 mr-3" />
@@ -75,7 +75,7 @@ const AssignStep: React.FC = () => {
                 </span>
               </div>
               {getAssignedItemsCount() === allItems.length && (
-                <span className="text-sm text-green-600 font-semibold bg-green-100 px-3 py-1 rounded-full">
+                <span className="text-sm text-green-600 font-semibold bg-green-100 px-3 py-1 rounded border border-green-200">
                   {t('allAssigned')}
                 </span>
               )}
@@ -89,7 +89,7 @@ const AssignStep: React.FC = () => {
               {people.map(person => {
                 const info = getPersonAssignmentInfo(person.id);
                 return (
-                  <div key={person.id} className="p-4 bg-white rounded-xl shadow-sm border border-gray-200/60 hover:shadow-md transition-shadow">
+                  <div key={person.id} className="p-4 bg-white rounded border border-gray-200 hover:border-gray-300 transition-all">
                     <div className="flex items-center mb-3">
                       <div 
                         className="person-color"
@@ -111,11 +111,11 @@ const AssignStep: React.FC = () => {
             {receipts.map(receipt => (
               <div key={receipt.id}>
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">{receipt.name}</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">{receipt.name}</h3>
                   <p className="text-subtitle mt-1">{t('itemsCount', { count: receipt.items.length })}</p>
                 </div>
-                <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/40 border border-gray-200/60 overflow-hidden">
-                  <div className="divide-y divide-gray-200/60">
+                <div className="bg-white rounded border border-gray-200 overflow-hidden">
+                  <div className="divide-y divide-gray-200">
                     {receipt.items.map((item) => (
                       <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors duration-200">
                         <div className="flex items-start justify-between mb-3">
@@ -156,10 +156,10 @@ const AssignStep: React.FC = () => {
                             <button
                               key={person.id}
                               onClick={() => handlePersonToggle(item.id, person.id)}
-                              className={`p-3 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ease-in-out transform hover:scale-105 ${
+                              className={`p-3 rounded border-2 flex items-center justify-center transition-all duration-200 ease-in-out ${
                                 item.assignedTo.includes(person.id)
-                                  ? 'border-blue-500 bg-blue-100 text-blue-800 shadow-md'
-                                  : 'border-gray-200 bg-white hover:border-gray-400 hover:shadow-sm'
+                                  ? 'border-blue-600 bg-blue-100 text-blue-800'
+                                  : 'border-gray-300 bg-white hover:border-gray-400'
                               }`}
                               aria-pressed={item.assignedTo.includes(person.id)}
                               aria-label={t('togglePersonFor', { 

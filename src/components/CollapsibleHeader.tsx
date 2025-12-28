@@ -65,9 +65,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
   // 移除自动折叠逻辑，完全由用户控制
 
   return (
-    <div className={`bg-white border-b sticky top-0 z-20 transition-all duration-300 ${
-      isCollapsed ? 'shadow-sm' : 'shadow-md'
-    }`}>
+    <div className={`bg-white border-b sticky top-0 z-20 transition-all duration-300`}>
       <div className="max-w-5xl mx-auto px-4">
         {/* 折叠状态 - 只显示薄薄的条 */}
         {isCollapsed && (
@@ -77,14 +75,14 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
               <button
                 onClick={handleCreateNewBill}
                 disabled={isCreatingSession}
-                className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 hover:bg-green-200 transition-colors text-sm text-green-700 hover:text-green-800 shadow-sm disabled:opacity-50"
+                className="flex items-center gap-1 px-2 py-1 rounded bg-green-100 hover:bg-green-200 transition-colors text-sm text-green-700 hover:text-green-800 border border-green-200 disabled:opacity-50"
                 title={tCommon('newBill')}
               >
                 <Plus className={`h-3 w-3 ${isCreatingSession ? 'animate-spin' : ''}`} />
               </button>
               <button
                 onClick={onToggle}
-                className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors text-sm text-blue-700 hover:text-blue-800 shadow-sm"
+                className="flex items-center gap-2 px-3 py-1 rounded bg-blue-100 hover:bg-blue-200 transition-colors text-sm text-blue-700 hover:text-blue-800 border border-blue-200"
               >
                 <ChevronDown className="h-4 w-4" />
                 <span>{t('title')}</span>
@@ -107,7 +105,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
                 <button
                   onClick={handleCreateNewBill}
                   disabled={isCreatingSession}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-100 hover:bg-green-200 transition-colors text-green-700 hover:text-green-800 disabled:opacity-50"
+                  className="flex items-center gap-2 px-3 py-2 rounded bg-green-100 hover:bg-green-200 transition-colors text-green-700 hover:text-green-800 border border-green-200 disabled:opacity-50"
                   title={tCommon('newBill')}
                 >
                   <Plus className={`h-4 w-4 ${isCreatingSession ? 'animate-spin' : ''}`} />
@@ -116,7 +114,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
                 <LanguageSwitcher />
                 <button
                   onClick={onToggle}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-800"
+                  className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-800 border border-gray-200"
                   title={tHeader('collapseTitle')}
                 >
                   <ChevronUp className="h-4 w-4" />

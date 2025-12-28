@@ -81,14 +81,14 @@ const InputStep: React.FC = () => {
                   type="button"
                   onClick={handleUploadClick}
                   disabled={isAiProcessing}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium text-sm shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm border border-purple-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
                   <span>{isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}</span>
                 </button>
-                <button 
-                  onClick={() => addReceipt(tCommon('receipt'))} 
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium text-sm shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transform hover:scale-105 transition-all duration-200"
+                <button
+                  onClick={() => addReceipt(tCommon('receipt'))}
+                  className="inline-flex items-center justify-center px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm border border-blue-600 transition-all duration-200"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   <span>{t('manualAdd')}</span>
@@ -107,7 +107,7 @@ const InputStep: React.FC = () => {
         
         {/* 错误提示和重试组件 */}
         {error && (
-          <div className="mx-6 mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+          <div className="mx-6 mb-4 p-4 bg-red-50 border border-red-200 rounded">
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
@@ -117,14 +117,14 @@ const InputStep: React.FC = () => {
                   <button
                     onClick={handleRetry}
                     disabled={isAiProcessing}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-200 text-red-800 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center px-3 py-1.5 rounded bg-red-100 hover:bg-red-200 text-red-800 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <RotateCcw className="h-4 w-4 mr-1.5" />
                     {tAI('retry')}
                   </button>
                   <button
                     onClick={handleDismissError}
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition-colors"
+                    className="inline-flex items-center px-3 py-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition-colors"
                   >
                     {tAI('dismiss')}
                   </button>
@@ -144,7 +144,7 @@ const InputStep: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 sm:py-20 border-2 border-dashed border-gray-300 rounded-2xl bg-gray-50/50">
+            <div className="text-center py-12 sm:py-20 border-2 border-dashed border-gray-300 rounded bg-gray-50">
               <Receipt className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 sm:mb-6 text-gray-400" />
               <h3 className="text-lg sm:text-xl font-bold text-gray-700 mb-2">{t('emptyStateTitle')}</h3>
               <p className="text-description text-sm sm:text-base mb-6 sm:mb-8 px-4">{t('emptyStateDescription')}</p>
@@ -152,14 +152,14 @@ const InputStep: React.FC = () => {
                 <button
                   onClick={handleUploadClick}
                   disabled={isAiProcessing}
-                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold text-base sm:text-lg shadow-xl shadow-purple-500/30 hover:shadow-purple-500/50 transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded bg-purple-600 hover:bg-purple-700 text-white font-semibold text-base sm:text-lg border border-purple-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
                   {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
                 </button>
-                <button 
-                  onClick={() => addReceipt(tCommon('receipt'))} 
-                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold text-base sm:text-lg shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-200"
+                <button
+                  onClick={() => addReceipt(tCommon('receipt'))}
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base sm:text-lg border border-blue-600 transition-all duration-200"
                 >
                   <Plus className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
                   {t('manualAdd')}
