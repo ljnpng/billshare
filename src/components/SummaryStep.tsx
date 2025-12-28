@@ -309,11 +309,11 @@ const SummaryStep: React.FC = () => {
                                                     {item.assignedTo.map(personId => {
                                                         const person = billSummary.people.find(p => p.id === personId);
                                                         return person ? (
-                                                            <div 
+                                                            <div
                                                                 key={personId}
-                                                                className="flex items-center gap-1 px-2 py-1 bg-white rounded-full text-xs border"
+                                                                className="flex items-center gap-1 px-2 py-1 bg-white rounded text-xs border border-gray-200"
                                                             >
-                                                                <div 
+                                                                <div
                                                                     className="w-2 h-2 rounded-full"
                                                                     style={{ backgroundColor: person.color }}
                                                                 />

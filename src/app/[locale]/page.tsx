@@ -147,10 +147,10 @@ export default function Home() {
             <LanguageSwitcher />
           </div>
           <div className="mb-4 sm:mb-6 pt-8 sm:pt-0">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900">
               {t('app.title')}
             </h1>
-            <div className="mt-2 sm:mt-3 mx-auto w-12 sm:w-16 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+            <div className="mt-2 sm:mt-3 mx-auto w-12 sm:w-16 h-1 bg-blue-600"></div>
           </div>
           <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
             {t('app.description')}
