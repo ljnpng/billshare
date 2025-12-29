@@ -144,7 +144,7 @@ const InputStep: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 sm:py-20 border-2 border-dashed border-gray-300 rounded bg-gray-50">
+            <div className="text-center py-12 sm:py-20 border-2 border-dashed border-gray-300">
               <Receipt className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 sm:mb-6 text-gray-400" />
               <h3 className="text-lg sm:text-xl font-bold text-gray-700 mb-2">{t('emptyStateTitle')}</h3>
               <p className="text-description text-sm sm:text-base mb-6 sm:mb-8 px-4">{t('emptyStateDescription')}</p>

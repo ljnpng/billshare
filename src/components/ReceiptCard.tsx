@@ -145,8 +145,8 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
 
 
   return (
-    <div className="bg-white rounded border border-gray-200 overflow-hidden">
-      <div className="p-6 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+    <div className="pb-8 border-b border-gray-200">
+      <div className="pb-4 border-b border-gray-200 flex justify-between items-center">
         {!isEditingName ? (
           <div className="flex items-center group">
             <h2 className="text-2xl font-bold text-gray-900">{receipt.name}</h2>
@@ -205,7 +205,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
           <Trash2 className="h-5 w-5" />
         </button>
       </div>
-      <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-5 gap-6 sm:gap-8">
+      <div className="pt-6 grid grid-cols-1 md:grid-cols-5 gap-6 sm:gap-8">
         {/* Left: Item Entry */}
         <div className="md:col-span-3">
           <form onSubmit={handleAddItem} className="mb-6">
@@ -238,9 +238,9 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
               </div>
             </div>
           </form>
-          <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+          <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
             {receipt.items.length > 0 ? receipt.items.map((item) => (
-              <div key={item.id} className="bg-gray-50 p-3 rounded hover:bg-gray-100 transition-colors">
+              <div key={item.id} className="p-3 border-l-2 border-gray-200 hover:border-blue-400 hover:bg-gray-50 transition-all">
                 {editingItemId === item.id ? (
                   // 编辑模式
                   <div className="flex items-center gap-3 flex-1">
@@ -361,7 +361,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
               <div id={`tip-help-${receipt.id}`} className="sr-only">{t('tipHelpText')}</div>
             </div>
           </div>
-          <div className="bg-gray-50 rounded p-4 mt-6">
+          <div className="pt-4 mt-6 border-t border-gray-200">
             <div className="space-y-3">
               <div className="flex justify-between text-sm"><span className="text-gray-600">{tCommon('subtotal')}:</span> <span className="font-semibold">${receipt.subtotal.toFixed(2)}</span></div>
               <div className="flex justify-between text-sm"><span className="text-gray-600">{tCommon('tax')}:</span> <span className="font-semibold">${receipt.tax.toFixed(2)}</span></div>

@@ -66,16 +66,16 @@ const AssignStep: React.FC = () => {
         
         <div className="card-content">
           {/* 进度指示 */}
-          <div className="mb-8 p-6 bg-blue-50 rounded border border-blue-200">
+          <div className="mb-8 pb-6 border-b-2 border-blue-600">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <CheckCircle className="h-6 w-6 text-blue-600 mr-3" />
-                <span className="text-base font-semibold text-blue-800">
+                <span className="text-base font-semibold text-gray-900">
                   {t('progressText', { assigned: getAssignedItemsCount(), total: allItems.length })}
                 </span>
               </div>
               {getAssignedItemsCount() === allItems.length && (
-                <span className="text-sm text-green-600 font-semibold bg-green-100 px-3 py-1 rounded border border-green-200">
+                <span className="text-sm text-green-600 font-semibold bg-green-50 px-3 py-1 rounded border border-green-300">
                   {t('allAssigned')}
                 </span>
               )}
@@ -89,7 +89,7 @@ const AssignStep: React.FC = () => {
               {people.map(person => {
                 const info = getPersonAssignmentInfo(person.id);
                 return (
-                  <div key={person.id} className="p-4 bg-white rounded border border-gray-200 hover:border-gray-300 transition-all">
+                  <div key={person.id} className="p-4 border-l-2 border-gray-300 hover:border-blue-500 transition-all">
                     <div className="flex items-center mb-3">
                       <div 
                         className="person-color"
@@ -109,13 +109,12 @@ const AssignStep: React.FC = () => {
           {/* 条目分配列表 */}
           <div className="space-y-8">
             {receipts.map(receipt => (
-              <div key={receipt.id}>
+              <div key={receipt.id} className="pb-8 border-b border-gray-200 last:border-b-0">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-gray-900">{receipt.name}</h3>
                   <p className="text-subtitle mt-1">{t('itemsCount', { count: receipt.items.length })}</p>
                 </div>
-                <div className="bg-white rounded border border-gray-200 overflow-hidden">
-                  <div className="divide-y divide-gray-200">
+                <div className="space-y-0 divide-y divide-gray-200">
                     {receipt.items.map((item) => (
                       <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors duration-200">
                         <div className="flex items-start justify-between mb-3">
@@ -184,7 +183,6 @@ const AssignStep: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              </div>
             ))}
           </div>
         </div>
