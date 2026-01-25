@@ -26,6 +26,7 @@
     "react-dom": "^18.2.0",
     "redis": "^5.8.2",
     "uuid": "^11.1.0",
+    "vercel": "^50.5.0",
     "zustand": "^4.4.4"
   },
   "devDependencies": {

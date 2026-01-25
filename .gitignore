@@ -68,3 +68,4 @@ coverage/
 # 打包分析
 stats.html
 bundle-analyzer-report.html
+.env*.local
