@@ -121,13 +121,13 @@ export const validateAIResponse = (response: any): boolean => {
     }
   }
 
-  // 检查金额数据
+  // 检查金额数据（仅警告，不阻止验证，由 cleanAndValidate 处理无效值）
   const amountFields = ['subtotal', 'tax', 'tip', 'total'];
   for (const field of amountFields) {
     if (response[field] !== undefined && response[field] !== null) {
       if (typeof response[field] !== 'number' || response[field] < 0) {
-        aiLogger.warn(`验证失败：${field} 不是有效的数字`);
-        return false;
+        aiLogger.warn(`金额字段 ${field} 无效，将被忽略: ${response[field]}`);
+        // 不返回 false，让 cleanAndValidate 处理无效值
       }
     }
   }
