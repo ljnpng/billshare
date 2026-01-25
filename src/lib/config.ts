@@ -1,7 +1,7 @@
 // AI 服务配置
 export const AI_CONFIG = {
   // AI 服务提供商选择
-  provider: (process.env.AI_PROVIDER || 'claude') as 'claude' | 'groq',
+  // provider 配置已移至服务端 (/api/recognize)，浏览器不应访问此值
   
   // Claude API 配置
   claude: {

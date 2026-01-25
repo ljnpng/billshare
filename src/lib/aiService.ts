@@ -69,7 +69,8 @@ const preprocessImage = async (file: File): Promise<File> => {
 };
 
 /**
- * 调用Next.js API路由进行识别
+ * 调用统一的 API 路由进行识别
+ * Provider 选择由服务端决定，浏览器无需知道
  */
 const callRecognitionAPI = async (file: File, locale: string = 'zh'): Promise<AIProcessingResult> => {
   try {
@@ -77,12 +78,9 @@ const callRecognitionAPI = async (file: File, locale: string = 'zh'): Promise<AI
     formData.append('file', file);
     formData.append('locale', locale);
 
-    // 根据配置选择 API 端点
-    const apiEndpoint = AI_CONFIG.provider === 'groq' ? '/api/groq/recognize' : '/api/claude/recognize';
-    
-    aiLogger.info(`使用 ${AI_CONFIG.provider} 服务进行识别，语言: ${locale}`);
+    aiLogger.info(`开始 AI 识别，语言: ${locale}`);
 
-    const response = await fetch(apiEndpoint, {
+    const response = await fetch('/api/recognize', {
       method: 'POST',
       body: formData,
     });
