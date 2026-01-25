@@ -56,12 +56,12 @@ export default function Home() {
 
   // 显示加载状态
   return (
-    <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-luxury-rich font-sans p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">正在创建新会话...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto mb-4"></div>
+            <p className="text-luxury-darkGold">正在创建新会话...</p>
           </div>
         </div>
       </div>

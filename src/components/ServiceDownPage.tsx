@@ -17,7 +17,7 @@ export default function ServiceDownPage({ message }: ServiceDownPageProps) {
   const defaultMessage = "服务暂时不可用，我们正在努力修复中。请稍后再试。"
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-luxury-rich flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 text-center">
         {/* Service Down Icon */}
         <div className="mx-auto w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center">

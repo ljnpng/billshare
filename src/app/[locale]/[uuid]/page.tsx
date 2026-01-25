@@ -179,12 +179,12 @@ export default function SessionPage({}: SessionPageProps) {
   // 显示加载状态
   if (isLoading) {
     return (
-      <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8">
+      <div className="min-h-screen bg-luxury-rich font-sans p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">正在加载会话数据...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto mb-4"></div>
+              <p className="text-luxury-darkGold">正在加载会话数据...</p>
             </div>
           </div>
         </div>
@@ -200,7 +200,7 @@ export default function SessionPage({}: SessionPageProps) {
   // 显示会话错误
   if (sessionError) {
     return (
-      <div className="min-h-screen font-sans p-4 sm:p-6 lg:p-8">
+      <div className="min-h-screen bg-luxury-rich font-sans p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-12">
             <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
@@ -223,7 +223,7 @@ export default function SessionPage({}: SessionPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-luxury-rich">
       {/* 可折叠头部 */}
       <CollapsibleHeader
         uuid={uuid}
