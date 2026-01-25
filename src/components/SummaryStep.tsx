@@ -19,8 +19,11 @@ const SummaryStep: React.FC = () => {
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  
+
   const billSummary = getBillSummary();
+  const people = useAppStore(state => state.people);
+  const receipts = useAppStore(state => state.receipts);
+  const isBillOnlyMode = people.length < 2;
 
   // Load exchange rate on component mount
   useEffect(() => {
@@ -179,7 +182,7 @@ const SummaryStep: React.FC = () => {
       console.error('创建新会话错误:', error);
       // 如果创建新会话失败，回退到原来的重置逻辑
       reset();
-      setCurrentStep('setup');
+      setCurrentStep('input');
     } finally {
       setIsCreatingSession(false);
     }
@@ -189,6 +192,86 @@ const SummaryStep: React.FC = () => {
     setCurrentStep('assign');
   };
 
+  const handleBackToInput = () => {
+    setCurrentStep('input');
+  };
+
+  // Bill-only mode: simple bill display without split
+  if (isBillOnlyMode) {
+    const grandTotal = receipts.reduce((sum, r) => sum + r.total, 0);
+
+    return (
+      <div className="max-w-4xl mx-auto">
+        {/* Bill cards */}
+        <div className="space-y-6 mb-6">
+          {receipts.map(receipt => (
+            <div key={receipt.id} className="card">
+              <div className="card-header">
+                <h3 className="card-title">{receipt.name}</h3>
+              </div>
+              <div className="card-content">
+                <div className="space-y-2">
+                  {receipt.items.map(item => (
+                    <div key={item.id} className="flex justify-between">
+                      <span className="text-gray-600">{item.name}</span>
+                      <CurrencyDisplay usdAmount={item.originalPrice || 0} />
+                    </div>
+                  ))}
+                </div>
+                <div className="border-t pt-3 mt-3 space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">{tCommon('subtotal')}</span>
+                    <span>${receipt.subtotal.toFixed(2)}</span>
+                  </div>
+                  {receipt.tax > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">{tCommon('tax')}</span>
+                      <span>${receipt.tax.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {receipt.tip > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">{tCommon('tip')}</span>
+                      <span>${receipt.tip.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                    <span>{tCommon('total')}</span>
+                    <CurrencyDisplay usdAmount={receipt.total} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Grand total */}
+        {receipts.length > 1 && (
+          <div className="card mb-6">
+            <div className="card-content">
+              <div className="flex justify-between items-center text-xl font-bold">
+                <span>{t('grandTotal')}</span>
+                <CurrencyDisplay usdAmount={grandTotal} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Back button */}
+        <div className="flex justify-start">
+          <button
+            onClick={handleBackToInput}
+            className="btn btn-secondary btn-md"
+            aria-label={tCommon('back')}
+          >
+            <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Split mode: requires billSummary
   if (!billSummary) {
     return (
       <div className="max-w-2xl mx-auto">
@@ -197,7 +280,7 @@ const SummaryStep: React.FC = () => {
             <div className="text-center py-8">
               <p className="text-gray-500">{t('cannotGenerate')}</p>
               <button
-                onClick={() => setCurrentStep('setup')}
+                onClick={() => setCurrentStep('input')}
                 className="btn btn-primary btn-md mt-4"
                 aria-label={t('restartButton')}
               >
