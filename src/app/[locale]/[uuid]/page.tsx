@@ -245,7 +245,7 @@ export default function SessionPage({}: SessionPageProps) {
       />
 
       {/* Sticky 步骤指示器 - 内容区域顶部固定 */}
-      <div className={`sticky z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200/60 transition-all duration-300 ${
+      <div className={`sticky z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200/60 transition-[top] duration-300 ${
         isHeaderCollapsed ? 'top-12' : 'top-[84px]'
       }`}>
         <div className="max-w-5xl mx-auto px-4 py-3 sm:py-4">

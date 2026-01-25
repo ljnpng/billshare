@@ -62,7 +62,8 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded text-sm font-semibold ring-offset-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded text-sm font-semibold ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s;
   }
 
   .btn:focus-visible {
@@ -144,7 +145,7 @@
   
   .input {
     @apply flex h-12 w-full rounded border border-gray-300 bg-white px-4 py-3 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .input:focus-visible {
@@ -258,7 +259,7 @@
 
 .step-indicator {
   @apply relative flex items-center justify-center w-10 h-10 rounded-full text-sm font-semibold;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .step-indicator.active {
@@ -275,7 +276,7 @@
 
 .step-line {
   @apply flex-1 h-0.5 bg-gray-300;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .step-line.active {
@@ -353,11 +354,41 @@
 /* Sticky 步骤指示器样式 */
 .sticky-step-container {
   @apply w-full;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* iOS Safari 兼容性优化 */
 .sticky-step-container {
   -webkit-transform: translateZ(0);
   will-change: transform;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animation-fade-in,
+  .animation-slide-up,
+  .animation-scale-in,
+  .animation-bounce-in {
+    animation: none;
+  }
+
+  .step-indicator,
+  .step-line,
+  .sticky-step-container,
+  .input,
+  .btn {
+    transition: none;
+  }
+
+  .loading-spinner {
+    animation-duration: 1.5s;
+  }
+
+  .animate-pulse {
+    animation: none;
+  }
+
+  .animate-spin {
+    animation-duration: 2s;
+  }
 } 
