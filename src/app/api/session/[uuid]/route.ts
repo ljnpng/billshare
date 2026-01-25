@@ -94,7 +94,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const persistData: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'> = {
       people: data.people || [],
       receipts: data.receipts || [],
-      currentStep: data.currentStep || 'setup'
+      currentStep: data.currentStep || 'input'
     };
     
     // 保存到数据库

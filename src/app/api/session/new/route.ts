@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const initialData: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'> = {
       people: [],
       receipts: [],
-      currentStep: 'setup'
+      currentStep: 'input'
     };
     
     // 保存到数据库

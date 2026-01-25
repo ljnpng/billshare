@@ -46,7 +46,7 @@ const sessionMiddlewareImpl: SessionMiddlewareImpl = (f, name) => (set, get, sto
         const persistData = {
           people: (state as any).people || [],
           receipts: (state as any).receipts || [],
-          currentStep: (state as any).currentStep || 'setup'
+          currentStep: (state as any).currentStep || 'input'
         };
         
         const response = await fetch(`/api/session/${sessionId}`, {
@@ -122,7 +122,7 @@ const sessionMiddlewareImpl: SessionMiddlewareImpl = (f, name) => (set, get, sto
       set({
         people: data.people || [],
         receipts: data.receipts || [],
-        currentStep: data.currentStep || 'setup',
+        currentStep: data.currentStep || 'input',
         isSessionLoaded: true,
       } as any);
     },
