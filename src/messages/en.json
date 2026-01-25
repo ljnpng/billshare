@@ -103,11 +103,17 @@
     "aiRecognition": "AI Recognition",
     "aiRecognizing": "Recognizing...",
     "manualAdd": "Manual Add",
-    "emptyStateTitle": "Start adding your first bill",
-    "emptyStateDescription": "All items will be displayed here.",
+    "orManualInput": "or enter manually",
+    "emptyStateTitle": "Upload a receipt to start",
+    "emptyStateDescription": "Take a photo or upload a receipt image, AI will automatically recognize the bill",
     "nextButton": "Next: Assign Items",
     "assignItems": "Assign Items",
-    "uploadReceipt": "Upload receipt image"
+    "viewSummary": "View Summary",
+    "uploadReceipt": "Upload receipt image",
+    "splitSection": "Need to split? Add people",
+    "splitSectionExpanded": "Split with",
+    "addPersonPlaceholder": "Enter person's name",
+    "backToHome": "Back to Home"
   },
   "assignStep": {
     "title": "Assign Items",
@@ -132,7 +138,9 @@
   },
   "summaryStep": {
     "title": "Cost Summary",
+    "titleBillOnly": "Bill Details",
     "description": "Here's the final amount each person needs to pay",
+    "descriptionBillOnly": "Here are your bill details",
     "billOverview": "Bill Overview",
     "personalSplit": "Personal Split",
     "receiptDetails": "Receipt Details",
