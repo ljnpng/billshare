@@ -61,7 +61,7 @@ export interface BillSummary {
 export interface AppState {
   people: Person[];
   receipts: Receipt[];
-  currentStep: 'setup' | 'input' | 'assign' | 'summary';
+  currentStep: 'input' | 'assign' | 'summary';
   isLoading: boolean;
   error: string | null;
   isAiProcessing: boolean; // 新增：AI处理状态
