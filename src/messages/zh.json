@@ -103,11 +103,17 @@
     "aiRecognition": "AI识别",
     "aiRecognizing": "识别中...",
     "manualAdd": "手动添加",
-    "emptyStateTitle": "开始添加你的第一份账单",
-    "emptyStateDescription": "所有条目都会在这里显示。",
+    "orManualInput": "或 手动输入",
+    "emptyStateTitle": "上传账单开始",
+    "emptyStateDescription": "拍照或上传收据图片，AI 将自动识别账单内容",
     "nextButton": "下一步：分配条目",
-    "assignItems": "分配条目",
-    "uploadReceipt": "上传收据图片"
+    "assignItems": "分配账单",
+    "viewSummary": "查看汇总",
+    "uploadReceipt": "上传收据图片",
+    "splitSection": "需要分账？点击添加人员",
+    "splitSectionExpanded": "分账人员",
+    "addPersonPlaceholder": "输入人员姓名",
+    "backToHome": "返回首页"
   },
   "assignStep": {
     "title": "分配条目",
@@ -132,7 +138,9 @@
   },
   "summaryStep": {
     "title": "费用汇总",
+    "titleBillOnly": "账单明细",
     "description": "以下是每个人需要支付的最终金额",
+    "descriptionBillOnly": "以下是您的账单明细",
     "billOverview": "账单总览",
     "personalSplit": "人员分摊",
     "receiptDetails": "收据明细",
