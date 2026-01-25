@@ -40,15 +40,15 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, variant = 'h
           return (
             <React.Fragment key={step.id}>
               <div className="flex flex-col items-center group">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200 ${
                   status === 'completed' ? 'bg-green-500 text-white shadow-lg shadow-green-500/25' :
                   status === 'active' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25' :
                   'bg-gray-200 text-gray-500'
                 } group-hover:scale-110`}>
                   {status === 'completed' ? (
-                    <Check className="h-4 w-4" />
+                    <Check className="h-4 w-4" aria-hidden="true" />
                   ) : (
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4" aria-hidden="true" />
                   )}
                 </div>
                 {status === 'active' && (
@@ -84,14 +84,14 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, variant = 'h
                 <div className="flex flex-col items-center group min-w-0 flex-1">
                   <div className={`step-indicator ${status} group-hover:scale-105 transition-transform`}>
                     {status === 'completed' ? (
-                      <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <Check className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                     ) : (
-                      <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                     )}
                   </div>
                   <span className={`mt-2 sm:mt-3 text-xs sm:text-sm font-semibold transition-colors text-center ${
-                    status === 'active' ? 'text-blue-600' : 
-                    status === 'completed' ? 'text-green-600' : 
+                    status === 'active' ? 'text-blue-600' :
+                    status === 'completed' ? 'text-green-600' :
                     'text-gray-500'
                   }`}>
                     <span className="hidden sm:inline">{step.label}</span>
@@ -101,10 +101,10 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, variant = 'h
                     <div className="mt-1 sm:mt-2 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-600 rounded-full animate-pulse"></div>
                   )}
                 </div>
-                
+
                 {index < steps.length - 1 && (
                   <div className={`step-line ${
-                    getStepStatus(index + 1) === 'completed' || 
+                    getStepStatus(index + 1) === 'completed' ||
                     getStepStatus(index + 1) === 'active' ? 'active' : ''
                   }`} />
                 )}
@@ -122,16 +122,16 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, variant = 'h
         {steps.map((step, index) => {
           const status = getStepStatus(index);
           const Icon = step.icon;
-          
+
           return (
             <React.Fragment key={step.id}>
               <div className="flex justify-center group relative">
-                <div className={`step-indicator ${status} group-hover:scale-110 transition-all duration-200 relative`}
+                <div className={`step-indicator ${status} group-hover:scale-110 transition-transform duration-200 relative`}
                      title={step.label}>
                   {status === 'completed' ? (
-                    <Check className="h-5 w-5" />
+                    <Check className="h-5 w-5" aria-hidden="true" />
                   ) : (
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-5 w-5" aria-hidden="true" />
                   )}
                   {status === 'active' && (
                     <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
@@ -166,9 +166,9 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, variant = 'h
             <div className="flex flex-col items-center group min-w-0 flex-1">
               <div className={`step-indicator ${status} group-hover:scale-105 transition-transform`}>
                 {status === 'completed' ? (
-                  <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <Check className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                 ) : (
-                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                 )}
               </div>
               <span className={`mt-2 sm:mt-3 text-xs sm:text-sm font-semibold transition-colors text-center ${

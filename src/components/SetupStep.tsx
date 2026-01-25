@@ -39,6 +39,8 @@ const SetupStep: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
               <input
                 type="text"
+                name="personName"
+                autoComplete="name"
                 value={newPersonName}
                 onChange={(e) => setNewPersonName(e.target.value)}
                 placeholder={t('addPersonPlaceholder')}
@@ -49,9 +51,9 @@ const SetupStep: React.FC = () => {
                 type="submit"
                 className="btn btn-primary btn-md whitespace-nowrap"
                 disabled={!newPersonName.trim()}
-                title={t('addButton')}
+                aria-label={t('addButton')}
               >
-                <Plus className="h-5 w-5" />
+                <Plus className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
           </form>
@@ -60,7 +62,7 @@ const SetupStep: React.FC = () => {
           <div className="space-y-3">
             {people.length === 0 ? (
               <div className="text-center py-6 sm:py-8 text-gray-500">
-                <User className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 text-gray-300" />
+                <User className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 text-gray-300" aria-hidden="true" />
                 <p className="text-sm sm:text-base">{t('noPeopleMessage')}</p>
                 <p className="text-xs sm:text-sm">{t('noPeopleSubMessage')}</p>
               </div>
@@ -81,9 +83,9 @@ const SetupStep: React.FC = () => {
                     onClick={() => removePerson(person.id)}
                     className="btn btn-ghost btn-sm ml-3 flex-shrink-0 text-red-500 hover:bg-red-50 hover:text-red-600"
                     disabled={people.length <= 1}
-                    title={tCommon('delete')}
+                    aria-label={`${tCommon('delete')} ${person.name}`}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </button>
                 </div>
               ))
@@ -105,9 +107,9 @@ const SetupStep: React.FC = () => {
               onClick={handleNext}
               className="btn btn-primary btn-lg"
               disabled={people.length < 2}
-              title={t('nextButton')}
+              aria-label={t('nextButton')}
             >
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
         </div>

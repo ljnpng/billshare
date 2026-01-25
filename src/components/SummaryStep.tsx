@@ -199,9 +199,9 @@ const SummaryStep: React.FC = () => {
               <button
                 onClick={() => setCurrentStep('setup')}
                 className="btn btn-primary btn-md mt-4"
-                title={t('restartButton')}
+                aria-label={t('restartButton')}
               >
-                <RotateCcw className="h-5 w-5" />
+                <RotateCcw className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -292,6 +292,7 @@ const SummaryStep: React.FC = () => {
                                     </div>
                                     <ChevronDown
                                         className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                        aria-hidden="true"
                                     />
                                 </div>
                             </button>
@@ -434,27 +435,27 @@ const SummaryStep: React.FC = () => {
           <button
             onClick={handleEditAssignments}
             className="btn btn-secondary btn-sm sm:btn-md"
-            title={t('modifyAssignments')}
+            aria-label={t('modifyAssignments')}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-5 w-5" aria-hidden="true" />
           </button>
           <button
             onClick={handleShareClick}
-            className="btn btn-secondary btn-sm sm:btn-md hover:scale-105 transition-all"
+            className="btn btn-secondary btn-sm sm:btn-md hover:scale-105 transition-transform"
             disabled={!sessionId}
-            title={t('shareLink')}
+            aria-label={t('shareLink')}
           >
-            <Share2 className="h-5 w-5" />
+            <Share2 className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
-        
+
         <button
           onClick={handleStartOver}
           className="btn btn-primary btn-sm sm:btn-md"
           disabled={isCreatingSession}
-          title={isCreatingSession ? tCommon('loading') : t('startOver')}
+          aria-label={isCreatingSession ? tCommon('loading') : t('startOver')}
         >
-          <RotateCcw className={`h-5 w-5 ${isCreatingSession ? 'animate-spin' : ''}`} />
+          <RotateCcw className={`h-5 w-5 ${isCreatingSession ? 'animate-spin' : ''}`} aria-hidden="true" />
         </button>
       </div>
 

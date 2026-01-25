@@ -35,6 +35,7 @@
   "receiptCard": {
     "receiptNamePlaceholder": "Enter receipt name...",
     "finishEdit": "Finish editing",
+    "editReceiptName": "Edit receipt name",
     "itemNamePlaceholder": "Item name",
     "priceEditPlaceholder": "Price",
     "saveEditTitle": "Save (Enter)",
@@ -105,7 +106,8 @@
     "emptyStateTitle": "Start adding your first bill",
     "emptyStateDescription": "All items will be displayed here.",
     "nextButton": "Next: Assign Items",
-    "assignItems": "Assign Items"
+    "assignItems": "Assign Items",
+    "uploadReceipt": "Upload receipt image"
   },
   "assignStep": {
     "title": "Assign Items",

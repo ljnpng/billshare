@@ -61,13 +61,13 @@ const AutoSaveIndicator: React.FC = () => {
   const getStatusIcon = () => {
     switch (saveStatus) {
       case 'saving':
-        return <Cloud className="h-3 w-3 animate-pulse" />;
+        return <Cloud className="h-3 w-3 animate-pulse" aria-hidden="true" />;
       case 'saved':
-        return <Check className="h-3 w-3 text-green-600" />;
+        return <Check className="h-3 w-3 text-green-600" aria-hidden="true" />;
       case 'error':
-        return <CloudOff className="h-3 w-3 text-red-600" />;
+        return <CloudOff className="h-3 w-3 text-red-600" aria-hidden="true" />;
       default:
-        return <Cloud className="h-3 w-3 text-gray-400" />;
+        return <Cloud className="h-3 w-3 text-gray-400" aria-hidden="true" />;
     }
   };
 
@@ -85,7 +85,7 @@ const AutoSaveIndicator: React.FC = () => {
   };
 
   return (
-    <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border transition-all duration-200 ${getStatusColor()}`}>
+    <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border transition-colors duration-200 ${getStatusColor()}`}>
       {getStatusIcon()}
       <span className="hidden sm:inline">{getStatusText()}</span>
       <span className="sm:hidden">

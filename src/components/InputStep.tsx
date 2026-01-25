@@ -81,16 +81,16 @@ const InputStep: React.FC = () => {
                   type="button"
                   onClick={handleUploadClick}
                   disabled={isAiProcessing}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm border border-purple-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm border border-purple-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Sparkles className="h-4 w-4 mr-2" />
+                  <Sparkles className="h-4 w-4 mr-2" aria-hidden="true" />
                   <span>{isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}</span>
                 </button>
                 <button
                   onClick={() => addReceipt(tCommon('receipt'))}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm border border-blue-600 transition-all duration-200"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm border border-blue-600 transition-colors duration-200"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
                   <span>{t('manualAdd')}</span>
                 </button>
               </div>
@@ -101,7 +101,8 @@ const InputStep: React.FC = () => {
             type="file"
             accept="image/*"
             onChange={handleFileUpload}
-            className="hidden"
+            className="sr-only"
+            aria-label={t('uploadReceipt')}
           />
         </div>
         
@@ -109,7 +110,7 @@ const InputStep: React.FC = () => {
         {error && (
           <div className="mx-6 mb-4 p-4 bg-red-50 border border-red-200 rounded">
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
               <div className="flex-1 min-w-0">
                 <h4 className="text-sm font-medium text-red-800 mb-1">{tAI('errorTitle')}</h4>
                 <p className="text-sm text-red-700 mb-3">{getErrorMessage(error)}</p>
@@ -119,7 +120,7 @@ const InputStep: React.FC = () => {
                     disabled={isAiProcessing}
                     className="inline-flex items-center px-3 py-1.5 rounded bg-red-100 hover:bg-red-200 text-red-800 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <RotateCcw className="h-4 w-4 mr-1.5" />
+                    <RotateCcw className="h-4 w-4 mr-1.5" aria-hidden="true" />
                     {tAI('retry')}
                   </button>
                   <button
@@ -145,23 +146,23 @@ const InputStep: React.FC = () => {
             </div>
           ) : (
             <div className="text-center py-12 sm:py-20 border-2 border-dashed border-gray-300">
-              <Receipt className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 sm:mb-6 text-gray-400" />
+              <Receipt className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 sm:mb-6 text-gray-400" aria-hidden="true" />
               <h3 className="text-lg sm:text-xl font-bold text-gray-700 mb-2">{t('emptyStateTitle')}</h3>
               <p className="text-description text-sm sm:text-base mb-6 sm:mb-8 px-4">{t('emptyStateDescription')}</p>
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center px-4">
                 <button
                   onClick={handleUploadClick}
                   disabled={isAiProcessing}
-                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded bg-purple-600 hover:bg-purple-700 text-white font-semibold text-base sm:text-lg border border-purple-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded bg-purple-600 hover:bg-purple-700 text-white font-semibold text-base sm:text-lg border border-purple-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
+                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" aria-hidden="true" />
                   {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
                 </button>
                 <button
                   onClick={() => addReceipt(tCommon('receipt'))}
-                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base sm:text-lg border border-blue-600 transition-all duration-200"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base sm:text-lg border border-blue-600 transition-colors duration-200"
                 >
-                  <Plus className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
+                  <Plus className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" aria-hidden="true" />
                   {t('manualAdd')}
                 </button>
               </div>
@@ -172,16 +173,16 @@ const InputStep: React.FC = () => {
 
       {/* 导航按钮 */}
       <div className="flex justify-between gap-3 mt-6">
-        <button onClick={handleBack} className="btn btn-secondary btn-md sm:btn-lg" title={tCommon('previous')}>
-          <ArrowLeft className="h-5 w-5" />
+        <button onClick={handleBack} className="btn btn-secondary btn-md sm:btn-lg" aria-label={tCommon('previous')}>
+          <ArrowLeft className="h-5 w-5" aria-hidden="true" />
         </button>
         <button
           onClick={handleNext}
           className="btn btn-primary btn-md sm:btn-lg"
           disabled={totalItems === 0}
-          title={t('nextButton')}
+          aria-label={t('nextButton')}
         >
-          <ArrowRight className="h-5 w-5" />
+          <ArrowRight className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
     </div>

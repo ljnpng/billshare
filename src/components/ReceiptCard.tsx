@@ -150,29 +150,30 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
         {!isEditingName ? (
           <div className="flex items-center group">
             <h2 className="text-2xl font-bold text-gray-900">{receipt.name}</h2>
-            <button onClick={() => setIsEditingName(true)} className="ml-3 text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-all">
-              <Edit className="h-4 w-4" />
+            <button onClick={() => setIsEditingName(true)} className="ml-3 text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-label={t('editReceiptName')}>
+              <Edit className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         ) : (
           <div className="flex items-center">
             <input
               type="text"
+              name="receiptName"
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
-                
+
                 // 清除之前的定时器
                 if (nameDebounceTimer) {
                   clearTimeout(nameDebounceTimer);
                 }
-                
+
                 // 即时保存名称变化
                 if (e.target.value.trim() && e.target.value.trim() !== receipt.name) {
                   const timer = setTimeout(() => {
                     updateReceiptName(receipt.id, e.target.value.trim());
                   }, 800); // 800ms 防抖
-                  
+
                   setNameDebounceTimer(timer);
                 }
               }}
@@ -196,13 +197,13 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
               }}
               placeholder={t('receiptNamePlaceholder')}
             />
-            <button onClick={() => setIsEditingName(false)} className="ml-2 btn btn-ghost btn-sm text-gray-400 hover:text-gray-600" title={t('finishEdit')}>
-                <Check className="h-4 w-4" />
+            <button onClick={() => setIsEditingName(false)} className="ml-2 btn btn-ghost btn-sm text-gray-400 hover:text-gray-600" aria-label={t('finishEdit')}>
+                <Check className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         )}
-        <button onClick={() => removeReceipt(receipt.id)} className="btn btn-ghost btn-sm text-red-500 hover:bg-red-50 hover:text-red-600" title={t('deleteReceipt')}>
-          <Trash2 className="h-5 w-5" />
+        <button onClick={() => removeReceipt(receipt.id)} className="btn btn-ghost btn-sm text-red-500 hover:bg-red-50 hover:text-red-600" aria-label={t('deleteReceipt')}>
+          <Trash2 className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
       <div className="pt-6 grid grid-cols-1 md:grid-cols-5 gap-6 sm:gap-8">
@@ -212,6 +213,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
+                name="itemName"
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
                 placeholder={t('addItemPlaceholder')}
@@ -223,6 +225,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
                    <input
                     type="number"
+                    name="itemPrice"
                     value={newItemPrice}
                     onChange={(e) => setNewItemPrice(e.target.value)}
                     placeholder={t('pricePlaceholder')}
@@ -232,20 +235,21 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                     aria-label={tCommon('price')}
                   />
                 </div>
-                <button type="submit" className="btn btn-primary h-12 w-12 flex-shrink-0 p-0" disabled={!newItemName.trim() || !newItemPrice} title={t('addItemButton')}>
-                  <PlusCircle className="h-5 w-5" />
+                <button type="submit" className="btn btn-primary h-12 w-12 flex-shrink-0 p-0" disabled={!newItemName.trim() || !newItemPrice} aria-label={t('addItemButton')}>
+                  <PlusCircle className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
             </div>
           </form>
           <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
             {receipt.items.length > 0 ? receipt.items.map((item) => (
-              <div key={item.id} className="p-3 border-l-2 border-gray-200 hover:border-blue-400 hover:bg-gray-50 transition-all">
+              <div key={item.id} className="p-3 border-l-2 border-gray-200 hover:border-blue-400 hover:bg-gray-50 transition-colors">
                 {editingItemId === item.id ? (
                   // 编辑模式
                   <div className="flex items-center gap-3 flex-1">
                     <input
                       type="text"
+                      name="editItemName"
                       value={editingItemName}
                       onChange={(e) => setEditingItemName(e.target.value)}
                       className="input input-sm flex-1"
@@ -260,9 +264,10 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                       }}
                     />
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
                       <input
                         type="number"
+                        name="editItemPrice"
                         value={editingItemPrice}
                         onChange={(e) => setEditingItemPrice(e.target.value)}
                         className="input input-sm w-24 pl-9"
@@ -285,11 +290,11 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                         }}
                       />
                     </div>
-                    <button onClick={handleSaveEdit} className="btn btn-ghost btn-xs text-green-600 hover:text-green-700" title={t('saveEditTitle')}>
-                      <Check className="h-4 w-4" />
+                    <button onClick={handleSaveEdit} className="btn btn-ghost btn-xs text-green-600 hover:text-green-700" aria-label={t('saveEditTitle')}>
+                      <Check className="h-4 w-4" aria-hidden="true" />
                     </button>
-                    <button onClick={handleCancelEdit} className="btn btn-ghost btn-xs text-gray-400 hover:text-gray-600" title={t('cancelEditTitle')}>
-                      <X className="h-4 w-4" />
+                    <button onClick={handleCancelEdit} className="btn btn-ghost btn-xs text-gray-400 hover:text-gray-600" aria-label={t('cancelEditTitle')}>
+                      <X className="h-4 w-4" aria-hidden="true" />
                     </button>
                   </div>
                 ) : (
@@ -300,19 +305,19 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                       <span className={`text-sm font-semibold mr-2 ${item.originalPrice !== null ? 'text-gray-700' : 'text-red-500'}`}>
                         {item.originalPrice !== null ? `$${item.originalPrice.toFixed(2)}` : t('needsPriceMessage')}
                       </span>
-                      <button 
-                        onClick={() => handleEditItem(item.id, item.name, item.originalPrice)} 
+                      <button
+                        onClick={() => handleEditItem(item.id, item.name, item.originalPrice)}
                         className="btn btn-ghost btn-xs text-gray-400 hover:text-blue-600 min-h-0 h-8 w-8 p-0"
-                        title={t('editTitle')}
+                        aria-label={`${t('editTitle')} ${item.name}`}
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-4 w-4" aria-hidden="true" />
                       </button>
-                      <button 
-                        onClick={() => removeItem(receipt.id, item.id)} 
+                      <button
+                        onClick={() => removeItem(receipt.id, item.id)}
                         className="btn btn-ghost btn-xs text-gray-400 hover:text-red-600 min-h-0 h-8 w-8 p-0"
-                        title={t('deleteTitle')}
+                        aria-label={`${t('deleteTitle')} ${item.name}`}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                       </button>
                     </div>
                   </div>
@@ -331,6 +336,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                  <input
                   id={`tax-${receipt.id}`}
                   type="number"
+                  name="tax"
                   value={taxAmount}
                   onChange={(e) => handleTaxChange(e.target.value)}
                   className="input w-full pl-9"
@@ -349,6 +355,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                  <input
                   id={`tip-${receipt.id}`}
                   type="number"
+                  name="tip"
                   value={tipAmount}
                   onChange={(e) => handleTipChange(e.target.value)}
                   className="input w-full pl-9"
