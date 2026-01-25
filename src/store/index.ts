@@ -89,7 +89,7 @@ export const useAppStore = create<AppStore>()(
         // Initial state
       people: [],
       receipts: [],
-      currentStep: 'setup',
+      currentStep: 'input',
       isLoading: false,
       error: null,
       isAiProcessing: false,
@@ -116,7 +116,7 @@ export const useAppStore = create<AppStore>()(
           const persistData = {
             people: state.people || [],
             receipts: state.receipts || [],
-            currentStep: state.currentStep || 'setup'
+            currentStep: state.currentStep || 'input'
           };
           
           const response = await fetch(`/api/session/${sessionId}`, {
@@ -178,7 +178,7 @@ export const useAppStore = create<AppStore>()(
         set({
           people: data.people || [],
           receipts: data.receipts || [],
-          currentStep: data.currentStep || 'setup',
+          currentStep: data.currentStep || 'input',
           isSessionLoaded: true,
         });
       },
@@ -532,7 +532,7 @@ export const useAppStore = create<AppStore>()(
       reset: () => set({
         people: [],
         receipts: [],
-        currentStep: 'setup',
+        currentStep: 'input',
         isLoading: false,
         error: null,
         isAiProcessing: false,
