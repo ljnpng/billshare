@@ -4,8 +4,6 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { useParams, useRouter } from 'next/navigation'
 import { useAppStore } from '../../../store'
-import StepIndicator from '../../../components/StepIndicator'
-import SetupStep from '../../../components/SetupStep'
 import InputStep from '../../../components/InputStep'
 import AssignStep from '../../../components/AssignStep'
 import SummaryStep from '../../../components/SummaryStep'
@@ -24,10 +22,10 @@ export default function SessionPage({}: SessionPageProps) {
   const [isServiceDown, setIsServiceDown] = useState(false)
   const [serviceDownMessage, setServiceDownMessage] = useState<string>('')
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(true)
-  
-  const { 
-    currentStep, 
-    error, 
+
+  const {
+    currentStep,
+    error,
     people,
     receipts,
     setCurrentStep,
@@ -39,11 +37,6 @@ export default function SessionPage({}: SessionPageProps) {
 
   const uuid = params.uuid as string
   const locale = params.locale as string
-
-  // 使用 useCallback 包装 toggle 函数避免重复创建
-  const handleHeaderToggle = useCallback(() => {
-    setIsHeaderCollapsed(!isHeaderCollapsed)
-  }, [isHeaderCollapsed])
 
   // 验证UUID格式
   const isValidUUID = (uuid: string): boolean => {
@@ -142,42 +135,36 @@ export default function SessionPage({}: SessionPageProps) {
     loadSessionData()
   }, [uuid, sessionId, isSessionLoaded, loadSession, setSessionId, createNewSession])
 
-  // 步骤逻辑保持与原页面一致
+  // 步骤逻辑
   useEffect(() => {
     if (isLoading || sessionError) return
 
-    // 如果人员少于2人，强制留在设置步骤
-    if (currentStep !== 'setup' && people.length < 2) {
-      setCurrentStep('setup')
-      return
-    }
-
-    // 如果没有收据，也停留在输入步骤
-    if (currentStep !== 'setup' && receipts.length === 0) {
-      setCurrentStep('input')
-      return
-    }
-    
     const totalItems = receipts.reduce((sum, r) => sum + r.items.length, 0)
 
-    // 如果进入分配步骤，但没有条目，则退回输入步骤
+    // If on assign step but no items, go back to input
     if (currentStep === 'assign' && totalItems === 0) {
       setCurrentStep('input')
       return
     }
 
-    // 如果进入汇总步骤，但有条目未分配，则退回分配步骤
-    const isAllAssigned = receipts.flatMap(r => r.items).every(item => item.assignedTo.length > 0)
-    if (currentStep === 'summary' && totalItems > 0 && !isAllAssigned) {
-      setCurrentStep('assign')
+    // If on assign step but less than 2 people, go to summary (bill-only mode)
+    if (currentStep === 'assign' && people.length < 2) {
+      setCurrentStep('summary')
       return
+    }
+
+    // If on summary with 2+ people, check all items are assigned
+    if (currentStep === 'summary' && people.length >= 2) {
+      const isAllAssigned = receipts.flatMap(r => r.items).every(item => item.assignedTo.length > 0)
+      if (totalItems > 0 && !isAllAssigned) {
+        setCurrentStep('assign')
+        return
+      }
     }
   }, [currentStep, people.length, receipts, setCurrentStep, isLoading, sessionError])
 
   const renderStep = () => {
     switch (currentStep) {
-      case 'setup':
-        return <SetupStep />
       case 'input':
         return <InputStep />
       case 'assign':
@@ -185,7 +172,7 @@ export default function SessionPage({}: SessionPageProps) {
       case 'summary':
         return <SummaryStep />
       default:
-        return <SetupStep />
+        return <InputStep />
     }
   }
 
@@ -241,24 +228,8 @@ export default function SessionPage({}: SessionPageProps) {
       <CollapsibleHeader
         uuid={uuid}
         isCollapsed={isHeaderCollapsed}
-        onToggle={handleHeaderToggle}
+        onToggle={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
       />
-
-      {/* Sticky 步骤指示器 - 内容区域顶部固定 */}
-      <div className={`sticky z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200/60 transition-[top] duration-300 ${
-        isHeaderCollapsed ? 'top-12' : 'top-[84px]'
-      }`}>
-        <div className="max-w-5xl mx-auto px-4 py-3 sm:py-4">
-          {/* 移动端紧凑版本 */}
-          <div className="block sm:hidden">
-            <StepIndicator currentStep={currentStep} variant="compact" />
-          </div>
-          {/* 桌面端完整版本 */}
-          <div className="hidden sm:block">
-            <StepIndicator currentStep={currentStep} variant="sticky" />
-          </div>
-        </div>
-      </div>
 
       <div className="max-w-5xl mx-auto px-4">
         {error && (
@@ -266,7 +237,7 @@ export default function SessionPage({}: SessionPageProps) {
             <ErrorAlert message={error} />
           </div>
         )}
-        
+
         <main className="animation-fade-in py-6">
           {renderStep()}
         </main>
