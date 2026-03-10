@@ -13,7 +13,7 @@ export const AI_CONFIG = {
 
   // Groq API 配置
   groq: {
-    model: 'meta-llama/llama-4-scout-17b-16e-instruct', // Groq 视觉模型
+    model: 'openai/gpt-oss-120b',
     maxTokens: 4096,
     temperature: 0.3,
   },
