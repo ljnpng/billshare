@@ -14,7 +14,8 @@ const LanguageSwitcher: React.FC = () => {
   const currentLocale = params.locale as string
 
   const switchLanguage = (locale: string) => {
-    // 替换当前路径中的语言代码
+    // Persist the explicit choice so future visits override browser detection.
+    document.cookie = `NEXT_LOCALE=${locale}; Path=/; Max-Age=31536000; SameSite=Lax`
     const newPath = pathname.replace(`/${currentLocale}`, `/${locale}`)
     router.push(newPath)
   }
@@ -48,4 +49,4 @@ const LanguageSwitcher: React.FC = () => {
   )
 }
 
-export default LanguageSwitcher 
+export default LanguageSwitcher

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sessionService, isRedisHealthy, DatabaseErrorType } from '../../../../lib/database';
+import { sessionService, isStorageHealthy, DatabaseErrorType } from '../../../../lib/database';
 import { AppState } from '../../../../types';
 
 interface RouteParams {

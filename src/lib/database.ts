@@ -1,297 +1,169 @@
 import { createClient, RedisClientType } from 'redis';
-import { AppState } from "../types";
+import { AppState } from '../types';
 
-// Error types for better error handling
 export enum DatabaseErrorType {
-  CONNECTION_ERROR = "CONNECTION_ERROR",
-  SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE",
-  INVALID_DATA = "INVALID_DATA",
-  SESSION_NOT_FOUND = "SESSION_NOT_FOUND",
-  UNKNOWN_ERROR = "UNKNOWN_ERROR",
+  CONNECTION_ERROR = 'CONNECTION_ERROR',
+  SERVICE_UNAVAILABLE = 'SERVICE_UNAVAILABLE',
+  INVALID_DATA = 'INVALID_DATA',
+  SESSION_NOT_FOUND = 'SESSION_NOT_FOUND',
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
-export interface DatabaseError {
-  type: DatabaseErrorType;
-  message: string;
-  originalError?: Error;
+export interface DatabaseError { type: DatabaseErrorType; message: string; originalError?: Error }
+export interface DatabaseResult<T> { success: boolean; data?: T; error?: DatabaseError }
+
+export interface StorageAdapter {
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string, ttlSeconds: number): Promise<void>;
+  delete(key: string): Promise<boolean>;
+  healthCheck(): Promise<void>;
 }
 
-export interface DatabaseResult<T> {
-  success: boolean;
-  data?: T;
-  error?: DatabaseError;
-}
+class MemoryStorage implements StorageAdapter {
+  private readonly values = new Map<string, { value: string; expiresAt: number }>();
 
-let redis: RedisClientType | null = null;
-
-export function getRedis(): RedisClientType {
-  if (!redis) {
-    const host = process.env.REDIS_HOST?.trim();
-    const port = process.env.REDIS_PORT?.trim();
-    const password = process.env.REDIS_PASSWORD?.trim();
-
-    if (!host || !port || !password) {
-      throw new Error(
-        "Missing Redis configuration. Please set REDIS_HOST, REDIS_PORT and REDIS_PASSWORD environment variables.",
-      );
+  async get(key: string) {
+    const entry = this.values.get(key);
+    if (!entry || entry.expiresAt <= Date.now()) {
+      this.values.delete(key);
+      return null;
     }
-
-    redis = createClient({
-      socket: {
-        host,
-        port: parseInt(port),
-      },
-      password,
-    });
-
-    redis.on('error', (err) => {
-      console.error('Redis connection error:', err);
-    });
+    return entry.value;
   }
 
-  return redis;
+  async set(key: string, value: string, ttlSeconds: number) {
+    this.values.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
+  }
+
+  async delete(key: string) { return this.values.delete(key); }
+  async healthCheck() {}
 }
 
-// Redis health check function
-export async function isRedisHealthy(): Promise<DatabaseResult<boolean>> {
-  try {
-    const redis = getRedis();
-    // Connect if not already connected
-    if (!redis.isOpen) {
-      await redis.connect();
+class RedisStorage implements StorageAdapter {
+  private client: RedisClientType | null = null;
+
+  private async getClient() {
+    if (!this.client) {
+      const host = process.env.REDIS_HOST?.trim();
+      const port = process.env.REDIS_PORT?.trim();
+      const password = process.env.REDIS_PASSWORD?.trim();
+      if (!host || !port || !password) throw new Error('Missing REDIS_HOST, REDIS_PORT or REDIS_PASSWORD');
+      this.client = createClient({ socket: { host, port: parseInt(port, 10) }, password });
+      this.client.on('error', (error) => console.error('Redis connection error:', error));
     }
-    // Simple ping test to check connectivity
-    await redis.ping();
-    return {
-      success: true,
-      data: true,
-    };
-  } catch (error) {
-    console.error("Redis health check failed:", error);
+    if (!this.client.isOpen) await this.client.connect();
+    return this.client;
+  }
 
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
+  async get(key: string) { return (await this.getClient()).get(key); }
+  async set(key: string, value: string, ttlSeconds: number) { await (await this.getClient()).setEx(key, ttlSeconds, value); }
+  async delete(key: string) { return (await (await this.getClient()).del(key)) > 0; }
+  async healthCheck() { await (await this.getClient()).ping(); }
+}
 
-    // Classify error types
-    let errorType = DatabaseErrorType.UNKNOWN_ERROR;
-    if (
-      errorMessage.includes("fetch") ||
-      errorMessage.includes("network") ||
-      errorMessage.includes("connection")
-    ) {
-      errorType = DatabaseErrorType.CONNECTION_ERROR;
-    } else if (
-      errorMessage.includes("service") ||
-      errorMessage.includes("unavailable")
-    ) {
-      errorType = DatabaseErrorType.SERVICE_UNAVAILABLE;
+class CloudflareKVStorage implements StorageAdapter {
+  private getConfig() {
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID?.trim();
+    const namespaceId = process.env.CLOUDFLARE_KV_NAMESPACE_ID?.trim();
+    const apiToken = process.env.CLOUDFLARE_API_TOKEN?.trim();
+    if (!accountId || !namespaceId || !apiToken) {
+      throw new Error('Missing CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_KV_NAMESPACE_ID or CLOUDFLARE_API_TOKEN');
     }
+    return { accountId, namespaceId, apiToken };
+  }
 
-    return {
-      success: false,
-      error: {
-        type: errorType,
-        message: errorMessage,
-        originalError: error instanceof Error ? error : new Error(errorMessage),
-      },
-    };
+  private async request(key: string, init?: RequestInit, ttlSeconds?: number) {
+    const { accountId, namespaceId, apiToken } = this.getConfig();
+    const base = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(accountId)}/storage/kv/namespaces/${encodeURIComponent(namespaceId)}/values/${encodeURIComponent(key)}`;
+    const url = ttlSeconds ? `${base}?expiration_ttl=${ttlSeconds}` : base;
+    return fetch(url, { ...init, headers: { Authorization: `Bearer ${apiToken}`, ...(init?.headers || {}) } });
+  }
+
+  async get(key: string) {
+    const response = await this.request(key);
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error(`Cloudflare KV read failed with status ${response.status}`);
+    return response.text();
+  }
+
+  async set(key: string, value: string, ttlSeconds: number) {
+    const response = await this.request(key, { method: 'PUT', body: value }, ttlSeconds);
+    if (!response.ok) throw new Error(`Cloudflare KV write failed with status ${response.status}`);
+  }
+
+  async delete(key: string) {
+    const response = await this.request(key, { method: 'DELETE' });
+    if (!response.ok && response.status !== 404) throw new Error(`Cloudflare KV delete failed with status ${response.status}`);
+    return response.status !== 404;
+  }
+
+  async healthCheck() {
+    const response = await this.request('__billshare_healthcheck__');
+    if (!response.ok && response.status !== 404) throw new Error(`Cloudflare KV health check failed with status ${response.status}`);
   }
 }
+
+function createStorage(): StorageAdapter {
+  const provider = (process.env.STORAGE_PROVIDER || 'memory').trim().toLowerCase();
+  if (provider === 'redis') return new RedisStorage();
+  if (provider === 'cloudflare') return new CloudflareKVStorage();
+  if (provider === 'memory') return new MemoryStorage();
+  throw new Error(`Unsupported STORAGE_PROVIDER: ${provider}`);
+}
+
+export const storage = createStorage();
+
+export async function isStorageHealthy(): Promise<DatabaseResult<boolean>> {
+  try { await storage.healthCheck(); return { success: true, data: true }; }
+  catch (error) { return failure('Storage health check failed', error); }
+}
+
+// Compatibility alias for existing API route imports.
+export const isRedisHealthy = isStorageHealthy;
 
 export interface SessionData {
   uuid: string;
-  data: Omit<AppState, "isLoading" | "error" | "isAiProcessing">; // 排除临时UI状态
+  data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>;
   createdAt: Date;
   updatedAt: Date;
 }
 
+const SESSION_TTL = 30 * 24 * 60 * 60;
+
 export class SessionService {
-  private redis: RedisClientType | null = null;
-  private readonly SESSION_TTL = 30 * 24 * 60 * 60; // 30天，秒为单位
-
-  constructor() {}
-
-  private async getRedisClient(): Promise<RedisClientType> {
-    if (!this.redis) {
-      this.redis = getRedis();
-    }
-    if (!this.redis.isOpen) {
-      await this.redis.connect();
-    }
-    return this.redis;
-  }
-
-  private getSessionKey(uuid: string): string {
-    return `session:${uuid}`;
-  }
+  private getSessionKey(uuid: string) { return `session:${uuid}`; }
 
   async getSession(uuid: string): Promise<DatabaseResult<SessionData>> {
     try {
-      const redis = await this.getRedisClient();
-      const sessionKey = this.getSessionKey(uuid);
-      const sessionData = await redis.get(sessionKey);
-
-      if (!sessionData) {
-        return {
-          success: false,
-          error: {
-            type: DatabaseErrorType.SESSION_NOT_FOUND,
-            message: `Session not found: ${uuid}`,
-          },
-        };
-      }
-
-      // Redis 可能返回对象或字符串，统一处理
-      const parsed =
-        typeof sessionData === "string" ? JSON.parse(sessionData) : sessionData;
-
-      const result = {
-        uuid,
-        data: parsed.data,
-        createdAt: new Date(parsed.createdAt),
-        updatedAt: new Date(parsed.updatedAt),
-      };
-
-      return {
-        success: true,
-        data: result,
-      };
-    } catch (error) {
-      console.error("Failed to get session:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-
-      // Classify error type
-      let errorType = DatabaseErrorType.UNKNOWN_ERROR;
-      if (
-        errorMessage.includes("fetch") ||
-        errorMessage.includes("network") ||
-        errorMessage.includes("connection")
-      ) {
-        errorType = DatabaseErrorType.CONNECTION_ERROR;
-      } else if (errorMessage.includes("JSON")) {
-        errorType = DatabaseErrorType.INVALID_DATA;
-      }
-
-      return {
-        success: false,
-        error: {
-          type: errorType,
-          message: errorMessage,
-          originalError:
-            error instanceof Error ? error : new Error(errorMessage),
-        },
-      };
-    }
+      const raw = await storage.get(this.getSessionKey(uuid));
+      if (!raw) return { success: false, error: { type: DatabaseErrorType.SESSION_NOT_FOUND, message: `Session not found: ${uuid}` } };
+      const parsed = JSON.parse(raw);
+      return { success: true, data: { uuid, data: parsed.data, createdAt: new Date(parsed.createdAt), updatedAt: new Date(parsed.updatedAt) } };
+    } catch (error) { return failure('Failed to get session', error, DatabaseErrorType.INVALID_DATA); }
   }
 
-  async saveSession(
-    uuid: string,
-    data: Omit<AppState, "isLoading" | "error" | "isAiProcessing">,
-  ): Promise<DatabaseResult<boolean>> {
+  async saveSession(uuid: string, data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>): Promise<DatabaseResult<boolean>> {
     try {
-      const redis = await this.getRedisClient();
-      const sessionKey = this.getSessionKey(uuid);
-      const now = new Date();
-
-      // 检查是否是新会话
-      const existingSession = await redis.get(sessionKey);
-      const createdAt = existingSession
-        ? typeof existingSession === "string"
-          ? JSON.parse(existingSession).createdAt
-          : (existingSession as any).createdAt
-        : now.toISOString();
-
-      const sessionData = {
-        data,
-        createdAt,
-        updatedAt: now.toISOString(),
-      };
-
-      // 设置数据并自动过期
-      await redis.setEx(
-        sessionKey,
-        this.SESSION_TTL,
-        JSON.stringify(sessionData),
-      );
-
-      return {
-        success: true,
-        data: true,
-      };
-    } catch (error) {
-      console.error("Failed to save session:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-
-      // Classify error type
-      let errorType = DatabaseErrorType.UNKNOWN_ERROR;
-      if (
-        errorMessage.includes("fetch") ||
-        errorMessage.includes("network") ||
-        errorMessage.includes("connection")
-      ) {
-        errorType = DatabaseErrorType.CONNECTION_ERROR;
-      }
-
-      return {
-        success: false,
-        error: {
-          type: errorType,
-          message: errorMessage,
-          originalError:
-            error instanceof Error ? error : new Error(errorMessage),
-        },
-      };
-    }
+      const key = this.getSessionKey(uuid);
+      const existing = await storage.get(key);
+      const createdAt = existing ? JSON.parse(existing).createdAt : new Date().toISOString();
+      await storage.set(key, JSON.stringify({ data, createdAt, updatedAt: new Date().toISOString() }), SESSION_TTL);
+      return { success: true, data: true };
+    } catch (error) { return failure('Failed to save session', error); }
   }
 
   async deleteSession(uuid: string): Promise<DatabaseResult<boolean>> {
-    try {
-      const redis = await this.getRedisClient();
-      const sessionKey = this.getSessionKey(uuid);
-      const result = await redis.del(sessionKey);
-
-      return {
-        success: true,
-        data: result > 0,
-      };
-    } catch (error) {
-      console.error("Failed to delete session:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-
-      // Classify error type
-      let errorType = DatabaseErrorType.UNKNOWN_ERROR;
-      if (
-        errorMessage.includes("fetch") ||
-        errorMessage.includes("network") ||
-        errorMessage.includes("connection")
-      ) {
-        errorType = DatabaseErrorType.CONNECTION_ERROR;
-      }
-
-      return {
-        success: false,
-        error: {
-          type: errorType,
-          message: errorMessage,
-          originalError:
-            error instanceof Error ? error : new Error(errorMessage),
-        },
-      };
-    }
+    try { return { success: true, data: await storage.delete(this.getSessionKey(uuid)) }; }
+    catch (error) { return failure('Failed to delete session', error); }
   }
 
-  async cleanupOldSessions(daysOld: number = 30): Promise<number> {
-    // Redis 自动处理过期，无需手动清理
-    // 此方法保留兼容性，但实际上不执行任何操作
-    console.log(
-      `Redis automatically handles session expiration after ${daysOld} days`,
-    );
-    return 0;
-  }
+  async cleanupOldSessions() { return 0; }
 }
 
-// 单例实例
+function failure<T>(operation: string, error: unknown, type = DatabaseErrorType.CONNECTION_ERROR): DatabaseResult<T> {
+  const message = error instanceof Error ? error.message : 'Unknown error';
+  console.error(`${operation}:`, error);
+  return { success: false, error: { type, message, originalError: error instanceof Error ? error : new Error(message) } };
+}
+
 export const sessionService = new SessionService();

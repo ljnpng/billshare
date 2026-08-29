@@ -8,7 +8,7 @@
 
 AI-powered receipt splitting application built with Next.js 14.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare&env=AI_PROVIDER,CLAUDE_API_KEY,GROQ_API_KEY,REDIS_HOST,REDIS_PORT,REDIS_PASSWORD&envDescription=Configure%20your%20AI%20provider%20and%20Redis%20credentials&envLink=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare%23environment-variables)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare&env=AI_PROVIDER,CLAUDE_API_KEY,GROQ_API_KEY,STORAGE_PROVIDER,CLOUDFLARE_ACCOUNT_ID,CLOUDFLARE_KV_NAMESPACE_ID,CLOUDFLARE_API_TOKEN,REDIS_HOST,REDIS_PORT,REDIS_PASSWORD&envDescription=Configure%20your%20AI%20provider%20and%20storage%20backend&envLink=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare%23environment-variables)
 
 ## Features
 
@@ -25,7 +25,7 @@ AI-powered receipt splitting application built with Next.js 14.
 Requirements:
 - Node.js 18+
 - Claude API key or Groq API key
-- Redis instance
+- A storage backend: local memory (default), Cloudflare KV, or Redis
 
 ```bash
 git clone https://github.com/ljnpng/billshare.git
@@ -41,6 +41,14 @@ npm run dev
 AI_PROVIDER=claude              # or groq (default: claude)
 CLAUDE_API_KEY=sk-ant-...       # required if using claude
 GROQ_API_KEY=gsk_...            # required if using groq
+STORAGE_PROVIDER=memory       # memory (default), cloudflare, or redis
+
+# Required for Cloudflare KV
+CLOUDFLARE_ACCOUNT_ID=your-account-id
+CLOUDFLARE_KV_NAMESPACE_ID=your-kv-namespace-id
+CLOUDFLARE_API_TOKEN=your-api-token
+
+# Required for Redis
 REDIS_HOST=your-redis-host
 REDIS_PORT=6379
 REDIS_PASSWORD=your-password
