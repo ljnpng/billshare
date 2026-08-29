@@ -23,7 +23,7 @@ const MinimalFooter: React.FC<MinimalFooterProps> = ({ showAutoSave = true }) =>
 
           {/* Center: Branding */}
           <div className="flex-1 text-center">
-            <span className="text-xs text-amber-700/60 font-medium tracking-wide">
+            <span className="text-xs text-gray-500 font-medium tracking-wide">
               {tApp('title')}
             </span>
           </div>

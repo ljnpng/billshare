@@ -7,35 +7,25 @@
     @apply border-gray-200;
   }
   body {
-    @apply text-gray-900;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    @apply bg-gray-50 text-gray-900;
+    font-family: 'Avenir Next', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
   }
 
-  /* Luxury gold background with currency pattern */
+  /* Keep the existing utility names for compatibility; surfaces are now flat. */
   .bg-luxury {
-    background:
-      /* Subtle gradient overlay for depth */
-      linear-gradient(135deg, rgba(212, 175, 55, 0.03) 0%, rgba(184, 134, 11, 0.06) 50%, rgba(212, 175, 55, 0.03) 100%),
-      /* Currency pattern - varied sizes (16px min to 32px max), light colors */
-      url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ctext x='10' y='35' font-family='Georgia, serif' font-size='32' fill='%23d4af37' fill-opacity='0.07'%3E$%3C/text%3E%3Ctext x='60' y='25' font-family='Georgia, serif' font-size='18' fill='%23b8860b' fill-opacity='0.06'%3E¥%3C/text%3E%3Ctext x='110' y='40' font-family='Georgia, serif' font-size='24' fill='%23d4af37' fill-opacity='0.055'%3E€%3C/text%3E%3Ctext x='160' y='30' font-family='Georgia, serif' font-size='16' fill='%23cd7f32' fill-opacity='0.05'%3E£%3C/text%3E%3Ctext x='35' y='80' font-family='Georgia, serif' font-size='20' fill='%23b8860b' fill-opacity='0.055'%3E₩%3C/text%3E%3Ctext x='90' y='90' font-family='Georgia, serif' font-size='28' fill='%23d4af37' fill-opacity='0.065'%3E$%3C/text%3E%3Ctext x='145' y='75' font-family='Georgia, serif' font-size='16' fill='%23b8860b' fill-opacity='0.05'%3E¥%3C/text%3E%3Ctext x='5' y='130' font-family='Georgia, serif' font-size='22' fill='%23cd7f32' fill-opacity='0.055'%3E€%3C/text%3E%3Ctext x='55' y='145' font-family='Georgia, serif' font-size='30' fill='%23d4af37' fill-opacity='0.06'%3E£%3C/text%3E%3Ctext x='120' y='135' font-family='Georgia, serif' font-size='18' fill='%23b8860b' fill-opacity='0.05'%3E$%3C/text%3E%3Ctext x='165' y='130' font-family='Georgia, serif' font-size='26' fill='%23d4af37' fill-opacity='0.06'%3E₩%3C/text%3E%3Ctext x='20' y='185' font-family='Georgia, serif' font-size='16' fill='%23b8860b' fill-opacity='0.05'%3E¥%3C/text%3E%3Ctext x='75' y='195' font-family='Georgia, serif' font-size='24' fill='%23cd7f32' fill-opacity='0.055'%3E€%3C/text%3E%3Ctext x='130' y='180' font-family='Georgia, serif' font-size='20' fill='%23d4af37' fill-opacity='0.055'%3E$%3C/text%3E%3Ctext x='175' y='190' font-family='Georgia, serif' font-size='16' fill='%23b8860b' fill-opacity='0.05'%3E£%3C/text%3E%3C/g%3E%3C/svg%3E"),
-      /* Base cream/champagne gradient */
-      linear-gradient(180deg, #f8f4eb 0%, #f5f0e6 50%, #f2ead8 100%);
-    background-attachment: fixed;
+    background: #f8fafc;
   }
 
-  /* Alternative: more prominent currency pattern */
   .bg-luxury-rich {
-    background:
-      /* Metallic sheen effect */
-      linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%),
-      /* Dense currency pattern - varied sizes (16px min to 36px max), subtle colors */
-      url("data:image/svg+xml,%3Csvg width='240' height='240' viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ctext x='10' y='40' font-family='Georgia, serif' font-size='36' fill='%23d4af37' fill-opacity='0.08'%3E$%3C/text%3E%3Ctext x='70' y='30' font-family='Georgia, serif' font-size='20' fill='%23b8860b' fill-opacity='0.06'%3E¥%3C/text%3E%3Ctext x='120' y='45' font-family='Georgia, serif' font-size='28' fill='%23d4af37' fill-opacity='0.065'%3E€%3C/text%3E%3Ctext x='180' y='35' font-family='Georgia, serif' font-size='16' fill='%23cd7f32' fill-opacity='0.055'%3E£%3C/text%3E%3Ctext x='215' y='50' font-family='Georgia, serif' font-size='24' fill='%23b8860b' fill-opacity='0.06'%3E₩%3C/text%3E%3Ctext x='35' y='95' font-family='Georgia, serif' font-size='22' fill='%23b8860b' fill-opacity='0.06'%3E₩%3C/text%3E%3Ctext x='95' y='100' font-family='Georgia, serif' font-size='32' fill='%23d4af37' fill-opacity='0.075'%3E$%3C/text%3E%3Ctext x='160' y='85' font-family='Georgia, serif' font-size='18' fill='%23cd7f32' fill-opacity='0.055'%3E¥%3C/text%3E%3Ctext x='205' y='105' font-family='Georgia, serif' font-size='26' fill='%23d4af37' fill-opacity='0.065'%3E€%3C/text%3E%3Ctext x='5' y='150' font-family='Georgia, serif' font-size='26' fill='%23cd7f32' fill-opacity='0.06'%3E€%3C/text%3E%3Ctext x='60' y='165' font-family='Georgia, serif' font-size='34' fill='%23d4af37' fill-opacity='0.07'%3E£%3C/text%3E%3Ctext x='130' y='155' font-family='Georgia, serif' font-size='16' fill='%23b8860b' fill-opacity='0.055'%3E$%3C/text%3E%3Ctext x='175' y='160' font-family='Georgia, serif' font-size='30' fill='%23d4af37' fill-opacity='0.07'%3E₩%3C/text%3E%3Ctext x='220' y='150' font-family='Georgia, serif' font-size='20' fill='%23cd7f32' fill-opacity='0.055'%3E¥%3C/text%3E%3Ctext x='25' y='215' font-family='Georgia, serif' font-size='18' fill='%23b8860b' fill-opacity='0.055'%3E¥%3C/text%3E%3Ctext x='80' y='225' font-family='Georgia, serif' font-size='28' fill='%23cd7f32' fill-opacity='0.065'%3E€%3C/text%3E%3Ctext x='145' y='210' font-family='Georgia, serif' font-size='24' fill='%23d4af37' fill-opacity='0.06'%3E$%3C/text%3E%3Ctext x='200' y='220' font-family='Georgia, serif' font-size='16' fill='%23b8860b' fill-opacity='0.05'%3E£%3C/text%3E%3C/g%3E%3C/svg%3E"),
-      /* Rich gold gradient base */
-      linear-gradient(180deg, #f7e7ce 0%, #f5e1c0 30%, #ecdbb0 70%, #e8d5a8 100%);
-    background-attachment: fixed;
+    background: #f8fafc;
+  }
+
+  /* Content card with glass effect */
+  .card-glass {
+    @apply bg-white border border-gray-200 rounded-md;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -415,4 +405,4 @@
   .animate-spin {
     animation-duration: 2s;
   }
-} 
+}

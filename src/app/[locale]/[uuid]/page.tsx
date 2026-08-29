@@ -8,7 +8,7 @@ import InputStep from '../../../components/InputStep'
 import AssignStep from '../../../components/AssignStep'
 import SummaryStep from '../../../components/SummaryStep'
 import ErrorAlert from '../../../components/ErrorAlert'
-import CollapsibleHeader from '../../../components/CollapsibleHeader'
+import MinimalFooter from '../../../components/MinimalFooter'
 import ServiceDownPage from '../../../components/ServiceDownPage'
 
 interface SessionPageProps {}
@@ -21,7 +21,6 @@ export default function SessionPage({}: SessionPageProps) {
   const [sessionError, setSessionError] = useState<string | null>(null)
   const [isServiceDown, setIsServiceDown] = useState(false)
   const [serviceDownMessage, setServiceDownMessage] = useState<string>('')
-  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(true)
 
   const {
     currentStep,
@@ -179,14 +178,10 @@ export default function SessionPage({}: SessionPageProps) {
   // 显示加载状态
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-luxury-rich font-sans p-4 sm:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-luxury-gold mx-auto mb-4"></div>
-              <p className="text-luxury-darkGold">正在加载会话数据...</p>
-            </div>
-          </div>
+      <div className="min-h-screen bg-luxury-rich flex items-center justify-center p-4">
+        <div className="p-8 text-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 border-t-gray-700 mx-auto mb-4"></div>
+          <p className="text-gray-500 text-sm">正在加载...</p>
         </div>
       </div>
     )
@@ -200,23 +195,21 @@ export default function SessionPage({}: SessionPageProps) {
   // 显示会话错误
   if (sessionError) {
     return (
-      <div className="min-h-screen bg-luxury-rich font-sans p-4 sm:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center py-12">
-            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 18.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">会话访问失败</h2>
-            <p className="text-gray-600 mb-6">{sessionError}</p>
-            <button
-              onClick={() => router.push(`/${locale}`)}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              创建新会话
-            </button>
+      <div className="min-h-screen bg-luxury-rich flex items-center justify-center p-4">
+        <div className="p-8 text-center max-w-md">
+          <div className="mx-auto w-12 h-12 border border-red-200 flex items-center justify-center mb-4">
+            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 18.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
           </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">会话访问失败</h2>
+          <p className="text-gray-600 mb-6 text-sm">{sessionError}</p>
+          <button
+            onClick={() => router.push(`/${locale}`)}
+            className="px-5 py-2.5 bg-gray-900 text-white rounded hover:bg-gray-700 transition-colors text-sm font-medium"
+          >
+            创建新会话
+          </button>
         </div>
       </div>
     )
@@ -224,24 +217,21 @@ export default function SessionPage({}: SessionPageProps) {
 
   return (
     <div className="min-h-screen bg-luxury-rich">
-      {/* 可折叠头部 */}
-      <CollapsibleHeader
-        uuid={uuid}
-        isCollapsed={isHeaderCollapsed}
-        onToggle={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
-      />
-
-      <div className="max-w-5xl mx-auto px-4">
+      {/* Main content area with padding for footer */}
+      <div className="max-w-3xl mx-auto px-4 pt-6 pb-20">
         {error && (
-          <div className="py-4">
+          <div className="mb-4">
             <ErrorAlert message={error} />
           </div>
         )}
 
-        <main className="animation-fade-in py-6">
+        <main className="animation-fade-in">
           {renderStep()}
         </main>
       </div>
+
+      {/* Minimal footer */}
+      <MinimalFooter showAutoSave={!!uuid} />
     </div>
   )
 }

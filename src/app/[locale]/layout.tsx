@@ -1,9 +1,7 @@
-import { Inter } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import IntlProvider from '../../components/IntlProvider';
 import '../globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
 const locales = ['zh', 'en'];
 
 export function generateStaticParams() {
@@ -53,4 +51,4 @@ export default async function LocaleLayout({
       {children}
     </IntlProvider>
   );
-} 
+}

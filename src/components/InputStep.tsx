@@ -132,7 +132,7 @@ const InputStep: React.FC = () => {
           <button
             onClick={handleUploadClick}
             disabled={isAiProcessing}
-            className="inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-lg sm:text-xl border border-purple-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+            className="inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 rounded bg-gray-900 hover:bg-gray-700 text-white font-semibold text-lg sm:text-xl border border-gray-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 mr-3" aria-hidden="true" />
             {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
@@ -161,7 +161,7 @@ const InputStep: React.FC = () => {
               type="button"
               onClick={handleUploadClick}
               disabled={isAiProcessing}
-              className="inline-flex items-center justify-center px-4 py-2 rounded bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm border border-purple-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center px-4 py-2 rounded bg-gray-900 hover:bg-gray-700 text-white font-medium text-sm border border-gray-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Sparkles className="h-4 w-4 mr-2" aria-hidden="true" />
               <span>{isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}</span>

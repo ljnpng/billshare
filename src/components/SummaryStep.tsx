@@ -524,7 +524,7 @@ const SummaryStep: React.FC = () => {
           </button>
           <button
             onClick={handleShareClick}
-            className="btn btn-secondary btn-sm sm:btn-md hover:scale-105 transition-transform"
+                  className="btn btn-secondary btn-sm sm:btn-md"
             disabled={!sessionId}
             aria-label={t('shareLink')}
           >
@@ -555,4 +555,4 @@ const SummaryStep: React.FC = () => {
   );
 };
 
-export default SummaryStep; 
+export default SummaryStep;

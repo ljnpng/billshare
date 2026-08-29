@@ -61,7 +61,7 @@ const AutoSaveIndicator: React.FC = () => {
   const getStatusIcon = () => {
     switch (saveStatus) {
       case 'saving':
-        return <Cloud className="h-3 w-3 animate-pulse" aria-hidden="true" />;
+        return <Cloud className="h-3 w-3" aria-hidden="true" />;
       case 'saved':
         return <Check className="h-3 w-3 text-green-600" aria-hidden="true" />;
       case 'error':

@@ -13,7 +13,7 @@ export const AI_CONFIG = {
 
   // Groq API 配置
   groq: {
-    model: 'openai/gpt-oss-120b',
+    model: 'qwen/qwen3.6-27b', // Groq 当前视觉模型
     maxTokens: 4096,
     temperature: 0.3,
   },
@@ -69,4 +69,4 @@ export const getSupportedFormatsInfo = () => {
       height: AI_CONFIG.image.maxHeight,
     },
   };
-}; 
+};

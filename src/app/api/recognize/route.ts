@@ -12,7 +12,7 @@ export const runtime = 'nodejs'
 export const maxDuration = 60
 
 // 服务端读取 provider 配置
-const getProvider = () => (process.env.AI_PROVIDER || 'claude') as 'claude' | 'groq'
+const getProvider = () => (process.env.AI_PROVIDER || 'claude') as 'claude' | 'groq' | 'openai-compatible'
 
 // 初始化 AI 客户端（懒加载）
 let anthropicClient: Anthropic | null = null
@@ -148,6 +148,48 @@ const recognizeWithGroq = async (file: File, locale: string): Promise<AIRecogniz
   return parseAIResponse(content)
 }
 
+/** Use an OpenAI-compatible endpoint with image_url input. */
+const recognizeWithOpenAICompatible = async (file: File, locale: string): Promise<AIRecognizedReceipt> => {
+  const baseUrl = (process.env.OPENAI_COMPATIBLE_BASE_URL || '').replace(/\/$/, '')
+  const apiKey = process.env.OPENAI_COMPATIBLE_API_KEY
+  const model = process.env.OPENAI_COMPATIBLE_MODEL || 'deepseek-v4-flash-vision-exp'
+
+  if (!baseUrl || !apiKey) {
+    throw new Error('OpenAI-compatible provider is not configured')
+  }
+
+  aiLogger.info('开始调用 OpenAI-compatible API...')
+  const response = await fetch(`${baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      temperature: AI_CONFIG.groq.temperature,
+      response_format: { type: 'json_object' },
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'text', text: getReceiptAnalysisPrompt(locale) },
+          { type: 'image_url', image_url: { url: await fileToBase64(file) } },
+        ],
+      }],
+    }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`OpenAI-compatible API ${response.status}: ${await response.text()}`)
+  }
+
+  const payload = await response.json() as { choices?: Array<{ message?: { content?: string } }> }
+  const content = payload.choices?.[0]?.message?.content
+  if (!content) throw new Error('API响应为空')
+  aiLogger.info('OpenAI-compatible API 调用成功')
+  return parseAIResponse(content)
+}
+
 /**
  * 清理和验证识别结果
  */
@@ -236,6 +278,8 @@ export async function POST(request: NextRequest) {
     let recognizedData: AIRecognizedReceipt
     if (provider === 'groq') {
       recognizedData = await recognizeWithGroq(processedFile, locale)
+    } else if (provider === 'openai-compatible') {
+      recognizedData = await recognizeWithOpenAICompatible(processedFile, locale)
     } else {
       recognizedData = await recognizeWithClaude(processedFile, locale)
     }
