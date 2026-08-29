@@ -78,7 +78,7 @@
     "noValidItems": "No valid product items recognized (product name cannot be empty)"
   },
   "app": {
-    "title": "BillShare",
+    "title": "split the bill",
     "description": "Smart bill splitting for meals, taxes, and tips - ensuring everyone pays their fair share"
   },
   "steps": {
@@ -220,4 +220,4 @@
       "apiError": "AI service temporarily unavailable, please try again later"
     }
   }
-} 
+}

@@ -1,4 +1,4 @@
-# BillShare
+# AA / split the bill
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-14.0-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -7,8 +7,6 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
 AI-powered receipt splitting application built with Next.js 14.
-
-Demo: https://billshare.amoy.day
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare&env=AI_PROVIDER,CLAUDE_API_KEY,GROQ_API_KEY,REDIS_HOST,REDIS_PORT,REDIS_PASSWORD&envDescription=Configure%20your%20AI%20provider%20and%20Redis%20credentials&envLink=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare%23environment-variables)
 
