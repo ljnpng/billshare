@@ -8,11 +8,11 @@
 
 AI-powered receipt splitting application built with Next.js 14.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare&env=AI_PROVIDER,CLAUDE_API_KEY,GROQ_API_KEY,STORAGE_PROVIDER,CLOUDFLARE_ACCOUNT_ID,CLOUDFLARE_KV_NAMESPACE_ID,CLOUDFLARE_API_TOKEN,REDIS_HOST,REDIS_PORT,REDIS_PASSWORD&envDescription=Configure%20your%20AI%20provider%20and%20storage%20backend&envLink=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare%23environment-variables)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare&env=OPENAI_COMPATIBLE_BASE_URL,OPENAI_COMPATIBLE_API_KEY,OPENAI_COMPATIBLE_MODEL,STORAGE_PROVIDER,CLOUDFLARE_ACCOUNT_ID,CLOUDFLARE_KV_NAMESPACE_ID,CLOUDFLARE_API_TOKEN,REDIS_HOST,REDIS_PORT,REDIS_PASSWORD&envDescription=Configure%20your%20AI%20endpoint%20and%20storage%20backend&envLink=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare%23environment-variables)
 
 ## Features
 
-- AI receipt recognition (Claude 3.5 Haiku / Groq Llama Vision)
+- AI receipt recognition through an OpenAI-compatible vision endpoint
 - Image format support: JPG, PNG, GIF, WebP, HEIC/HEIF
 - Proportional tax/tip distribution based on item prices
 - Multi-person item sharing with automatic cost splitting
@@ -24,7 +24,7 @@ AI-powered receipt splitting application built with Next.js 14.
 
 Requirements:
 - Node.js 18+
-- Claude API key or Groq API key
+- An OpenAI-compatible vision API endpoint, key, and model
 - A storage backend: local memory (default), Cloudflare KV, or Redis
 
 ```bash
@@ -38,9 +38,9 @@ npm run dev
 ## Environment Variables
 
 ```bash
-AI_PROVIDER=claude              # or groq (default: claude)
-CLAUDE_API_KEY=sk-ant-...       # required if using claude
-GROQ_API_KEY=gsk_...            # required if using groq
+OPENAI_COMPATIBLE_BASE_URL=https://api.deepseek.com/v1
+OPENAI_COMPATIBLE_API_KEY=sk-...
+OPENAI_COMPATIBLE_MODEL=deepseek-v4-flash-vision-exp
 STORAGE_PROVIDER=memory       # memory (default), cloudflare, or redis
 
 # Required for Cloudflare KV
@@ -55,8 +55,7 @@ REDIS_PASSWORD=your-password
 ```
 
 API Keys:
-- Claude: https://console.anthropic.com/
-- Groq: https://console.groq.com/
+- DeepSeek: https://platform.deepseek.com/
 - Redis: Railway, Upstash, Redis Cloud, or self-hosted
 
 ## Development
@@ -66,7 +65,6 @@ npm run dev         # Start dev server (auto-opens http://localhost:3000)
 npm run build       # Build for production
 npm run start       # Start production server
 npm run lint        # Run ESLint
-npm run test:ai     # Test AI service (supports AI_PROVIDER=claude|groq)
 ```
 
 ## Deployment

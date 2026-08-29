@@ -1,23 +1,5 @@
 // AI 服务配置
 export const AI_CONFIG = {
-  // AI 服务提供商选择
-  // provider 配置已移至服务端 (/api/recognize)，浏览器不应访问此值
-  
-  // Claude API 配置
-  claude: {
-    model: 'claude-3-5-haiku-20241022',
-    maxTokens: 8192, // Claude 3.5 Haiku 最大支持 8192 tokens
-    temperature: 0.3,
-    betas: ['files-api-2025-04-14'] as const,
-  },
-
-  // Groq API 配置
-  groq: {
-    model: 'qwen/qwen3.6-27b', // Groq 当前视觉模型
-    maxTokens: 4096,
-    temperature: 0.3,
-  },
-  
   // 图片处理配置
   image: {
     // 支持的图片格式

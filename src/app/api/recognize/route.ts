@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic, { toFile } from '@anthropic-ai/sdk'
-import { Groq } from 'groq-sdk'
 import { AIRecognizedReceipt, AIProcessingResult } from '@/types'
-import { AI_CONFIG } from '@/lib/config'
 import { getReceiptAnalysisPrompt } from '@/lib/prompts'
 import { aiLogger } from '@/lib/logger'
 import { validateAndPreprocessImage, validateAIResponse, parseAIResponse } from '@/lib/imageUtils'
@@ -11,34 +8,7 @@ import { getErrorType } from '@/lib/errorMessages'
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-// 服务端读取 provider 配置
-const getProvider = () => (process.env.AI_PROVIDER || 'claude') as 'claude' | 'groq' | 'openai-compatible'
-
-// 初始化 AI 客户端（懒加载）
-let anthropicClient: Anthropic | null = null
-let groqClient: Groq | null = null
-
-const getAnthropicClient = () => {
-  if (!anthropicClient) {
-    anthropicClient = new Anthropic({
-      apiKey: process.env.CLAUDE_API_KEY || 'dummy-key-for-build',
-    })
-  }
-  return anthropicClient
-}
-
-const getGroqClient = () => {
-  if (!groqClient) {
-    groqClient = new Groq({
-      apiKey: process.env.GROQ_API_KEY || 'dummy-key-for-build',
-    })
-  }
-  return groqClient
-}
-
-/**
- * 将图片文件转换为 base64 数据URL (Groq 用)
- */
+/** Convert an image file to an OpenAI-compatible data URL. */
 const fileToBase64 = async (file: File): Promise<string> => {
   const arrayBuffer = await file.arrayBuffer()
   const buffer = Buffer.from(arrayBuffer)
@@ -46,110 +16,7 @@ const fileToBase64 = async (file: File): Promise<string> => {
   return `data:${file.type};base64,${base64}`
 }
 
-/**
- * 上传文件到 Claude Files API
- */
-const uploadToFilesAPI = async (file: File): Promise<string> => {
-  const anthropic = getAnthropicClient()
-  aiLogger.info('开始上传文件到 Files API...')
-
-  const fileUpload = await anthropic.beta.files.upload({
-    file: await toFile(file, file.name, { type: file.type }),
-    betas: ['files-api-2025-04-14'],
-  })
-
-  aiLogger.info('文件上传成功', {
-    fileId: fileUpload.id,
-    fileName: file.name,
-    fileSize: file.size,
-  })
-
-  return fileUpload.id
-}
-
-/**
- * 使用 Claude 进行识别
- */
-const recognizeWithClaude = async (file: File, locale: string): Promise<AIRecognizedReceipt> => {
-  const anthropic = getAnthropicClient()
-
-  const fileId = await uploadToFilesAPI(file)
-
-  try {
-    aiLogger.info('开始调用 Claude API...')
-
-    const response = await anthropic.beta.messages.create({
-      model: AI_CONFIG.claude.model,
-      max_tokens: AI_CONFIG.claude.maxTokens,
-      temperature: AI_CONFIG.claude.temperature,
-      betas: [...AI_CONFIG.claude.betas],
-      messages: [
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: getReceiptAnalysisPrompt(locale) },
-            { type: 'image', source: { type: 'file', file_id: fileId } },
-          ],
-        },
-      ],
-    })
-
-    aiLogger.info('Claude API 调用成功')
-
-    const content = response.content[0]
-    if (content.type !== 'text' || !content.text) {
-      throw new Error('API响应为空')
-    }
-
-    return parseAIResponse(content.text)
-  } finally {
-    // 清理上传的文件
-    try {
-      await anthropic.beta.files.delete(fileId)
-      aiLogger.info('临时文件已清理')
-    } catch (cleanupError) {
-      aiLogger.warn('清理临时文件失败:', cleanupError)
-    }
-  }
-}
-
-/**
- * 使用 Groq 进行识别
- */
-const recognizeWithGroq = async (file: File, locale: string): Promise<AIRecognizedReceipt> => {
-  const groq = getGroqClient()
-
-  const imageBase64 = await fileToBase64(file)
-
-  aiLogger.info('开始调用 Groq API...')
-
-  const response = await groq.chat.completions.create({
-    messages: [
-      {
-        role: 'user',
-        content: [
-          { type: 'text', text: getReceiptAnalysisPrompt(locale) },
-          { type: 'image_url', image_url: { url: imageBase64 } },
-        ],
-      },
-    ],
-    model: AI_CONFIG.groq.model,
-    temperature: AI_CONFIG.groq.temperature,
-    max_tokens: AI_CONFIG.groq.maxTokens,
-  })
-
-  aiLogger.info('Groq API 调用成功')
-
-  const content = response.choices[0]?.message?.content
-  if (!content) {
-    throw new Error('API响应为空')
-  }
-
-  return parseAIResponse(content)
-}
-
-/** Use an OpenAI-compatible endpoint with image_url input. */
-const recognizeWithOpenAICompatible = async (file: File, locale: string): Promise<AIRecognizedReceipt> => {
+const recognizeReceipt = async (file: File, locale: string): Promise<AIRecognizedReceipt> => {
   const baseUrl = (process.env.OPENAI_COMPATIBLE_BASE_URL || '').replace(/\/$/, '')
   const apiKey = process.env.OPENAI_COMPATIBLE_API_KEY
   const model = process.env.OPENAI_COMPATIBLE_MODEL || 'deepseek-v4-flash-vision-exp'
@@ -167,7 +34,7 @@ const recognizeWithOpenAICompatible = async (file: File, locale: string): Promis
     },
     body: JSON.stringify({
       model,
-      temperature: AI_CONFIG.groq.temperature,
+      temperature: 0.3,
       response_format: { type: 'json_object' },
       messages: [{
         role: 'user',
@@ -251,8 +118,6 @@ const cleanAndValidate = (data: AIRecognizedReceipt, fileName: string, fileSize:
 export async function POST(request: NextRequest) {
   let file: File | null = null
   let locale: string = 'zh'
-  const provider = getProvider()
-
   try {
     const formData = await request.formData()
     file = formData.get('file') as File
@@ -265,7 +130,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    aiLogger.info(`开始 AI 识别流程 (provider: ${provider})`, {
+    aiLogger.info('开始 AI 识别流程 (OpenAI-compatible)', {
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
@@ -274,15 +139,8 @@ export async function POST(request: NextRequest) {
     // 1. 验证并预处理图片
     const processedFile = await validateAndPreprocessImage(file)
 
-    // 2. 根据 provider 调用对应的 AI 服务
-    let recognizedData: AIRecognizedReceipt
-    if (provider === 'groq') {
-      recognizedData = await recognizeWithGroq(processedFile, locale)
-    } else if (provider === 'openai-compatible') {
-      recognizedData = await recognizeWithOpenAICompatible(processedFile, locale)
-    } else {
-      recognizedData = await recognizeWithClaude(processedFile, locale)
-    }
+    // 2. 调用 OpenAI-compatible 视觉模型
+    let recognizedData = await recognizeReceipt(processedFile, locale)
 
     aiLogger.info('AI 响应解析成功', {
       businessName: recognizedData.businessName,
@@ -307,11 +165,10 @@ export async function POST(request: NextRequest) {
       fileSize: file?.size,
       fileType: file?.type,
       locale,
-      timestamp: new Date().toISOString(),
-      provider
+      timestamp: new Date().toISOString()
     }
 
-    aiLogger.error(`AI 识别失败 (${provider})`, errorDetails)
+    aiLogger.error('AI 识别失败 (OpenAI-compatible)', errorDetails)
 
     let errorType = 'recognitionFailed'
     if (error instanceof Error) {
