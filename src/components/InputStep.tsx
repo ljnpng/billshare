@@ -106,14 +106,14 @@ const InputStep: React.FC = () => {
                 <button
                   onClick={handleRetry}
                   disabled={isAiProcessing}
-                  className="inline-flex items-center px-3 py-1.5 rounded bg-red-100 hover:bg-red-200 text-red-800 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn btn-sm bg-red-100 text-red-800 border border-red-200 hover:bg-red-200 disabled:cursor-not-allowed"
                 >
                   <RotateCcw className="h-4 w-4 mr-1.5" aria-hidden="true" />
                   {tAI('retry')}
                 </button>
                 <button
                   onClick={handleDismissError}
-                  className="inline-flex items-center px-3 py-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition-colors"
+                  className="btn btn-sm btn-secondary"
                 >
                   {tAI('dismiss')}
                 </button>
@@ -136,9 +136,9 @@ const InputStep: React.FC = () => {
             <button
               onClick={handleUploadClick}
               disabled={isAiProcessing}
-              className="inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 rounded bg-gray-900 hover:bg-gray-700 text-white font-semibold text-lg sm:text-xl border border-gray-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary min-h-12 px-7 sm:min-h-[3.25rem] sm:px-8 text-base sm:text-lg shadow-sm hover:shadow-md disabled:cursor-not-allowed"
             >
-              <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 mr-3" aria-hidden="true" />
+              <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 mr-2.5" aria-hidden="true" />
               {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
             </button>
 
@@ -169,14 +169,14 @@ const InputStep: React.FC = () => {
               type="button"
               onClick={handleUploadClick}
               disabled={isAiProcessing}
-              className="inline-flex items-center justify-center px-4 py-2 rounded bg-gray-900 hover:bg-gray-700 text-white font-medium text-sm border border-gray-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-secondary btn-sm disabled:cursor-not-allowed"
             >
               <Sparkles className="h-4 w-4 mr-2" aria-hidden="true" />
               <span>{isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}</span>
             </button>
             <button
               onClick={() => addReceipt(tCommon('receipt'))}
-              className="inline-flex items-center justify-center px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm border border-blue-600 transition-colors duration-200"
+              className="btn btn-primary btn-sm"
             >
               <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
               <span>{t('manualAdd')}</span>
@@ -184,10 +184,10 @@ const InputStep: React.FC = () => {
           </div>
 
           {/* Collapsible split section */}
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-xl overflow-hidden p-1 bg-white">
             <button
               onClick={() => setIsSplitSectionExpanded(!isSplitSectionExpanded)}
-              className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center justify-between rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center">
                 <User className="h-5 w-5 text-gray-500 mr-2" aria-hidden="true" />

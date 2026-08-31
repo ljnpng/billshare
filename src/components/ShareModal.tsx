@@ -97,7 +97,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
           <button
             ref={closeButtonRef}
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            className="btn btn-ghost btn-sm !h-9 !min-h-9 !w-9 !p-0 hover:bg-gray-100"
             aria-label={tCommon('close')}
           >
             <X className="h-5 w-5 text-gray-500" aria-hidden="true" />
@@ -123,7 +123,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
             {/* 复制链接 */}
             <button
               onClick={onCopyLink}
-              className={`w-full flex items-center justify-center gap-3 py-3 px-4 rounded font-medium transition-colors ${
+              className={`btn w-full gap-3 ${
                 copySuccess
                   ? 'bg-green-50 text-green-700 border border-green-200'
                   : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100'
@@ -142,7 +142,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
             {/* 浏览器打开 */}
             <button
               onClick={onOpenInBrowser}
-              className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded font-medium bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 transition-colors"
+              className="btn btn-secondary w-full gap-3"
             >
               <ExternalLink className="h-5 w-5" aria-hidden="true" />
               {t('openInBrowser')}

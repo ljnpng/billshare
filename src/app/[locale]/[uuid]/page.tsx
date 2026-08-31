@@ -47,7 +47,7 @@ export default function SharedDraftPage() {
             <p className="text-gray-600 mb-6 text-sm">{error}</p>
             <button
               onClick={() => router.replace('/')}
-              className="px-5 py-2.5 bg-gray-900 text-white rounded hover:bg-gray-700 transition-colors text-sm font-medium"
+              className="btn btn-primary"
             >
               返回当前草稿
             </button>

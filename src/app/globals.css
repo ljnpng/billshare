@@ -76,8 +76,8 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded text-sm font-semibold ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s, opacity 0.2s;
+    @apply inline-flex items-center justify-center rounded-lg text-sm font-medium ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
   }
 
   .btn:focus-visible {
@@ -121,23 +121,23 @@
   }
   
   .btn-lg {
-    @apply h-12 px-8 text-base;
+    @apply h-11 px-5 text-sm;
   }
   
   /* Mobile-first touch targets */
   @media (max-width: 768px) {
     .btn {
-      @apply h-12 px-6 text-base;
-      min-width: 48px;
+      @apply min-h-11 h-auto px-4 text-sm;
+      min-width: 44px;
     }
 
     .btn-sm {
-      @apply h-10 px-4 text-sm;
+      @apply min-h-10 h-auto px-3 text-xs;
       min-width: 40px;
     }
 
     .btn-lg {
-      @apply h-14 px-8 text-base;
+      @apply min-h-12 h-auto px-5 text-sm;
     }
 
     .input {

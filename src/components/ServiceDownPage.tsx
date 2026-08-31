@@ -85,14 +85,14 @@ export default function ServiceDownPage({ message }: ServiceDownPageProps) {
         <div className="space-y-3">
           <button
             onClick={() => router.push('/')}
-            className="w-full bg-gray-900 text-white py-3 px-6 rounded hover:bg-gray-700 transition-colors font-medium"
+            className="btn btn-primary w-full"
           >
             返回首页
           </button>
           
           <button
             onClick={() => window.location.reload()}
-            className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded hover:bg-gray-200 transition-colors font-medium"
+            className="btn btn-secondary w-full"
           >
             刷新页面
           </button>
