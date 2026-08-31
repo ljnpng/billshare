@@ -221,8 +221,8 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                 aria-label={tCommon('name')}
               />
               <div className="flex gap-3">
-                <div className="relative flex-1 sm:flex-none">
-                   <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
+                <div className="input-group relative flex-1 sm:flex-none">
+                   <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
                    <input
                     type="number"
                     name="itemPrice"
@@ -263,8 +263,8 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                         }
                       }}
                     />
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
+                    <div className="input-group relative">
+                      <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
                       <input
                         type="number"
                         name="editItemPrice"
@@ -331,8 +331,8 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
           <div className="space-y-6">
             <div>
               <label htmlFor={`tax-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">{t('taxLabel')}</label>
-              <div className="relative">
-                 <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
+              <div className="input-group relative">
+                 <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
                  <input
                   id={`tax-${receipt.id}`}
                   type="number"
@@ -350,8 +350,8 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
             </div>
             <div>
               <label htmlFor={`tip-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">{t('tipLabel')}</label>
-              <div className="relative">
-                 <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden="true" />
+              <div className="input-group relative">
+                 <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
                  <input
                   id={`tip-${receipt.id}`}
                   type="number"
@@ -381,4 +381,4 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
       </div>
     </div>
   );
-}; 
+};

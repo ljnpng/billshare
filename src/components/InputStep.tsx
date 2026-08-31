@@ -214,6 +214,7 @@ const InputStep: React.FC = () => {
                       type="text"
                       name="personName"
                       autoComplete="name"
+                      aria-label={tCommon('name')}
                       value={newPersonName}
                       onChange={(e) => setNewPersonName(e.target.value)}
                       placeholder={t('addPersonPlaceholder')}
