@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { Plus, Receipt, ArrowRight, Sparkles, AlertCircle, RotateCcw, ChevronDown, Trash2, User } from 'lucide-react';
+import { Receipt, PlusCircle, AlertCircle, RotateCcw, ChevronDown, Trash2, User } from 'lucide-react';
 import { useAppStore } from '../store';
 import { ReceiptCard } from './ReceiptCard';
 import ReceiptRecognitionSkeleton from './ReceiptRecognitionSkeleton';
@@ -168,17 +168,15 @@ const InputStep: React.FC = () => {
               type="button"
               onClick={handleUploadClick}
               disabled={isAiProcessing}
-              className="btn btn-secondary btn-sm disabled:cursor-not-allowed"
+              className="btn btn-secondary btn-sm !text-sm disabled:cursor-not-allowed"
             >
-              <Sparkles className="h-4 w-4 mr-2" aria-hidden="true" />
-              <span>{isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}</span>
+              {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
             </button>
             <button
               onClick={() => addReceipt(tCommon('receipt'))}
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary btn-sm !text-sm"
             >
-              <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
-              <span>{t('manualAdd')}</span>
+              {t('manualAdd')}
             </button>
           </div>
 
@@ -227,7 +225,7 @@ const InputStep: React.FC = () => {
                       disabled={!newPersonName.trim()}
                       aria-label={tCommon('add')}
                     >
-                      <Plus className="h-5 w-5" aria-hidden="true" />
+                      <PlusCircle className="h-5 w-5" aria-hidden="true" />
                     </button>
                   </div>
                 </form>
@@ -274,8 +272,7 @@ const InputStep: React.FC = () => {
               disabled={totalItems === 0}
               aria-label={nextButtonText}
             >
-              <span className="mr-2">{nextButtonText}</span>
-              <ArrowRight className="h-5 w-5" aria-hidden="true" />
+              {nextButtonText}
             </button>
           </div>
         </div>
