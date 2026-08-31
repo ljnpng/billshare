@@ -5,7 +5,6 @@ import { useAppStore } from '../store';
 import AssignStep from './AssignStep';
 import ErrorAlert from './ErrorAlert';
 import InputStep from './InputStep';
-import MinimalFooter from './MinimalFooter';
 import SummaryStep from './SummaryStep';
 
 export default function BillEditor() {
@@ -66,7 +65,7 @@ export default function BillEditor() {
 
   return (
     <div className="min-h-screen bg-luxury-rich">
-      <div className="max-w-3xl mx-auto px-4 pt-6 pb-20">
+      <div className="max-w-3xl mx-auto px-4 pt-6 pb-6">
         {error ? (
           <div className="mb-4">
             <ErrorAlert message={error} />
@@ -76,7 +75,6 @@ export default function BillEditor() {
         <main className="animation-fade-in">{step}</main>
       </div>
 
-      <MinimalFooter />
     </div>
   );
 }
