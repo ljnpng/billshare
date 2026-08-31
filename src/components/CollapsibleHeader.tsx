@@ -4,16 +4,13 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '../store';
 import LanguageSwitcher from './LanguageSwitcher';
-import AutoSaveIndicator from './AutoSaveIndicator';
 
 interface CollapsibleHeaderProps {
-  uuid?: string;
   isCollapsed: boolean;
   onToggle: () => void;
 }
 
 const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({ 
-  uuid, 
   isCollapsed, 
   onToggle
 }) => {
@@ -67,11 +64,7 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
         {!isCollapsed && (
           <div className="py-4">
             <div className="flex justify-between items-center">
-              <div>
-                {uuid && (
-                  <AutoSaveIndicator />
-                )}
-              </div>
+              <div />
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleCreateNewBill}

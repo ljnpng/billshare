@@ -43,16 +43,6 @@
     "editTitle": "Edit",
     "deleteTitle": "Delete"
   },
-  "autoSave": {
-    "saving": "Saving...",
-    "saved": "Saved",
-    "failed": "Save failed",
-    "lastSaved": "Last saved",
-    "enabled": "Auto-save enabled",
-    "savingShort": "Saving...",
-    "savedShort": "Saved",
-    "autoSave": "Auto Save"
-  },
   "languageSwitcher": {
     "chineseShort": "中",
     "englishShort": "EN",
