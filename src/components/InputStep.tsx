@@ -125,26 +125,32 @@ const InputStep: React.FC = () => {
 
       {!hasReceipts && !isAiProcessing ? (
         /* Empty state - minimal upload UI */
-        <div className="text-center py-16 sm:py-24">
-          <Receipt className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-6 sm:mb-8 text-gray-300" aria-hidden="true" />
-          <h3 className="text-xl sm:text-2xl font-bold text-gray-700 mb-2">{t('emptyStateTitle')}</h3>
-          <p className="text-gray-500 text-sm sm:text-base mb-8 sm:mb-10 px-4 max-w-md mx-auto">{t('emptyStateDescription')}</p>
+        <div className="upload-empty-state text-center py-16 sm:py-24">
+          <div className="upload-empty-content">
+            <div className="upload-empty-before">
+              <Receipt className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-6 sm:mb-8 text-gray-300" aria-hidden="true" />
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-700 mb-2">{t('emptyStateTitle')}</h3>
+              <p className="text-gray-500 text-sm sm:text-base px-4 max-w-md mx-auto">{t('emptyStateDescription')}</p>
+            </div>
 
-          <button
-            onClick={handleUploadClick}
-            disabled={isAiProcessing}
-            className="inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 rounded bg-gray-900 hover:bg-gray-700 text-white font-semibold text-lg sm:text-xl border border-gray-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 mr-3" aria-hidden="true" />
-            {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
-          </button>
+            <button
+              onClick={handleUploadClick}
+              disabled={isAiProcessing}
+              className="inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 rounded bg-gray-900 hover:bg-gray-700 text-white font-semibold text-lg sm:text-xl border border-gray-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 mr-3" aria-hidden="true" />
+              {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
+            </button>
 
-          <button
-            onClick={() => addReceipt(tCommon('receipt'))}
-            className="block mx-auto mt-4 text-gray-500 hover:text-gray-700 text-sm underline transition-colors"
-          >
-            {t('orManualInput')}
-          </button>
+            <div className="upload-empty-after">
+              <button
+                onClick={() => addReceipt(tCommon('receipt'))}
+                className="block mx-auto text-gray-500 hover:text-gray-700 text-sm underline transition-colors"
+              >
+                {t('orManualInput')}
+              </button>
+            </div>
+          </div>
         </div>
       ) : (
         /* Has receipts - show list */
