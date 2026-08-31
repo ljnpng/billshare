@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 interface ServiceDownPageProps {
   message?: string
@@ -11,8 +11,6 @@ interface ServiceDownPageProps {
 export default function ServiceDownPage({ message }: ServiceDownPageProps) {
   const t = useTranslations()
   const router = useRouter()
-  const params = useParams()
-  const locale = params.locale as string
 
   const defaultMessage = "服务暂时不可用，我们正在努力修复中。请稍后再试。"
 
@@ -86,7 +84,7 @@ export default function ServiceDownPage({ message }: ServiceDownPageProps) {
         {/* Actions */}
         <div className="space-y-3">
           <button
-            onClick={() => router.push(`/${locale}`)}
+            onClick={() => router.push('/')}
             className="w-full bg-gray-900 text-white py-3 px-6 rounded hover:bg-gray-700 transition-colors font-medium"
           >
             返回首页

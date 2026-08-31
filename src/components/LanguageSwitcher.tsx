@@ -16,8 +16,7 @@ const LanguageSwitcher: React.FC = () => {
   const switchLanguage = (locale: string) => {
     // Persist the explicit choice so future visits override browser detection.
     document.cookie = `NEXT_LOCALE=${locale}; Path=/; Max-Age=31536000; SameSite=Lax`
-    const newPath = pathname.replace(`/${currentLocale}`, `/${locale}`)
-    router.push(newPath)
+    router.push(pathname)
   }
 
   return (
