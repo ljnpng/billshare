@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAppStore } from '../store';
 import LanguageSwitcher from './LanguageSwitcher';
 import AutoSaveIndicator from './AutoSaveIndicator';
@@ -20,47 +20,18 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
   const t = useTranslations('app');
   const tCommon = useTranslations('common');
   const tHeader = useTranslations('header');
-  const params = useParams();
   const router = useRouter();
-  const { reset, setSessionId } = useAppStore();
+  const { reset } = useAppStore();
   const [isCreatingSession, setIsCreatingSession] = useState(false);
 
-  // 创建新会话的处理函数
-  const handleCreateNewBill = useCallback(async () => {
+  const handleCreateNewBill = useCallback(() => {
     if (isCreatingSession) return;
     
     setIsCreatingSession(true);
-    const locale = params.locale as string;
-    
-    try {
-      const response = await fetch('/api/session/new', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('创建会话失败');
-      }
-      
-      const result = await response.json();
-      
-      if (result.success && result.uuid) {
-        // 重置状态并设置新的sessionId
-        reset();
-        setSessionId(result.uuid);
-        // 重定向到新的UUID URL
-        router.replace(`/${locale}/${result.uuid}`);
-      } else {
-        throw new Error('创建会话失败');
-      }
-    } catch (error) {
-      console.error('创建新会话错误:', error);
-    } finally {
-      setIsCreatingSession(false);
-    }
-  }, [isCreatingSession, params.locale, router, reset, setSessionId]);
+    reset();
+    router.replace('/');
+    setIsCreatingSession(false);
+  }, [isCreatingSession, router, reset]);
 
   // 移除自动折叠逻辑，完全由用户控制
 

@@ -8,6 +8,7 @@ import { AppState } from '../../../../types'
 import { dataProcessor } from '../../../../lib/dataProcessor'
 import LanguageSwitcher from '../../../../components/LanguageSwitcher'
 import { getCachedExchangeRate, convertUsdToCny } from '../../../../lib/currencyService'
+import { useAppStore } from '../../../../store'
 
 interface PreviewPageProps {}
 
@@ -24,9 +25,10 @@ export default function PreviewPage({}: PreviewPageProps) {
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([])
   const [exchangeRate, setExchangeRate] = useState(7.2) // Default fallback rate
   const [isCreatingSession, setIsCreatingSession] = useState(false)
+  const replaceDraft = useAppStore(state => state.replaceDraft)
+  const reset = useAppStore(state => state.reset)
   
   const uuid = params.uuid as string
-  const locale = params.locale as string
 
   // 验证UUID格式
   const isValidUUID = (uuid: string): boolean => {
@@ -43,41 +45,18 @@ export default function PreviewPage({}: PreviewPageProps) {
   }
 
   const handleEditSession = () => {
-    router.push(`/${locale}/${uuid}`)
+    router.push('/')
   }
 
-  // 创建新会话的处理函数
-  const handleCreateNewBill = useCallback(async () => {
+  const handleCreateNewBill = useCallback(() => {
     if (isCreatingSession) return;
-    
+
     setIsCreatingSession(true);
-    
-    try {
-      const response = await fetch('/api/session/new', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('创建会话失败');
-      }
-      
-      const result = await response.json();
-      
-      if (result.success && result.uuid) {
-        // 重定向到新的UUID URL
-        router.replace(`/${locale}/${result.uuid}`);
-      } else {
-        throw new Error('创建会话失败');
-      }
-    } catch (error) {
-      console.error('创建新会话错误:', error);
-    } finally {
-      setIsCreatingSession(false);
-    }
-  }, [isCreatingSession, locale, router]);
+
+    reset();
+    router.replace('/');
+    setIsCreatingSession(false);
+  }, [isCreatingSession, reset, router]);
 
   // Currency display component
   const CurrencyDisplay = ({ usdAmount }: { usdAmount: number }) => {
@@ -133,6 +112,7 @@ export default function PreviewPage({}: PreviewPageProps) {
         
         if (result.success && result.data) {
           setSessionData(result.data)
+          replaceDraft(result.data)
         } else {
           setError('分享的账单数据无效')
         }
@@ -145,7 +125,7 @@ export default function PreviewPage({}: PreviewPageProps) {
     }
 
     loadPreviewData()
-  }, [uuid])
+  }, [replaceDraft, uuid])
 
   if (isLoading) {
     return (

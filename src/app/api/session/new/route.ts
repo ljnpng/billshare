@@ -18,18 +18,19 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // 创建新的会话UUID
+    const body = await request.json().catch(() => ({}));
+
+    // A session is a share snapshot. It is created only when the user shares.
     const uuid = uuidv4();
-    
-    // 初始化空的会话数据
-    const initialData: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'> = {
-      people: [],
-      receipts: [],
-      currentStep: 'input'
+    const sourceData = body.data && typeof body.data === 'object' ? body.data : {};
+    const snapshotData: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'> = {
+      people: sourceData.people || [],
+      receipts: sourceData.receipts || [],
+      currentStep: sourceData.currentStep || 'input'
     };
     
     // 保存到数据库
-    const saveResult = await sessionService.saveSession(uuid, initialData);
+    const saveResult = await sessionService.saveSession(uuid, snapshotData);
     
     if (!saveResult.success) {
       // Handle different error types
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       uuid,
-      data: initialData,
+      data: snapshotData,
       success: true
     });
     

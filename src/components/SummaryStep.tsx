@@ -14,11 +14,13 @@ const SummaryStep: React.FC = () => {
   const tCommon = useTranslations('common');
   const tCopy = useTranslations('copySuccess');
   const tAssign = useTranslations('assignStep');
-  const { getBillSummary, reset, setCurrentStep, setSessionId, sessionId, exchangeRate, loadExchangeRate } = useAppStore();
+  const { createShareSession, getBillSummary, reset, setCurrentStep, setError, exchangeRate, loadExchangeRate } = useAppStore();
   const [copySuccess, setCopySuccess] = useState(false);
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([]);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
   const billSummary = getBillSummary();
   const people = useAppStore(state => state.people);
@@ -50,13 +52,24 @@ const SummaryStep: React.FC = () => {
   };
 
   const getShareUrl = () => {
-    if (!sessionId) return '';
-    const locale = params.locale as string;
-    return `${window.location.origin}/${locale}/preview/${sessionId}`;
+    return shareUrl;
   };
 
-  const handleShareClick = () => {
-    setShowShareModal(true);
+  const handleShareClick = async () => {
+    if (isSharing) return;
+
+    setIsSharing(true);
+    setError(null);
+
+    const uuid = await createShareSession();
+    if (uuid) {
+      setShareUrl(`${window.location.origin}/preview/${uuid}`);
+      setShowShareModal(true);
+    } else {
+      setError('创建分享链接失败，请稍后重试');
+    }
+
+    setIsSharing(false);
   };
 
   const handleModalCopyLink = async () => {
@@ -149,43 +162,14 @@ const SummaryStep: React.FC = () => {
     }
   };
 
-  const handleStartOver = async () => {
+  const handleStartOver = () => {
     if (isCreatingSession) return;
-    
+
     setIsCreatingSession(true);
-    const locale = params.locale as string;
-    
-    try {
-      const response = await fetch('/api/session/new', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('创建会话失败');
-      }
-      
-      const result = await response.json();
-      
-      if (result.success && result.uuid) {
-        // 重置状态并设置新的sessionId
-        reset();
-        setSessionId(result.uuid);
-        // 重定向到新的UUID URL
-        router.replace(`/${locale}/${result.uuid}`);
-      } else {
-        throw new Error('创建会话失败');
-      }
-    } catch (error) {
-      console.error('创建新会话错误:', error);
-      // 如果创建新会话失败，回退到原来的重置逻辑
-      reset();
-      setCurrentStep('input');
-    } finally {
-      setIsCreatingSession(false);
-    }
+    reset();
+    setShareUrl('');
+    router.replace('/');
+    setIsCreatingSession(false);
   };
 
   const handleEditAssignments = () => {
@@ -524,11 +508,11 @@ const SummaryStep: React.FC = () => {
           </button>
           <button
             onClick={handleShareClick}
-                  className="btn btn-secondary btn-sm sm:btn-md"
-            disabled={!sessionId}
+            className="btn btn-secondary btn-sm sm:btn-md"
+            disabled={isSharing}
             aria-label={t('shareLink')}
           >
-            <Share2 className="h-5 w-5" aria-hidden="true" />
+            <Share2 className={`h-5 w-5 ${isSharing ? 'animate-spin' : ''}`} aria-hidden="true" />
           </button>
         </div>
 
@@ -546,7 +530,7 @@ const SummaryStep: React.FC = () => {
       <ShareModal
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}
-        shareUrl={getShareUrl()}
+        shareUrl={shareUrl}
         onCopyLink={handleModalCopyLink}
         onOpenInBrowser={handleOpenInBrowser}
         copySuccess={copySuccess}

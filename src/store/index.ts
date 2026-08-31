@@ -6,19 +6,17 @@ import { recognizeReceipt } from '../lib/aiService';
 import { storeLogger } from '../lib/logger';
 import { getCachedExchangeRate } from '../lib/currencyService';
 interface AppStore extends AppState {
-  // Session state
-  sessionId: string | null;
-  isSessionLoaded: boolean;
-  
+  isDraftHydrated: boolean;
+
   // Exchange rate state
   exchangeRate: number;
   isLoadingExchangeRate: boolean;
   
-  // Session methods
-  saveSession: () => Promise<boolean>;
-  loadSession: (uuid: string) => Promise<boolean>;
-  setSessionId: (uuid: string) => void;
-  loadSessionData: (data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>) => void;
+  // Shared snapshots are remote; the active draft always belongs to this browser.
+  createShareSession: () => Promise<string | null>;
+  hydrateDraft: () => void;
+  loadSharedSession: (uuid: string) => Promise<boolean>;
+  replaceDraft: (data: PersistedAppState) => void;
   
   // Exchange rate methods
   loadExchangeRate: () => Promise<void>;
@@ -79,8 +77,37 @@ const assignColor = (peopleCount: number) => {
   return colorPalette[peopleCount % colorPalette.length];
 };
 
-// Auto-save debounce delay in milliseconds
-const AUTO_SAVE_DELAY = 1000;
+type PersistedAppState = Pick<AppState, 'people' | 'receipts' | 'currentStep'>;
+type StoredDraft = { version: 1; state: PersistedAppState };
+
+const DRAFT_STORAGE_KEY = 'billshare:draft:v1';
+
+const browserStorage = {
+  getItem: (name: string): string | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+      return window.localStorage.getItem(name);
+    } catch {
+      return null;
+    }
+  },
+  setItem: (name: string, value: string): void => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(name, value);
+    } catch (error) {
+      storeLogger.warn('浏览器草稿保存失败', { error });
+    }
+  },
+  removeItem: (name: string): void => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.removeItem(name);
+    } catch (error) {
+      storeLogger.warn('浏览器草稿删除失败', { error });
+    }
+  },
+};
 
 export const useAppStore = create<AppStore>()(
   devtools(
@@ -93,25 +120,15 @@ export const useAppStore = create<AppStore>()(
       isLoading: false,
       error: null,
       isAiProcessing: false,
-      
-      // Session state
-      sessionId: null,
-      isSessionLoaded: false,
+      isDraftHydrated: false,
       
       // Exchange rate state
       exchangeRate: 7.2, // Default fallback rate
       isLoadingExchangeRate: false,
       
-      // Session methods
-      saveSession: async () => {
+      createShareSession: async () => {
         const state = get();
-        const sessionId = state.sessionId;
-        
-        if (!sessionId) {
-          console.warn('No session ID available for saving');
-          return false;
-        }
-        
+
         try {
           const persistData = {
             people: state.people || [],
@@ -119,7 +136,7 @@ export const useAppStore = create<AppStore>()(
             currentStep: state.currentStep || 'input'
           };
           
-          const response = await fetch(`/api/session/${sessionId}`, {
+          const response = await fetch('/api/session/new', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -128,18 +145,42 @@ export const useAppStore = create<AppStore>()(
           });
           
           if (!response.ok) {
-            throw new Error('Failed to save session');
+            throw new Error('Failed to create shared snapshot');
           }
           
           const result = await response.json();
-          return result.success;
+          return result.success && result.uuid ? result.uuid : null;
         } catch (error) {
-          console.error('Session save error:', error);
-          return false;
+          console.error('Shared snapshot creation error:', error);
+          return null;
         }
       },
+
+      hydrateDraft: () => {
+        if (get().isDraftHydrated) return;
+
+        try {
+          const rawDraft = browserStorage.getItem(DRAFT_STORAGE_KEY);
+          if (rawDraft) {
+            const storedDraft = JSON.parse(rawDraft) as StoredDraft;
+            if (storedDraft.version === 1 && storedDraft.state) {
+              set({
+                people: storedDraft.state.people || [],
+                receipts: storedDraft.state.receipts || [],
+                currentStep: storedDraft.state.currentStep || 'input',
+                isDraftHydrated: true,
+              });
+              return;
+            }
+          }
+        } catch (error) {
+          storeLogger.warn('浏览器草稿加载失败', { error });
+        }
+
+        set({ isDraftHydrated: true });
+      },
       
-      loadSession: async (uuid: string) => {
+      loadSharedSession: async (uuid: string) => {
         try {
           const response = await fetch(`/api/session/${uuid}`);
           
@@ -155,11 +196,9 @@ export const useAppStore = create<AppStore>()(
           const result = await response.json();
           
           if (result.success && result.data) {
-            // Load session data to store
-            get().loadSessionData(result.data);
-            get().setSessionId(uuid);
+            get().replaceDraft(result.data);
             
-            console.log('Session loaded successfully:', uuid);
+            console.log('Shared snapshot loaded successfully:', uuid);
             return true;
           }
           
@@ -170,16 +209,15 @@ export const useAppStore = create<AppStore>()(
         }
       },
       
-      setSessionId: (uuid: string) => {
-        set({ sessionId: uuid });
-      },
-      
-      loadSessionData: (data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>) => {
+      replaceDraft: (data: PersistedAppState) => {
         set({
           people: data.people || [],
           receipts: data.receipts || [],
           currentStep: data.currentStep || 'input',
-          isSessionLoaded: true,
+          error: null,
+          isLoading: false,
+          isAiProcessing: false,
+          isDraftHydrated: true,
         });
       },
       
@@ -536,80 +574,31 @@ export const useAppStore = create<AppStore>()(
         isLoading: false,
         error: null,
         isAiProcessing: false,
-        sessionId: null,
-        isSessionLoaded: false,
+        isDraftHydrated: true,
         exchangeRate: 7.2,
         isLoadingExchangeRate: false
       })
-    })
-    ),
+    })),
     {
       name: 'billshare-store'
     }
   )
 );
 
-// Auto-save functionality
-let autoSaveTimeoutId: NodeJS.Timeout | null = null;
-
-// Subscribe to state changes for auto-save
 useAppStore.subscribe(
-  (state) => ({
+  state => ({
     people: state.people,
     receipts: state.receipts,
     currentStep: state.currentStep,
-    sessionId: state.sessionId,
-    isSessionLoaded: state.isSessionLoaded
   }),
-  (newState, prevState) => {
-    // Don't auto-save if session is not loaded yet or no session ID
-    if (!newState.sessionId || !newState.isSessionLoaded) {
-      return;
-    }
-
-    // Don't auto-save if only sessionId or isSessionLoaded changed
-    const dataChanged = 
-      newState.people !== prevState.people ||
-      newState.receipts !== prevState.receipts ||
-      newState.currentStep !== prevState.currentStep;
-
-    if (!dataChanged) {
-      return;
-    }
-
-    // Clear existing timeout
-    if (autoSaveTimeoutId) {
-      clearTimeout(autoSaveTimeoutId);
-    }
-
-    // Set new timeout for auto-save
-    autoSaveTimeoutId = setTimeout(async () => {
-      try {
-        const success = await useAppStore.getState().saveSession();
-        if (success) {
-          storeLogger.info('自动保存成功', { 
-            sessionId: newState.sessionId,
-            peopleCount: newState.people.length,
-            receiptsCount: newState.receipts.length,
-            currentStep: newState.currentStep
-          });
-        } else {
-          storeLogger.warn('自动保存失败', { sessionId: newState.sessionId });
-        }
-      } catch (error) {
-        storeLogger.error('自动保存异常', { 
-          sessionId: newState.sessionId,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        });
-      }
-    }, AUTO_SAVE_DELAY);
+  (draft) => {
+    const storedDraft: StoredDraft = { version: 1, state: draft };
+    browserStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(storedDraft));
   },
   {
-    equalityFn: (a, b) => 
-      a.people === b.people &&
-      a.receipts === b.receipts &&
-      a.currentStep === b.currentStep &&
-      a.sessionId === b.sessionId &&
-      a.isSessionLoaded === b.isSessionLoaded
+    equalityFn: (current, previous) =>
+      current.people === previous.people &&
+      current.receipts === previous.receipts &&
+      current.currentStep === previous.currentStep,
   }
-); 
+);
