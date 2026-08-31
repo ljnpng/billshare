@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { Plus, Receipt, ArrowRight, Sparkles, AlertCircle, RotateCcw, ChevronDown, Trash2, User } from 'lucide-react';
 import { useAppStore } from '../store';
 import { ReceiptCard } from './ReceiptCard';
+import ReceiptRecognitionSkeleton from './ReceiptRecognitionSkeleton';
 
 const InputStep: React.FC = () => {
   const t = useTranslations('inputStep');
@@ -122,7 +123,7 @@ const InputStep: React.FC = () => {
         </div>
       )}
 
-      {!hasReceipts ? (
+      {!hasReceipts && !isAiProcessing ? (
         /* Empty state - minimal upload UI */
         <div className="text-center py-16 sm:py-24">
           <Receipt className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-6 sm:mb-8 text-gray-300" aria-hidden="true" />
@@ -148,6 +149,7 @@ const InputStep: React.FC = () => {
       ) : (
         /* Has receipts - show list */
         <div className="space-y-6">
+          {isAiProcessing && <ReceiptRecognitionSkeleton />}
           {/* Receipt cards */}
           {[...receipts].reverse().map((receipt, index) => (
             <div key={receipt.id} className="animation-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>

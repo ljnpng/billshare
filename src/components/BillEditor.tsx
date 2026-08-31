@@ -46,17 +46,6 @@ export default function BillEditor() {
     }
   }, [currentStep, isHydrated, people.length, receipts, setCurrentStep]);
 
-  if (!isHydrated) {
-    return (
-      <div className="min-h-screen bg-luxury-rich flex items-center justify-center p-4">
-        <div className="p-8 text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 border-t-gray-700 mx-auto mb-4" />
-          <p className="text-gray-500 text-sm">正在加载浏览器草稿...</p>
-        </div>
-      </div>
-    );
-  }
-
   const step = currentStep === 'assign'
     ? <AssignStep />
     : currentStep === 'summary'
