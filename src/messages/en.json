@@ -90,7 +90,7 @@
   "inputStep": {
     "title": "Input Bill Items",
     "description": "Add one or more receipts and input the name and price for each item.",
-    "aiRecognition": "AI Recognition",
+    "aiRecognition": "Take Photo",
     "aiRecognizing": "Recognizing...",
     "manualAdd": "Manual Add",
     "orManualInput": "or enter manually",

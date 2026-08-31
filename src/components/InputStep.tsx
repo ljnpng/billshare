@@ -136,9 +136,8 @@ const InputStep: React.FC = () => {
             <button
               onClick={handleUploadClick}
               disabled={isAiProcessing}
-              className="btn btn-primary min-h-12 px-7 sm:min-h-[3.25rem] sm:px-8 text-base sm:text-lg shadow-sm hover:shadow-md disabled:cursor-not-allowed"
+              className="btn btn-primary min-h-[3.25rem] w-56 px-6 text-lg shadow-sm hover:shadow-md disabled:cursor-not-allowed"
             >
-              <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 mr-2.5" aria-hidden="true" />
               {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
             </button>
 

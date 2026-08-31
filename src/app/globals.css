@@ -8,7 +8,7 @@
   }
   body {
     @apply bg-gray-50 text-gray-900;
-    font-family: 'Avenir Next', 'Helvetica Neue', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
@@ -337,7 +337,7 @@
 .upload-empty-before {
   grid-row: 1;
   align-self: end;
-  padding-bottom: clamp(2rem, 6vh, 4rem);
+  padding-bottom: 1rem;
 }
 
 .upload-empty-content > button {
@@ -348,7 +348,7 @@
 .upload-empty-after {
   grid-row: 3;
   align-self: start;
-  padding-top: clamp(1rem, 3vh, 2rem);
+  padding-top: 0.75rem;
 }
 
 @keyframes fadeIn {

@@ -90,7 +90,7 @@
   "inputStep": {
     "title": "输入账单条目",
     "description": "添加一张或多张收据，并输入每个条目的名称和价格。",
-    "aiRecognition": "AI识别",
+    "aiRecognition": "拍照识别",
     "aiRecognizing": "识别中...",
     "manualAdd": "手动添加",
     "orManualInput": "或 手动输入",
