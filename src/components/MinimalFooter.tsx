@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import LanguageSwitcher from './LanguageSwitcher'
 const MinimalFooter: React.FC = () => {
   const tApp = useTranslations('app')
 
@@ -19,10 +18,7 @@ const MinimalFooter: React.FC = () => {
             </span>
           </div>
 
-          {/* Right: Language switcher */}
-          <div className="flex-1 flex justify-end">
-            <LanguageSwitcher />
-          </div>
+          <div className="flex-1" />
         </div>
       </div>
     </footer>

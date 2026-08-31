@@ -7,6 +7,8 @@ export default createMiddleware({
   localePrefix: 'never',
   // Let next-intl use the browser's Accept-Language header on first visit.
   localeDetection: true,
+  // Do not persist a language choice; resolve it from the browser on each visit.
+  localeCookie: false,
 });
 
 export const config = {

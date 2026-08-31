@@ -3,7 +3,6 @@ import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '../store';
-import LanguageSwitcher from './LanguageSwitcher';
 
 interface CollapsibleHeaderProps {
   isCollapsed: boolean;
@@ -75,7 +74,6 @@ const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
                   <Plus className={`h-4 w-4 ${isCreatingSession ? 'animate-spin' : ''}`} aria-hidden="true" />
                   <span className="text-sm">{tCommon('newBill')}</span>
                 </button>
-                <LanguageSwitcher />
                 <button
                   onClick={onToggle}
                   className="p-2 rounded bg-gray-100 hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-800 border border-gray-200"

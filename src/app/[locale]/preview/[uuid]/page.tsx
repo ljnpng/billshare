@@ -6,7 +6,6 @@ import { useParams, useRouter } from 'next/navigation'
 import { ChevronDown, ExternalLink, Edit3, Plus } from 'lucide-react'
 import { AppState } from '../../../../types'
 import { dataProcessor } from '../../../../lib/dataProcessor'
-import LanguageSwitcher from '../../../../components/LanguageSwitcher'
 import { getCachedExchangeRate, convertUsdToCny } from '../../../../lib/currencyService'
 import { useAppStore } from '../../../../store'
 
@@ -202,7 +201,6 @@ export default function PreviewPage({}: PreviewPageProps) {
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <LanguageSwitcher />
               <h1 className="text-xl font-semibold text-gray-900 hidden md:block md:ml-4">
                 账单分摊预览
               </h1>
