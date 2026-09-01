@@ -11,7 +11,6 @@ const nextConfig = {
   swcMinify: true,
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
-    NEXT_LOCALE: process.env.NEXT_LOCALE || 'zh',
   },
   compress: true,
   optimizeFonts: true,

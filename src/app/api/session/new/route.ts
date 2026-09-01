@@ -17,14 +17,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json().catch(() => ({}));
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: '请求体必须是合法 JSON' }, { status: 400 });
+    }
+
+    if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+      return NextResponse.json({ error: '请求体必须是 JSON 对象' }, { status: 400 });
+    }
 
     const uuid = uuidv4();
-    const sourceData = body.data && typeof body.data === 'object' ? body.data : {};
+    const sourceData =
+      'data' in body && body.data && typeof body.data === 'object' && !Array.isArray(body.data)
+        ? (body.data as Record<string, unknown>)
+        : {};
     const snapshotData: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'> = {
-      people: sourceData.people || [],
-      receipts: sourceData.receipts || [],
-      currentStep: sourceData.currentStep || 'input',
+      people: (sourceData.people as AppState['people'] | undefined) || [],
+      receipts: (sourceData.receipts as AppState['receipts'] | undefined) || [],
+      currentStep: (sourceData.currentStep as AppState['currentStep'] | undefined) || 'input',
     };
 
     const saveResult = await sessionService.saveSession(uuid, snapshotData);

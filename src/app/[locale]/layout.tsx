@@ -7,7 +7,10 @@ import zhMessages from '../../messages/zh.json';
 const locales = ['zh', 'en'] as const;
 type Locale = (typeof locales)[number];
 
-const messagesByLocale = { zh: zhMessages, en: enMessages } as const;
+const messagesByLocale = {
+  zh: zhMessages,
+  en: enMessages,
+} satisfies Record<Locale, typeof enMessages>;
 
 function getMessages(locale: string) {
   if (!locales.includes(locale as Locale)) {
