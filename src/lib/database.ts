@@ -39,6 +39,12 @@ class MemoryStorage implements StorageAdapter {
   async healthCheck() {}
 }
 
+// Next.js can load API route modules in separate bundles. Keep the in-memory
+// adapter on the process global so those bundles share the same session map.
+const globalForBillShare = globalThis as typeof globalThis & {
+  __billshareMemoryStorage?: MemoryStorage;
+};
+
 class RedisStorage implements StorageAdapter {
   private client: RedisClientType | null = null;
 
@@ -107,7 +113,10 @@ function createStorage(): StorageAdapter {
   const provider = (process.env.STORAGE_PROVIDER || 'memory').trim().toLowerCase();
   if (provider === 'redis') return new RedisStorage();
   if (provider === 'cloudflare') return new CloudflareKVStorage();
-  if (provider === 'memory') return new MemoryStorage();
+  if (provider === 'memory') {
+    globalForBillShare.__billshareMemoryStorage ??= new MemoryStorage();
+    return globalForBillShare.__billshareMemoryStorage;
+  }
   throw new Error(`Unsupported STORAGE_PROVIDER: ${provider}`);
 }
 
