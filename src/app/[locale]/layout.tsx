@@ -1,38 +1,37 @@
 import { notFound } from 'next/navigation';
 import IntlProvider from '../../components/IntlProvider';
 import '../globals.css';
+import enMessages from '../../messages/en.json';
+import zhMessages from '../../messages/zh.json';
 
-const locales = ['zh', 'en'];
+const locales = ['zh', 'en'] as const;
+type Locale = (typeof locales)[number];
+
+const messagesByLocale = { zh: zhMessages, en: enMessages } as const;
+
+function getMessages(locale: string) {
+  if (!locales.includes(locale as Locale)) {
+    notFound();
+  }
+
+  return messagesByLocale[locale as Locale];
+}
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
-  let messages;
-  try {
-    messages = (await import(`../../messages/${locale}.json`)).default;
-  } catch {
-    messages = {};
-  }
+  const messages = getMessages(locale);
 
   return {
-    title: messages.app?.title || 'SplitBill',
-    description: messages.app?.description || 'Smart bill splitting for meals, taxes, and tips',
+    title: messages.app.title,
+    description: messages.app.description,
   };
 }
 
 export default async function LocaleLayout({ children, params: { locale } }: { children: React.ReactNode; params: { locale: string } }) {
-  if (!locales.includes(locale as any)) {
-    notFound();
-  }
-
-  let messages;
-  try {
-    messages = (await import(`../../messages/${locale}.json`)).default;
-  } catch {
-    messages = {};
-  }
+  const messages = getMessages(locale);
 
   return (
     <IntlProvider messages={messages} locale={locale}>
