@@ -96,6 +96,7 @@
     "orManualInput": "or enter manually",
     "emptyStateTitle": "Upload a receipt to start",
     "emptyStateDescription": "Take a photo or upload a receipt image, AI will automatically recognize the bill",
+    "dropReceiptHint": "You can also drag images here",
     "nextButton": "Next: Assign Items",
     "assignItems": "Assign Items",
     "viewSummary": "View Summary",

@@ -13,6 +13,7 @@ const InputStep: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newPersonName, setNewPersonName] = useState('');
   const [isSplitSectionExpanded, setIsSplitSectionExpanded] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleNext = () => {
     if (people.length >= 2) {
@@ -30,6 +31,29 @@ const InputStep: React.FC = () => {
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+    if (!isAiProcessing) setIsDragging(true);
+  };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    if (event.currentTarget === event.target || !event.currentTarget.contains(event.relatedTarget as Node)) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+    if (isAiProcessing) return;
+
+    const imageFiles = Array.from(event.dataTransfer.files).filter((file) => file.type.startsWith('image/'));
+    for (const file of imageFiles) {
+      await processReceiptImage('', file);
     }
   };
 
@@ -69,7 +93,12 @@ const InputStep: React.FC = () => {
   const nextButtonText = people.length >= 2 ? t('assignItems') : t('viewSummary');
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div
+      className={`max-w-4xl mx-auto ${isDragging ? 'upload-drop-active' : ''}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="sr-only" aria-label={t('uploadReceipt')} />
 
       {error && (
@@ -103,6 +132,7 @@ const InputStep: React.FC = () => {
               <Receipt className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-6 sm:mb-8 text-gray-300" aria-hidden="true" />
               <h3 className="text-xl sm:text-2xl font-bold text-gray-700 mb-2">{t('emptyStateTitle')}</h3>
               <p className="text-gray-500 text-sm sm:text-base px-4 max-w-md mx-auto">{t('emptyStateDescription')}</p>
+              <p className="upload-drop-hint">{t('dropReceiptHint')}</p>
             </div>
 
             <button onClick={handleUploadClick} disabled={isAiProcessing} className="btn btn-primary min-h-[3.25rem] w-56 px-6 text-lg disabled:cursor-not-allowed">

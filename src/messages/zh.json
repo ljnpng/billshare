@@ -96,6 +96,7 @@
     "orManualInput": "或 手动输入",
     "emptyStateTitle": "上传账单开始",
     "emptyStateDescription": "拍照或上传收据图片，AI 将自动识别账单内容",
+    "dropReceiptHint": "也可以将图片拖到此处",
     "nextButton": "下一步：分配条目",
     "assignItems": "分配账单",
     "viewSummary": "查看汇总",

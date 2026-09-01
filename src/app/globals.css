@@ -353,6 +353,24 @@
   justify-content: center;
 }
 
+.upload-drop-active {
+  border-radius: 0.75rem;
+  outline: 2px dashed rgb(59 130 246 / 0.65);
+  outline-offset: 0.5rem;
+}
+
+.upload-drop-active .upload-empty-state {
+  background: rgba(59, 130, 246, 0.06);
+  outline: 2px dashed rgb(59 130 246 / 0.65);
+  outline-offset: -0.75rem;
+}
+
+.upload-drop-hint {
+  margin-top: 0.75rem;
+  color: rgb(107 114 128);
+  font-size: 0.875rem;
+}
+
 .upload-empty-content {
   position: absolute;
   inset: 0;
