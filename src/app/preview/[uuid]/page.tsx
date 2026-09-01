@@ -4,10 +4,10 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { ChevronDown, Receipt } from 'lucide-react';
-import { AppState } from '../../../../types';
-import { dataProcessor } from '../../../../lib/dataProcessor';
-import { FALLBACK_RATE, getCachedExchangeRate, convertUsdToCny } from '../../../../lib/currencyService';
-import { useAppStore } from '../../../../store';
+import { AppState } from '@/types';
+import { dataProcessor } from '@/lib/dataProcessor';
+import { FALLBACK_RATE, getCachedExchangeRate, convertUsdToCny } from '@/lib/currencyService';
+import { useAppStore } from '@/store';
 
 interface PreviewPageProps {}
 

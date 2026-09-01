@@ -33,22 +33,17 @@
     "receipts": "Receipts"
   },
   "receiptCard": {
-    "receiptNamePlaceholder": "Enter receipt name...",
-    "finishEdit": "Finish editing",
-    "editReceiptName": "Edit receipt name",
-    "itemNamePlaceholder": "Item name",
-    "priceEditPlaceholder": "Price",
-    "saveEditTitle": "Save (Enter)",
-    "cancelEditTitle": "Cancel (Esc)",
-    "editTitle": "Edit",
-    "deleteTitle": "Delete"
-  },
-  "languageSwitcher": {
-    "chineseShort": "中",
-    "englishShort": "EN",
-    "switchLanguage": "Switch Language",
-    "chinese": "中文",
-    "english": "English"
+    "deleteReceipt": "Delete",
+    "addItemPlaceholder": "Item name (e.g., Pizza)",
+    "pricePlaceholder": "Price",
+    "addItemButton": "Add",
+    "noItemsMessage": "No items yet",
+    "taxLabel": "Tax",
+    "tipLabel": "Tip",
+    "summaryTitle": "Receipt Summary",
+    "needsPriceMessage": "Price needed",
+    "taxHelpText": "Enter the tax amount for this receipt",
+    "tipHelpText": "Enter the tip amount for this receipt"
   },
   "header": {
     "collapseTitle": "Collapse header"
@@ -154,19 +149,6 @@
     "shareToWeChat": "Share to WeChat",
     "openInBrowser": "Open in Browser",
     "shareInWeChatTip": "Please tap the menu button in the top-right corner and select \"Share with Friends\" or \"Share to Moments\""
-  },
-  "receiptCard": {
-    "deleteReceipt": "Delete",
-    "addItemPlaceholder": "Item name (e.g., Pizza)",
-    "pricePlaceholder": "Price",
-    "addItemButton": "Add",
-    "noItemsMessage": "No items yet",
-    "taxLabel": "Tax",
-    "tipLabel": "Tip",
-    "summaryTitle": "Receipt Summary",
-    "needsPriceMessage": "Price needed",
-    "taxHelpText": "Enter the tax amount for this receipt",
-    "tipHelpText": "Enter the tip amount for this receipt"
   },
   "errorAlert": {
     "title": "Error Occurred"

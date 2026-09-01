@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
+import IntlProvider from '@/components/IntlProvider';
 
 export const metadata: Metadata = {
   title: 'SplitBill',
@@ -18,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </head>
       <body>
-        {children}
+        <IntlProvider>{children}</IntlProvider>
         <SpeedInsights />
       </body>
     </html>

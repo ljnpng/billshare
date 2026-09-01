@@ -33,22 +33,17 @@
     "receipts": "收据"
   },
   "receiptCard": {
-    "receiptNamePlaceholder": "输入收据名称...",
-    "finishEdit": "完成编辑",
-    "editReceiptName": "编辑收据名称",
-    "itemNamePlaceholder": "商品名称",
-    "priceEditPlaceholder": "价格",
-    "saveEditTitle": "保存 (Enter)",
-    "cancelEditTitle": "取消 (Esc)",
-    "editTitle": "编辑",
-    "deleteTitle": "删除"
-  },
-  "languageSwitcher": {
-    "chineseShort": "中",
-    "englishShort": "EN",
-    "switchLanguage": "切换语言",
-    "chinese": "中文",
-    "english": "English"
+    "deleteReceipt": "删除",
+    "addItemPlaceholder": "项目名称 (例如: 披萨)",
+    "pricePlaceholder": "价格",
+    "addItemButton": "添加",
+    "noItemsMessage": "暂无项目",
+    "taxLabel": "税费 (Tax)",
+    "tipLabel": "小费 (Tip)",
+    "summaryTitle": "收据汇总",
+    "needsPriceMessage": "需要填写价格",
+    "taxHelpText": "输入此收据的税费金额",
+    "tipHelpText": "输入此收据的小费金额"
   },
   "header": {
     "collapseTitle": "折叠头部"
@@ -154,19 +149,6 @@
     "shareToWeChat": "分享到微信",
     "openInBrowser": "在浏览器中打开",
     "shareInWeChatTip": "请点击右上角菜单，选择「分享给朋友」或「分享到朋友圈」"
-  },
-  "receiptCard": {
-    "deleteReceipt": "删除",
-    "addItemPlaceholder": "项目名称 (例如: 披萨)",
-    "pricePlaceholder": "价格",
-    "addItemButton": "添加",
-    "noItemsMessage": "暂无项目",
-    "taxLabel": "税费 (Tax)",
-    "tipLabel": "小费 (Tip)",
-    "summaryTitle": "收据汇总",
-    "needsPriceMessage": "需要填写价格",
-    "taxHelpText": "输入此收据的税费金额",
-    "tipHelpText": "输入此收据的小费金额"
   },
   "errorAlert": {
     "title": "出现错误"

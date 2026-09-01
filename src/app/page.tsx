@@ -1,4 +1,4 @@
-import BillEditor from '../../components/BillEditor';
+import BillEditor from '@/components/BillEditor';
 
 export default function Home() {
   return <BillEditor />;
