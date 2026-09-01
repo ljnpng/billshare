@@ -13,7 +13,6 @@ interface AppStore extends AppState {
 
   createShareSession: () => Promise<string | null>;
   hydrateDraft: () => void;
-  loadSharedSession: (uuid: string) => Promise<boolean>;
   replaceDraft: (data: PersistedAppState) => void;
 
   loadExchangeRate: () => Promise<void>;
@@ -162,35 +161,6 @@ export const useAppStore = create<AppStore>()(
         }
 
         set({ isDraftHydrated: true });
-      },
-
-      loadSharedSession: async (uuid: string) => {
-        try {
-          const response = await fetch(`/api/session/${uuid}`);
-
-          if (response.status === 404) {
-            console.warn('Session not found:', uuid);
-            return false;
-          }
-
-          if (!response.ok) {
-            throw new Error('Failed to load session');
-          }
-
-          const result = await response.json();
-
-          if (result.success && result.data) {
-            get().replaceDraft(result.data);
-
-            console.log('Shared snapshot loaded successfully:', uuid);
-            return true;
-          }
-
-          return false;
-        } catch (error) {
-          console.error('Session load error:', error);
-          return false;
-        }
       },
 
       replaceDraft: (data: PersistedAppState) => {
