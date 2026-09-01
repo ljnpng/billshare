@@ -17,7 +17,6 @@ export default function ServiceDownPage({ message }: ServiceDownPageProps) {
   return (
     <div className="min-h-screen bg-luxury-rich flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 text-center">
-        {/* Service Down Icon */}
         <div className="mx-auto w-16 h-16 border border-gray-300 rounded-md flex items-center justify-center">
           <svg className="w-8 h-8 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -29,13 +28,11 @@ export default function ServiceDownPage({ message }: ServiceDownPageProps) {
           </svg>
         </div>
 
-        {/* Title */}
         <div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">服务维护中</h2>
           <div className="w-12 h-px bg-gray-300 mx-auto"></div>
         </div>
 
-        {/* Message */}
         <div className="space-y-4">
           <p className="text-lg text-gray-600">{message || defaultMessage}</p>
 
@@ -56,7 +53,6 @@ export default function ServiceDownPage({ message }: ServiceDownPageProps) {
           </div>
         </div>
 
-        {/* Status Indicator */}
         <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
           <div className="flex space-x-1">
             <div className="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
@@ -66,7 +62,6 @@ export default function ServiceDownPage({ message }: ServiceDownPageProps) {
           <span>检查服务状态中...</span>
         </div>
 
-        {/* Actions */}
         <div className="space-y-3">
           <button onClick={() => router.push('/')} className="btn btn-primary w-full">
             返回首页
@@ -77,7 +72,6 @@ export default function ServiceDownPage({ message }: ServiceDownPageProps) {
           </button>
         </div>
 
-        {/* Footer Info */}
         <div className="pt-6 border-t border-gray-200">
           <div className="text-xs text-gray-400 space-y-1">
             <p>如果问题持续存在，请联系技术支持</p>

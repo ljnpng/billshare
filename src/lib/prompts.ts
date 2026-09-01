@@ -1,4 +1,3 @@
-// 优化后的 Claude 3.5 Haiku 账单识别 Prompt
 
 export const RECEIPT_ANALYSIS_PROMPT = `
 你是一个专业的账单识别专家。请仔细分析这张账单图片，使用以下结构化方法：
@@ -81,7 +80,6 @@ export const RECEIPT_ANALYSIS_PROMPT = `
 现在请分析这张账单图片：
 `;
 
-// 英文版本的提示词
 export const RECEIPT_ANALYSIS_PROMPT_EN = `
 You are a professional receipt recognition expert. Please carefully analyze this receipt image using the following structured approach:
 
@@ -163,12 +161,10 @@ If image is not a receipt or cannot be recognized, return:
 Now please analyze this receipt image:
 `;
 
-// 根据语言获取对应的提示词
 export const getReceiptAnalysisPrompt = (locale: string = 'zh') => {
   return locale === 'en' ? RECEIPT_ANALYSIS_PROMPT_EN : RECEIPT_ANALYSIS_PROMPT;
 };
 
-// 简化的提示词（用于快速识别）
 export const SIMPLE_RECEIPT_PROMPT = `
 请识别这张账单图片中的关键信息：
 
@@ -195,7 +191,6 @@ export const getSimpleReceiptPrompt = (locale: string = 'zh') => {
   return locale === 'en' ? SIMPLE_RECEIPT_PROMPT_EN : SIMPLE_RECEIPT_PROMPT;
 };
 
-// 错误情况的 Prompt
 export const ERROR_RESPONSE_PROMPT = `
 如果无法识别，请返回：
 {
@@ -230,10 +225,8 @@ export const getErrorResponsePrompt = (locale: string = 'zh') => {
   return locale === 'en' ? ERROR_RESPONSE_PROMPT_EN : ERROR_RESPONSE_PROMPT;
 };
 
-// 完整的 Prompt（保持向后兼容）
 export const COMPLETE_RECEIPT_PROMPT = RECEIPT_ANALYSIS_PROMPT;
 
-// 示例响应格式
 export const EXAMPLE_RESPONSE = {
   businessName: 'The Poke Co',
   items: [

@@ -2,24 +2,15 @@ import { AI_CONFIG } from './config';
 import { aiLogger } from './logger';
 import convert from 'heic-convert';
 
-/**
- * 检查文件是否为支持的图片格式
- */
 export const isSupportedImageFormat = (mimeType: string): boolean => {
   const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif'];
   return supportedTypes.includes(mimeType);
 };
 
-/**
- * 检查文件是否为 HEIC 格式
- */
 export const isHeicFormat = (file: File): boolean => {
   return file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
 };
 
-/**
- * 转换 HEIC 格式到 JPEG
- */
 export const convertHeicToJpeg = async (file: File): Promise<File> => {
   try {
     aiLogger.info('开始转换 HEIC 格式...', {
@@ -53,21 +44,15 @@ export const convertHeicToJpeg = async (file: File): Promise<File> => {
   }
 };
 
-/**
- * 验证并预处理图片文件
- */
 export const validateAndPreprocessImage = async (file: File): Promise<File> => {
-  // 验证文件格式
   if (!isSupportedImageFormat(file.type)) {
     throw new Error('不支持的文件格式');
   }
 
-  // 验证文件大小
   if (file.size > AI_CONFIG.image.maxFileSize) {
     throw new Error('文件过大');
   }
 
-  // 转换 HEIC 格式
   let processedFile = file;
   if (isHeicFormat(file)) {
     processedFile = await convertHeicToJpeg(file);
@@ -76,9 +61,6 @@ export const validateAndPreprocessImage = async (file: File): Promise<File> => {
   return processedFile;
 };
 
-/**
- * 基本格式验证
- */
 export const validateBasicFormat = (response: any): boolean => {
   if (typeof response !== 'object' || response === null) {
     aiLogger.warn('验证失败：响应不是有效的对象');
@@ -93,9 +75,6 @@ export const validateBasicFormat = (response: any): boolean => {
   return true;
 };
 
-/**
- * 验证AI响应格式
- */
 export const validateAIResponse = (response: any): boolean => {
   if (!validateBasicFormat(response)) {
     return false;
@@ -106,7 +85,6 @@ export const validateAIResponse = (response: any): boolean => {
     return false;
   }
 
-  // 检查每个商品项目
   for (let i = 0; i < response.items.length; i++) {
     const item = response.items[i];
     if (!item.name || typeof item.name !== 'string') {
@@ -119,13 +97,11 @@ export const validateAIResponse = (response: any): boolean => {
     }
   }
 
-  // 检查金额数据（仅警告，不阻止验证，由 cleanAndValidate 处理无效值）
   const amountFields = ['subtotal', 'tax', 'tip', 'total'];
   for (const field of amountFields) {
     if (response[field] !== undefined && response[field] !== null) {
       if (typeof response[field] !== 'number' || response[field] < 0) {
         aiLogger.warn(`金额字段 ${field} 无效，将被忽略: ${response[field]}`);
-        // 不返回 false，让 cleanAndValidate 处理无效值
       }
     }
   }
@@ -133,9 +109,6 @@ export const validateAIResponse = (response: any): boolean => {
   return true;
 };
 
-/**
- * 解析AI响应JSON
- */
 export const parseAIResponse = (responseText: string): any => {
   try {
     const recognizedData = JSON.parse(responseText);

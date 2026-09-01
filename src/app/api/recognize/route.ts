@@ -8,7 +8,6 @@ import { getErrorType } from '@/lib/errorMessages';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-/** Convert an image file to an OpenAI-compatible data URL. */
 const fileToBase64 = async (file: File): Promise<string> => {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
@@ -61,9 +60,6 @@ const recognizeReceipt = async (file: File, locale: string): Promise<AIRecognize
   return parseAIResponse(content);
 };
 
-/**
- * 清理和验证识别结果
- */
 const cleanAndValidate = (data: AIRecognizedReceipt, fileName: string, fileSize: number): AIRecognizedReceipt => {
   if (!validateAIResponse(data)) {
     aiLogger.error('AI 响应验证失败', {
@@ -76,16 +72,13 @@ const cleanAndValidate = (data: AIRecognizedReceipt, fileName: string, fileSize:
 
   const originalItemsCount = data.items?.length || 0;
 
-  // 过滤无效项目
   data.items = data.items.filter((item) => item.name && typeof item.name === 'string' && item.name.trim().length > 0);
 
-  // 标准化价格字段
   data.items = data.items.map((item) => ({
     ...item,
     price: typeof item.price === 'number' && item.price >= 0 ? item.price : null,
   }));
 
-  // 清理无效的金额字段（AI可能返回负数或非数字）
   const amountFields = ['subtotal', 'tax', 'tip', 'total'] as const;
   for (const field of amountFields) {
     const value = data[field];
@@ -135,10 +128,8 @@ export async function POST(request: NextRequest) {
       fileType: file.type,
     });
 
-    // 1. 验证并预处理图片
     const processedFile = await validateAndPreprocessImage(file);
 
-    // 2. 调用 OpenAI-compatible 视觉模型
     let recognizedData = await recognizeReceipt(processedFile, locale);
 
     aiLogger.info('AI 响应解析成功', {
@@ -146,7 +137,6 @@ export async function POST(request: NextRequest) {
       itemsCount: recognizedData.items?.length || 0,
     });
 
-    // 3. 清理和验证
     recognizedData = cleanAndValidate(recognizedData, file.name, file.size);
 
     const result: AIProcessingResult = {

@@ -5,7 +5,6 @@ import { AppState } from '../../../../types';
 
 export async function POST(request: NextRequest) {
   try {
-    // 检查当前存储后端健康状态
     const healthCheck = await isStorageHealthy();
     if (!healthCheck.success) {
       return NextResponse.json(
@@ -20,7 +19,6 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json().catch(() => ({}));
 
-    // A session is a share snapshot. It is created only when the user shares.
     const uuid = uuidv4();
     const sourceData = body.data && typeof body.data === 'object' ? body.data : {};
     const snapshotData: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'> = {
@@ -29,11 +27,9 @@ export async function POST(request: NextRequest) {
       currentStep: sourceData.currentStep || 'input',
     };
 
-    // 保存到数据库
     const saveResult = await sessionService.saveSession(uuid, snapshotData);
 
     if (!saveResult.success) {
-      // Handle different error types
       if (saveResult.error?.type === DatabaseErrorType.CONNECTION_ERROR) {
         return NextResponse.json(
           {

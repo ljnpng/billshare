@@ -1,12 +1,6 @@
-/**
- * AI识别错误消息国际化映射
- */
 
 export type ErrorType = 'formatError' | 'noItemsFound' | 'networkError' | 'recognitionFailed' | 'parseError' | 'invalidFile' | 'processingFailed' | 'apiError';
 
-/**
- * 根据错误消息内容判断错误类型
- */
 export const getErrorType = (errorMessage: string): ErrorType => {
   const message = errorMessage.toLowerCase();
 
@@ -44,9 +38,6 @@ export const getErrorType = (errorMessage: string): ErrorType => {
   return 'recognitionFailed';
 };
 
-/**
- * 获取国际化错误消息的键
- */
 export const getErrorMessageKey = (errorMessage: string): string => {
   const errorType = getErrorType(errorMessage);
   return `aiRecognition.errors.${errorType}`;

@@ -9,7 +9,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { uuid } = await params;
 
-    // 验证UUID格式
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(uuid)) {
       return NextResponse.json({ error: '无效的会话ID格式' }, { status: 400 });
@@ -18,7 +17,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const sessionResult = await sessionService.getSession(uuid);
 
     if (!sessionResult.success) {
-      // Handle different error types
       if (sessionResult.error?.type === DatabaseErrorType.CONNECTION_ERROR) {
         return NextResponse.json(
           {
@@ -34,7 +32,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         return NextResponse.json({ error: '会话不存在' }, { status: 404 });
       }
 
-      // Other errors
       return NextResponse.json({ error: sessionResult.error?.message || '服务器内部错误' }, { status: 500 });
     }
 
@@ -59,7 +56,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const deleteResult = await sessionService.deleteSession(uuid);
 
     if (!deleteResult.success) {
-      // Handle different error types
       if (deleteResult.error?.type === DatabaseErrorType.CONNECTION_ERROR) {
         return NextResponse.json(
           {
@@ -74,7 +70,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: deleteResult.error?.message || '删除会话失败' }, { status: 500 });
     }
 
-    // Check if session was actually deleted
     if (!deleteResult.data) {
       return NextResponse.json({ error: '会话不存在' }, { status: 404 });
     }

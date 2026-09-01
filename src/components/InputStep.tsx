@@ -69,14 +69,12 @@ const InputStep: React.FC = () => {
   const totalItems = receipts.reduce((sum, r) => sum + r.items.length, 0);
   const hasReceipts = receipts.length > 0;
 
-  // Determine button text based on people count
   const nextButtonText = people.length >= 2 ? t('assignItems') : t('viewSummary');
 
   return (
     <div className="max-w-4xl mx-auto">
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="sr-only" aria-label={t('uploadReceipt')} />
 
-      {/* Error alert */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded">
           <div className="flex items-start gap-3">
@@ -102,7 +100,6 @@ const InputStep: React.FC = () => {
       )}
 
       {!hasReceipts && !isAiProcessing ? (
-        /* Empty state - minimal upload UI */
         <div className="upload-empty-state text-center py-16 sm:py-24">
           <div className="upload-empty-content">
             <div className="upload-empty-before">
@@ -123,17 +120,14 @@ const InputStep: React.FC = () => {
           </div>
         </div>
       ) : (
-        /* Has receipts - show list */
         <div className="space-y-6">
           {isAiProcessing && <ReceiptRecognitionSkeleton />}
-          {/* Receipt cards */}
           {[...receipts].reverse().map((receipt, index) => (
             <div key={receipt.id} className="animation-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
               <ReceiptCard receipt={receipt} />
             </div>
           ))}
 
-          {/* Add more receipts buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
             <button type="button" onClick={handleUploadClick} disabled={isAiProcessing} className="btn btn-secondary btn-sm !text-sm disabled:cursor-not-allowed">
               {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
@@ -143,7 +137,6 @@ const InputStep: React.FC = () => {
             </button>
           </div>
 
-          {/* Collapsible split section */}
           <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
             <button
               onClick={() => setIsSplitSectionExpanded(!isSplitSectionExpanded)}
@@ -159,7 +152,6 @@ const InputStep: React.FC = () => {
 
             {isSplitSectionExpanded && (
               <div className="p-4 border-t border-gray-200">
-                {/* Add person form */}
                 <form onSubmit={handleAddPerson} className="mb-4">
                   <div className="flex gap-2">
                     <input
@@ -179,7 +171,6 @@ const InputStep: React.FC = () => {
                   </div>
                 </form>
 
-                {/* People list */}
                 {people.length > 0 ? (
                   <div className="space-y-2">
                     {people.map((person) => (
@@ -205,7 +196,6 @@ const InputStep: React.FC = () => {
             )}
           </div>
 
-          {/* Navigation buttons */}
           <div className="flex justify-end pt-4">
             <button onClick={handleNext} className="btn btn-primary btn-lg w-full sm:w-auto" disabled={totalItems === 0} aria-label={nextButtonText}>
               {nextButtonText}

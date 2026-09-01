@@ -3,16 +3,10 @@ import imageCompression from 'browser-image-compression';
 import { AI_CONFIG, isSupportedImageFormat, getSupportedFormatsInfo } from './config';
 import { aiLogger } from './logger';
 
-/**
- * 检查文件是否为 HEIC 格式
- */
 const isHeicFormat = (file: File): boolean => {
   return file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
 };
 
-/**
- * 压缩和调整图片大小
- */
 const compressAndResizeImage = async (file: File): Promise<File> => {
   try {
     aiLogger.info('开始压缩图片...', {
@@ -35,13 +29,9 @@ const compressAndResizeImage = async (file: File): Promise<File> => {
   }
 };
 
-/**
- * 预处理图片文件
- */
 const preprocessImage = async (file: File): Promise<File> => {
   let processedFile = file;
 
-  // 检查文件大小
   if (file.size > AI_CONFIG.image.maxFileSize) {
     throw new Error(AI_CONFIG.errors.fileTooLarge);
   }
@@ -54,12 +44,10 @@ const preprocessImage = async (file: File): Promise<File> => {
     });
   }
 
-  // 检查是否为支持的格式
   if (!isSupportedImageFormat(processedFile.type)) {
     throw new Error(AI_CONFIG.errors.unsupportedFormat);
   }
 
-  // 压缩图片（如果需要）
   if (processedFile.size > AI_CONFIG.image.maxFileSize) {
     processedFile = await compressAndResizeImage(processedFile);
   }
@@ -67,10 +55,6 @@ const preprocessImage = async (file: File): Promise<File> => {
   return processedFile;
 };
 
-/**
- * 调用统一的 API 路由进行识别
- * Provider 选择由服务端决定，浏览器无需知道
- */
 const callRecognitionAPI = async (file: File, locale: string = 'zh'): Promise<AIProcessingResult> => {
   try {
     const formData = new FormData();
@@ -97,17 +81,12 @@ const callRecognitionAPI = async (file: File, locale: string = 'zh'): Promise<AI
   }
 };
 
-/**
- * 使用 Next.js API 路由识别账单
- */
 export const recognizeReceipt = async (imageFile: File, locale: string = 'zh'): Promise<AIProcessingResult> => {
   try {
     aiLogger.info('开始 AI 识别流程...');
 
-    // 1. 预处理图片
     const processedFile = await preprocessImage(imageFile);
 
-    // 2. 调用 Next.js API 路由
     const result = await callRecognitionAPI(processedFile, locale);
 
     if (result.success) {
@@ -129,16 +108,10 @@ export const recognizeReceipt = async (imageFile: File, locale: string = 'zh'): 
   }
 };
 
-/**
- * 获取支持的图片格式信息
- */
 export const getSupportedImageFormats = () => {
   return getSupportedFormatsInfo();
 };
 
-/**
- * 预览图片处理结果（用于测试）
- */
 export const previewImageProcessing = async (file: File) => {
   const originalInfo = {
     name: file.name,

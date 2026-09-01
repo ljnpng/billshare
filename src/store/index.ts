@@ -8,21 +8,17 @@ import { FALLBACK_RATE, getCachedExchangeRate } from '../lib/currencyService';
 interface AppStore extends AppState {
   isDraftHydrated: boolean;
 
-  // Exchange rate state
   exchangeRate: number;
   isLoadingExchangeRate: boolean;
 
-  // Shared snapshots are remote; the active draft always belongs to this browser.
   createShareSession: () => Promise<string | null>;
   hydrateDraft: () => void;
   loadSharedSession: (uuid: string) => Promise<boolean>;
   replaceDraft: (data: PersistedAppState) => void;
 
-  // Exchange rate methods
   loadExchangeRate: () => Promise<void>;
   setExchangeRate: (rate: number) => void;
 
-  // Actions
   setPeople: (people: Person[]) => void;
   addPerson: (name: string) => void;
   removePerson: (personId: string) => void;
@@ -36,7 +32,6 @@ interface AppStore extends AppState {
   removeItem: (receiptId: string, itemId: string) => void;
   updateItemAssignment: (itemId: string, assignedTo: string[]) => void;
 
-  // AI识别相关
   processReceiptImage: (receiptId: string, imageFile: File, locale?: string) => Promise<boolean>;
   setAiProcessing: (processing: boolean) => void;
 
@@ -44,35 +39,30 @@ interface AppStore extends AppState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 
-  // Computed values
   getBillSummary: () => ReturnType<typeof dataProcessor.generateBillSummary> | null;
 
-  // Reset
   reset: () => void;
 }
 
-// 使用现代化的颜色系统 - 更加柔和且富有活力
-// 基于苹果设计系统的颜色理念，提供更好的视觉体验
 const colorPalette = [
-  '#007AFF', // 苹果蓝
-  '#32D74B', // 苹果绿
-  '#FF9F0A', // 苹果橙
-  '#BF5AF2', // 苹果紫
-  '#FF453A', // 苹果红
-  '#64D2FF', // 苹果青
-  '#FF2D92', // 苹果粉
-  '#30D158', // 苹果薄荷绿
-  '#5AC8FA', // 苹果天蓝
-  '#FFCC00', // 苹果黄
-  '#FF6B35', // 苹果珊瑚色
-  '#A855F7', // 苹果薰衣草
-  '#06B6D4', // 现代青色
-  '#10B981', // 现代绿色
-  '#F59E0B', // 现代琥珀色
-  '#8B5CF6', // 现代紫色
+  '#007AFF',
+  '#32D74B',
+  '#FF9F0A',
+  '#BF5AF2',
+  '#FF453A',
+  '#64D2FF',
+  '#FF2D92',
+  '#30D158',
+  '#5AC8FA',
+  '#FFCC00',
+  '#FF6B35',
+  '#A855F7',
+  '#06B6D4',
+  '#10B981',
+  '#F59E0B',
+  '#8B5CF6',
 ];
 
-// 根据已有的人数，顺序分配颜色
 const assignColor = (peopleCount: number) => {
   return colorPalette[peopleCount % colorPalette.length];
 };
@@ -105,7 +95,6 @@ const browserStorage = {
 export const useAppStore = create<AppStore>()(
   devtools(
     subscribeWithSelector((set, get) => ({
-      // Initial state
       people: [],
       receipts: [],
       currentStep: 'input',
@@ -114,7 +103,6 @@ export const useAppStore = create<AppStore>()(
       isAiProcessing: false,
       isDraftHydrated: false,
 
-      // Exchange rate state
       exchangeRate: FALLBACK_RATE,
       isLoadingExchangeRate: false,
 
@@ -217,7 +205,6 @@ export const useAppStore = create<AppStore>()(
         });
       },
 
-      // Exchange rate methods
       loadExchangeRate: async () => {
         set({ isLoadingExchangeRate: true });
         try {
@@ -226,7 +213,6 @@ export const useAppStore = create<AppStore>()(
           storeLogger.info('汇率加载成功', { rate });
         } catch (error) {
           storeLogger.error('汇率加载失败', { error });
-          // Keep the initial fallback rate when cache access fails.
           set({ isLoadingExchangeRate: false });
         }
       },
@@ -236,7 +222,6 @@ export const useAppStore = create<AppStore>()(
         storeLogger.info('汇率已更新', { rate });
       },
 
-      // Actions
       setPeople: (people) => set({ people }),
 
       addPerson: (name) => {
@@ -381,7 +366,6 @@ export const useAppStore = create<AppStore>()(
         }
       },
 
-      // AI识别相关actions
       processReceiptImage: async (receiptId, imageFile, locale = 'zh') => {
         storeLogger.info('开始处理收据图片', {
           receiptId,
@@ -409,7 +393,6 @@ export const useAppStore = create<AppStore>()(
 
           const aiData = result.data;
 
-          // 如果没有提供 receiptId 或 receiptId 为空，创建新收据
           let receipt: Receipt;
           let isNewReceipt = false;
 
@@ -446,7 +429,6 @@ export const useAppStore = create<AppStore>()(
             isNewReceipt,
           });
 
-          // 创建更新后的收据对象，包含AI识别的名称
           let updatedReceipt: Receipt = {
             ...receipt,
             items: [],
@@ -467,15 +449,12 @@ export const useAppStore = create<AppStore>()(
             });
           }
 
-          // 添加AI识别的items
           for (const item of aiData.items) {
             updatedReceipt = dataProcessor.addItem(updatedReceipt, item.name, item.price);
           }
 
-          // 更新税费和小费
           const finalReceipt = dataProcessor.updateTaxAndTip(updatedReceipt, aiData.tax || 0, aiData.tip || 0);
 
-          // 更新store中的receipt
           set((state) => ({
             receipts: state.receipts.map((r) => (r.id === receipt.id ? finalReceipt : r)),
             isAiProcessing: false,
@@ -495,10 +474,8 @@ export const useAppStore = create<AppStore>()(
             error: error instanceof Error ? error.message : 'Unknown error',
           });
 
-          // 如果在处理过程中创建了新收据但出现异常，移除这个空收据
           if (!receiptId && error instanceof Error) {
             const receipts = get().receipts;
-            // 找到最近创建的可能为空的收据并移除
             const lastReceipt = receipts[receipts.length - 1];
             if (lastReceipt && lastReceipt.items.length === 0) {
               get().removeReceipt(lastReceipt.id);

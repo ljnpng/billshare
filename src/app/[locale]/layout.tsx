@@ -23,12 +23,10 @@ export async function generateMetadata({ params: { locale } }: { params: { local
 }
 
 export default async function LocaleLayout({ children, params: { locale } }: { children: React.ReactNode; params: { locale: string } }) {
-  // 验证语言是否支持
   if (!locales.includes(locale as any)) {
     notFound();
   }
 
-  // 获取翻译消息
   let messages;
   try {
     messages = (await import(`../../messages/${locale}.json`)).default;

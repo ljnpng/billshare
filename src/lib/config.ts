@@ -1,15 +1,9 @@
-// AI 服务配置
 export const AI_CONFIG = {
-  // 图片处理配置
   image: {
-    // 支持的图片格式
     supportedFormats: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif'],
-    // 最大文件大小 (25MB)
     maxFileSize: 25 * 1024 * 1024,
-    // 最大图片尺寸
     maxWidth: 8000,
     maxHeight: 8000,
-    // 压缩配置
     compression: {
       maxSizeMB: 20,
       maxWidthOrHeight: 2048,
@@ -18,7 +12,6 @@ export const AI_CONFIG = {
     },
   },
 
-  // 错误消息配置
   errors: {
     fileUploadFailed: 'File upload failed, please check your network connection or try again later',
     unsupportedFormat: 'Unsupported image format, please use JPG, PNG, GIF, WebP or HEIC format',
@@ -35,12 +28,10 @@ export const AI_CONFIG = {
   },
 } as const;
 
-// 检查图片格式是否支持
 export const isSupportedImageFormat = (type: string): boolean => {
   return AI_CONFIG.image.supportedFormats.includes(type as any);
 };
 
-// 获取支持的图片格式信息
 export const getSupportedFormatsInfo = () => {
   return {
     formats: AI_CONFIG.image.supportedFormats,

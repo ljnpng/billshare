@@ -24,12 +24,10 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
   const [editingItemName, setEditingItemName] = useState('');
   const [editingItemPrice, setEditingItemPrice] = useState('');
 
-  // 防抖定时器引用
   const [nameDebounceTimer, setNameDebounceTimer] = useState<NodeJS.Timeout | null>(null);
   const [taxDebounceTimer, setTaxDebounceTimer] = useState<NodeJS.Timeout | null>(null);
   const [tipDebounceTimer, setTipDebounceTimer] = useState<NodeJS.Timeout | null>(null);
 
-  // 监听receipt的税费和小费变化，同步更新本地状态
   useEffect(() => {
     setTaxAmount(receipt.tax.toString());
     setTipAmount(receipt.tip.toString());
@@ -65,16 +63,13 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     updateTaxAndTip(receipt.id, tax, tip);
   };
 
-  // 即时更新税费，带防抖
   const handleTaxChange = (value: string) => {
     setTaxAmount(value);
 
-    // 清除之前的定时器
     if (taxDebounceTimer) {
       clearTimeout(taxDebounceTimer);
     }
 
-    // 设置新的防抖定时器
     const timer = setTimeout(() => {
       const tax = parseFloat(value) || 0;
       const tip = parseFloat(tipAmount) || 0;
@@ -84,16 +79,13 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     setTaxDebounceTimer(timer);
   };
 
-  // 即时更新小费，带防抖
   const handleTipChange = (value: string) => {
     setTipAmount(value);
 
-    // 清除之前的定时器
     if (tipDebounceTimer) {
       clearTimeout(tipDebounceTimer);
     }
 
-    // 设置新的防抖定时器
     const timer = setTimeout(() => {
       const tax = parseFloat(taxAmount) || 0;
       const tip = parseFloat(value) || 0;
@@ -103,7 +95,6 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     setTipDebounceTimer(timer);
   };
 
-  // 清理定时器
   useEffect(() => {
     return () => {
       if (nameDebounceTimer) clearTimeout(nameDebounceTimer);
@@ -120,7 +111,6 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
 
   const handleSaveEdit = () => {
     if (editingItemId && editingItemName.trim() && editingItemPrice.trim()) {
-      // 先删除原商品，再添加新商品（简单的编辑实现）
       removeItem(receipt.id, editingItemId);
       addItem(receipt.id, editingItemName.trim(), parseFloat(editingItemPrice));
       setEditingItemId(null);
@@ -158,12 +148,10 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
               onChange={(e) => {
                 setName(e.target.value);
 
-                // 清除之前的定时器
                 if (nameDebounceTimer) {
                   clearTimeout(nameDebounceTimer);
                 }
 
-                // 即时保存名称变化
                 if (e.target.value.trim() && e.target.value.trim() !== receipt.name) {
                   const timer = setTimeout(() => {
                     updateReceiptName(receipt.id, e.target.value.trim());
@@ -202,7 +190,6 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
         </button>
       </div>
       <div className="pt-6 grid grid-cols-1 md:grid-cols-5 gap-6 sm:gap-8">
-        {/* Left: Item Entry */}
         <div className="md:col-span-3">
           <form onSubmit={handleAddItem} className="mb-6">
             <div className="flex flex-col sm:flex-row gap-3">
@@ -241,7 +228,6 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
               receipt.items.map((item) => (
                 <div key={item.id} className="p-3 border-l-2 border-gray-200 hover:border-blue-400 hover:bg-gray-50 transition-colors">
                   {editingItemId === item.id ? (
-                    // 编辑模式
                     <div className="flex items-center gap-3 flex-1">
                       <input
                         type="text"
@@ -279,7 +265,6 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                             }
                           }}
                           onBlur={() => {
-                            // 失焦时自动保存（如果有内容）
                             if (editingItemName.trim() && editingItemPrice.trim()) {
                               setTimeout(handleSaveEdit, 100);
                             }
@@ -294,7 +279,6 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                       </button>
                     </div>
                   ) : (
-                    // 显示模式
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{item.name}</span>
                       <div className="flex items-center gap-0.5">
@@ -325,7 +309,6 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
             )}
           </div>
         </div>
-        {/* Right: Tax, Tip, Summary */}
         <div className="md:col-span-2 md:border-l md:pl-6">
           <div className="space-y-6">
             <div>

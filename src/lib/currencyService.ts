@@ -34,7 +34,6 @@ export async function getUsdToCnyRate(): Promise<number> {
 }
 
 export async function getCachedExchangeRate(): Promise<number> {
-  // Check if we're in a browser environment
   if (typeof window === 'undefined') {
     return await getUsdToCnyRate();
   }

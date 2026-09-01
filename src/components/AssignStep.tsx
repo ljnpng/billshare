@@ -11,7 +11,6 @@ const AssignStep: React.FC = () => {
   const allItems = receipts.flatMap((r) => r.items);
 
   if (allItems.length === 0 || !people.length) {
-    // 应该由 App.tsx 中的逻辑处理，这里做个兜底
     return <div>{tCommon('loading')}</div>;
   }
 
@@ -61,7 +60,6 @@ const AssignStep: React.FC = () => {
         </div>
 
         <div className="card-content">
-          {/* 进度指示 */}
           <div className="mb-8 pb-6 border-b-2 border-blue-600">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -76,7 +74,6 @@ const AssignStep: React.FC = () => {
             </div>
           </div>
 
-          {/* 人员预览 */}
           <div className="mb-8">
             <h3 className="text-xl font-bold mb-4">{t('peoplePreview')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -97,7 +94,6 @@ const AssignStep: React.FC = () => {
             </div>
           </div>
 
-          {/* 条目分配列表 */}
           <div className="space-y-8">
             {receipts.map((receipt) => (
               <div key={receipt.id} className="pb-8 border-b border-gray-200 last:border-b-0">
@@ -140,7 +136,6 @@ const AssignStep: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* 人员选择 */}
                       <div
                         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 pt-4"
                         role="group"
@@ -176,7 +171,6 @@ const AssignStep: React.FC = () => {
         </div>
       </div>
 
-      {/* 导航按钮 */}
       <div className="flex justify-between gap-3">
         <button onClick={handleBack} className="btn btn-secondary btn-md sm:btn-lg" aria-label={tCommon('previous')}>
           {tCommon('previous')}

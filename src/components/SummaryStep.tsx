@@ -27,12 +27,10 @@ const SummaryStep: React.FC = () => {
   const receipts = useAppStore((state) => state.receipts);
   const isBillOnlyMode = people.length < 2;
 
-  // Load exchange rate on component mount
   useEffect(() => {
     loadExchangeRate();
   }, [loadExchangeRate]);
 
-  // Currency display component
   const CurrencyDisplay = ({ usdAmount }: { usdAmount: number }) => {
     const cnyAmount = convertUsdToCny(usdAmount, exchangeRate);
     return (
@@ -175,13 +173,11 @@ const SummaryStep: React.FC = () => {
     setCurrentStep('input');
   };
 
-  // Bill-only mode: simple bill display without split
   if (isBillOnlyMode) {
     const grandTotal = receipts.reduce((sum, r) => sum + r.total, 0);
 
     return (
       <div className="max-w-4xl mx-auto">
-        {/* Bill cards */}
         <div className="space-y-6 mb-6">
           {receipts.map((receipt) => (
             <div key={receipt.id} className="card">
@@ -224,7 +220,6 @@ const SummaryStep: React.FC = () => {
           ))}
         </div>
 
-        {/* Grand total */}
         {receipts.length > 1 && (
           <div className="card mb-6">
             <div className="card-content">
@@ -236,7 +231,6 @@ const SummaryStep: React.FC = () => {
           </div>
         )}
 
-        {/* Back button */}
         <div className="flex justify-start">
           <button onClick={handleBackToInput} className="btn btn-secondary btn-md" aria-label={tCommon('back')}>
             {tCommon('back')}
@@ -246,7 +240,6 @@ const SummaryStep: React.FC = () => {
     );
   }
 
-  // Split mode: requires billSummary
   if (!billSummary) {
     return (
       <div className="max-w-2xl mx-auto">
@@ -266,7 +259,6 @@ const SummaryStep: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* 总览卡片 */}
       <div className="card mb-6">
         <div className="card-header">
           <h2 className="card-title">{t('title')}</h2>
@@ -275,7 +267,6 @@ const SummaryStep: React.FC = () => {
 
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* 账单总览 */}
             <div className="p-4 bg-gray-50 rounded-lg">
               <h3 className="font-medium mb-3">{t('billOverview')}</h3>
               <div className="space-y-2">
@@ -298,7 +289,6 @@ const SummaryStep: React.FC = () => {
               </div>
             </div>
 
-            {/* 人员分摊 */}
             <div className="p-4 bg-gray-50 rounded-lg">
               <h3 className="font-medium mb-3">{t('personalSplit')}</h3>
               <div className="space-y-2">
@@ -322,7 +312,6 @@ const SummaryStep: React.FC = () => {
         </div>
       </div>
 
-      {/* 收据明细 */}
       <div className="card mb-6">
         <div className="card-header">
           <h2 className="card-title">{t('receiptDetails')}</h2>
@@ -351,7 +340,6 @@ const SummaryStep: React.FC = () => {
                               <span className="text-gray-600 min-w-0 break-words">{item.name}</span>
                               <CurrencyDisplay usdAmount={item.finalPrice} />
                             </div>
-                            {/* 显示分配的人员 */}
                             <div className="flex flex-wrap gap-1">
                               {item.assignedTo.map((personId) => {
                                 const person = billSummary.people.find((p) => p.id === personId);
@@ -400,7 +388,6 @@ const SummaryStep: React.FC = () => {
         </div>
       </div>
 
-      {/* 详细分摊 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {billSummary.personalBills.map((bill) => (
           <div key={bill.personId} className="card">
@@ -418,7 +405,6 @@ const SummaryStep: React.FC = () => {
 
             <div className="card-content">
               <div className="space-y-4">
-                {/* 按收据分组显示条目 */}
                 {Object.entries(
                   bill.items.reduce(
                     (groups, item) => {
@@ -475,7 +461,6 @@ const SummaryStep: React.FC = () => {
         ))}
       </div>
 
-      {/* 操作按钮 */}
       <div className="flex justify-between items-center gap-2">
         <div className="flex gap-2">
           <button onClick={handleEditAssignments} className="btn btn-secondary btn-sm sm:btn-md" aria-label={t('modifyAssignments')}>
@@ -496,7 +481,6 @@ const SummaryStep: React.FC = () => {
         </button>
       </div>
 
-      {/* 分享弹窗 */}
       <ShareModal
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}

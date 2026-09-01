@@ -1,4 +1,3 @@
-// 基础数据结构定义
 
 export interface Person {
   id: string;
@@ -55,7 +54,6 @@ export interface BillSummary {
   createdAt: Date;
 }
 
-// 用于前端状态管理
 export interface AppState {
   people: Person[];
   receipts: Receipt[];
@@ -65,7 +63,6 @@ export interface AppState {
   isAiProcessing: boolean; // 新增：AI处理状态
 }
 
-// 新增：AI识别相关的类型定义
 export interface AIRecognizedItem {
   name: string;
   price: number | null; // 允许价格为 null，用户可以后续填写

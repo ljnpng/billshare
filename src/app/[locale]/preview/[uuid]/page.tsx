@@ -34,7 +34,6 @@ export default function PreviewPage({}: PreviewPageProps) {
   const uuid = params.uuid as string;
   const locale = params.locale as string;
 
-  // 验证UUID格式
   const isValidUUID = (uuid: string): boolean => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidRegex.test(uuid);
@@ -91,7 +90,6 @@ export default function PreviewPage({}: PreviewPageProps) {
     </div>
   );
 
-  // Currency display component
   const CurrencyDisplay = ({ usdAmount }: { usdAmount: number }) => {
     const cnyAmount = convertUsdToCny(usdAmount, exchangeRate);
     return (
@@ -102,7 +100,6 @@ export default function PreviewPage({}: PreviewPageProps) {
     );
   };
 
-  // Load exchange rate
   useEffect(() => {
     const loadExchangeRate = async () => {
       try {
@@ -110,7 +107,6 @@ export default function PreviewPage({}: PreviewPageProps) {
         setExchangeRate(rate);
       } catch (error) {
         console.error('Failed to load exchange rate:', error);
-        // Keep the initial fallback rate when cache access fails.
       }
     };
 
@@ -124,14 +120,12 @@ export default function PreviewPage({}: PreviewPageProps) {
       return;
     }
 
-    // 验证UUID格式
     if (!isValidUUID(uuid)) {
       setError(tPreview('invalidLink'));
       setIsLoading(false);
       return;
     }
 
-    // 加载会话数据
     const loadPreviewData = async () => {
       try {
         const response = await fetch(`/api/session/${uuid}`);
@@ -181,7 +175,6 @@ export default function PreviewPage({}: PreviewPageProps) {
     return renderEmptyState(tPreview('cannotLoad'), error || tPreview('invalidData'));
   }
 
-  // 计算账单摘要
   const billSummary = dataProcessor.generateBillSummary(sessionData.receipts, sessionData.people);
 
   if (!billSummary) {
@@ -190,7 +183,6 @@ export default function PreviewPage({}: PreviewPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 头部 */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
@@ -208,7 +200,6 @@ export default function PreviewPage({}: PreviewPageProps) {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-6">
-        {/* 总览卡片 */}
         <div className="card mb-6">
           <div className="card-header">
             <h2 className="card-title">{t('title')}</h2>
@@ -217,7 +208,6 @@ export default function PreviewPage({}: PreviewPageProps) {
 
           <div className="card-content">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 账单总览 */}
               <div className="p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-medium mb-3">{t('billOverview')}</h3>
                 <div className="space-y-2">
@@ -240,7 +230,6 @@ export default function PreviewPage({}: PreviewPageProps) {
                 </div>
               </div>
 
-              {/* 人员分摊 */}
               <div className="p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-medium mb-3">{t('personalSplit')}</h3>
                 <div className="space-y-2">
@@ -264,7 +253,6 @@ export default function PreviewPage({}: PreviewPageProps) {
           </div>
         </div>
 
-        {/* 收据明细 */}
         <div className="card mb-6">
           <div className="card-header">
             <h2 className="card-title">{t('receiptDetails')}</h2>
@@ -293,7 +281,6 @@ export default function PreviewPage({}: PreviewPageProps) {
                                 <span className="text-gray-600 min-w-0 break-words">{item.name}</span>
                                 <CurrencyDisplay usdAmount={item.finalPrice} />
                               </div>
-                              {/* 显示分配的人员 */}
                               <div className="flex flex-wrap gap-1">
                                 {item.assignedTo.map((personId) => {
                                   const person = billSummary.people.find((p) => p.id === personId);
@@ -347,7 +334,6 @@ export default function PreviewPage({}: PreviewPageProps) {
           </div>
         </div>
 
-        {/* 详细分摊 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {billSummary.personalBills.map((bill) => (
             <div key={bill.personId} className="card">
@@ -365,7 +351,6 @@ export default function PreviewPage({}: PreviewPageProps) {
 
               <div className="card-content">
                 <div className="space-y-4">
-                  {/* 按收据分组显示条目 */}
                   {Object.entries(
                     bill.items.reduce(
                       (groups, item) => {

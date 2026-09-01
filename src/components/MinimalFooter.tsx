@@ -11,7 +11,6 @@ const MinimalFooter: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex-1" />
 
-          {/* Center: Branding */}
           <div className="flex-1 text-center">
             <span className="text-xs text-gray-500 font-medium tracking-wide">{tApp('title')}</span>
           </div>
