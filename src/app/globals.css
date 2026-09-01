@@ -72,6 +72,17 @@
     white-space: nowrap;
     border-width: 0;
   }
+
+  /* Keep amount fields clean while preserving numeric input behavior. */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
 }
 
 @layer components {
