@@ -16,7 +16,7 @@ npm run start     # Serve the production build locally
 npm test          # Run Node's test runner (currently no checked-in test files)
 ```
 
-AI recognition requires a configured provider and credentials. Copy `.env.example` to `.env`, set `AI_PROVIDER` (`claude` or `groq`) and the matching API key. Storage defaults to process-local memory; use `STORAGE_PROVIDER=cloudflare` with Cloudflare KV credentials or `STORAGE_PROVIDER=redis` with Redis settings for shared persistence. Never commit `.env` or credentials.
+AI recognition requires a configured OpenAI-compatible vision endpoint. Set `OPENAI_COMPATIBLE_BASE_URL`, `OPENAI_COMPATIBLE_API_KEY`, and optionally `OPENAI_COMPATIBLE_MODEL` in `.env`. Storage defaults to process-local memory; use `STORAGE_PROVIDER=cloudflare` with Cloudflare KV credentials or `STORAGE_PROVIDER=redis` with Redis settings for shared persistence. Never commit `.env` or credentials.
 
 ## Coding Style & Naming Conventions
 

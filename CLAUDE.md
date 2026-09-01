@@ -9,16 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` - Build production bundle
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint checks
-- `npm run test:ai` - Test AI service connection (supports AI_PROVIDER=claude|groq)
-
-### Testing AI Services
-```bash
-# Test default (Claude) service
-npm run test:ai
-
-# Test Groq service
-AI_PROVIDER=groq npm run test:ai
-```
+- `npm test` - Run the Node test suite
 
 ## Architecture Overview
 
@@ -26,24 +17,24 @@ BillShare is a Next.js 14 full-stack application for AI-powered receipt splittin
 
 ### Core Flow
 1. **Image Processing**: Upload → compression (client) → HEIC conversion (server) → AI recognition
-2. **AI Recognition**: Claude 3.5 Haiku (high accuracy) or Groq Llama Vision (high speed)
+2. **AI Recognition**: Configured OpenAI-compatible vision endpoint
 3. **Bill Processing**: Parse items → assign to people → calculate proportional tax/tip → generate individual bills
 
 ### Key Directories
-- `src/app/api/` - API routes for AI services
-  - `claude/recognize/route.ts` - Claude API endpoint
-  - `groq/recognize/route.ts` - Groq API endpoint
+- `src/app/api/` - API routes for AI services and share sessions
+  - `recognize/route.ts` - Configured vision-provider endpoint
+  - `session/` - Create and retrieve shared bill snapshots
 - `src/lib/` - Core business logic
   - `aiService.ts` - Client-side AI service calls and image preprocessing
   - `dataProcessor.ts` - Bill calculation algorithms (tax/tip distribution, multi-person sharing)
-  - `config.ts` - Environment variables and AI provider configuration
+  - `config.ts` - Image format, size, and compression configuration
 - `src/store/index.ts` - Zustand global state management
-- `src/components/` - Step-based UI components (SetupStep, InputStep, AssignStep, SummaryStep)
+- `src/components/` - Step-based UI components (InputStep, AssignStep, SummaryStep) and shared editor UI
 
 ### Critical Files for AI Processing
 - `src/lib/prompts.ts` - Contains AI prompts in both Chinese and English
-- `src/app/api/*/route.ts` - Server-side AI API handlers with HEIC conversion
-- `src/lib/imageUtils.ts` - Image compression and format validation (if exists)
+- `src/app/api/recognize/route.ts` - Server-side vision API handler with HEIC conversion
+- `src/lib/imageUtils.ts` - Image compression and format validation
 
 ### State Management
 Uses Zustand with the following key state:
@@ -53,9 +44,10 @@ Uses Zustand with the following key state:
 - `isAiProcessing` - AI recognition status
 
 ### Environment Variables
-- `AI_PROVIDER` - Choose between "claude" (default) or "groq"
-- `CLAUDE_API_KEY` - Required when using Claude
-- `GROQ_API_KEY` - Required when using Groq
+- `OPENAI_COMPATIBLE_BASE_URL` - OpenAI-compatible vision API base URL
+- `OPENAI_COMPATIBLE_API_KEY` - API credential for the configured endpoint
+- `OPENAI_COMPATIBLE_MODEL` - Vision model name
+- `STORAGE_PROVIDER` - `memory` (default), `cloudflare`, or `redis`
 
 ### Bill Calculation Logic
 The `dataProcessor.ts` implements:
@@ -67,7 +59,7 @@ The `dataProcessor.ts` implements:
 - Uses `next-intl` with middleware-based locale detection
 - Language files in `src/messages/` (en.json, zh.json)
 - AI prompts automatically switch based on detected locale
-- Supports URL-based locale routing (`/en/`, `/zh/`)
+- Uses browser-language locale detection without exposing `/en` or `/zh` prefixes in public URLs
 
 ### Image Processing Pipeline
 1. Client compression using `browser-image-compression`
@@ -77,5 +69,5 @@ The `dataProcessor.ts` implements:
 
 ### Testing
 - Use `test-receipts/` directory for sample images
-- Test script validates API connectivity and basic recognition
-- Check both AI providers work with different image formats
+- Run `npm run lint`, `npm run build`, and `npm test` before submitting changes
+- Exercise receipt recognition manually with supported image formats when credentials are configured
