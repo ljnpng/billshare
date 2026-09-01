@@ -3,7 +3,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'BillShare',
+  title: 'SplitBill',
   description: 'Smart bill splitting for meals, taxes, and tips - ensuring everyone pays their fair share',
   icons: {
     icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],

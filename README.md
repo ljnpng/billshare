@@ -8,7 +8,7 @@
 
 AI-powered receipt splitting application built with Next.js 14.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare&env=OPENAI_COMPATIBLE_BASE_URL,OPENAI_COMPATIBLE_API_KEY,OPENAI_COMPATIBLE_MODEL,STORAGE_PROVIDER,CLOUDFLARE_ACCOUNT_ID,CLOUDFLARE_KV_NAMESPACE_ID,CLOUDFLARE_API_TOKEN,REDIS_HOST,REDIS_PORT,REDIS_PASSWORD&envDescription=Configure%20your%20AI%20endpoint%20and%20storage%20backend&envLink=https%3A%2F%2Fgithub.com%2Fljnpng%2Fbillshare%23environment-variables)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fljnpng%2Fsplitbill&env=OPENAI_COMPATIBLE_BASE_URL,OPENAI_COMPATIBLE_API_KEY,OPENAI_COMPATIBLE_MODEL,STORAGE_PROVIDER,CLOUDFLARE_ACCOUNT_ID,CLOUDFLARE_KV_NAMESPACE_ID,CLOUDFLARE_API_TOKEN,REDIS_HOST,REDIS_PORT,REDIS_PASSWORD&envDescription=Configure%20your%20AI%20endpoint%20and%20storage%20backend&envLink=https%3A%2F%2Fgithub.com%2Fljnpng%2Fsplitbill%23environment-variables)
 
 ## Features
 
@@ -28,8 +28,8 @@ Requirements:
 - A storage backend: local memory (default), Cloudflare KV, or Redis
 
 ```bash
-git clone https://github.com/ljnpng/billshare.git
-cd billshare
+git clone https://github.com/ljnpng/splitbill.git
+cd splitbill
 npm install
 cp .env.example .env
 npm run dev

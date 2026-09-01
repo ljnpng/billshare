@@ -21,7 +21,7 @@ export async function generateMetadata({
   }
   
   return {
-    title: messages.app?.title || 'BillShare',
+    title: messages.app?.title || 'SplitBill',
     description: messages.app?.description || 'Smart bill splitting for meals, taxes, and tips',
   };
 }

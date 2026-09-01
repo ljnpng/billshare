@@ -80,7 +80,8 @@ const assignColor = (peopleCount: number) => {
 type PersistedAppState = Pick<AppState, 'people' | 'receipts' | 'currentStep'>;
 type StoredDraft = { version: 1; state: PersistedAppState };
 
-const DRAFT_STORAGE_KEY = 'billshare:draft:v1';
+const DRAFT_STORAGE_KEY = 'splitbill:draft:v1';
+const LEGACY_DRAFT_STORAGE_KEY = 'billshare:draft:v1';
 
 const browserStorage = {
   getItem: (name: string): string | null => {
@@ -160,7 +161,8 @@ export const useAppStore = create<AppStore>()(
         if (get().isDraftHydrated) return;
 
         try {
-          const rawDraft = browserStorage.getItem(DRAFT_STORAGE_KEY);
+          const rawDraft = browserStorage.getItem(DRAFT_STORAGE_KEY)
+            ?? browserStorage.getItem(LEGACY_DRAFT_STORAGE_KEY);
           if (rawDraft) {
             const storedDraft = JSON.parse(rawDraft) as StoredDraft;
             if (storedDraft.version === 1 && storedDraft.state) {
@@ -170,6 +172,10 @@ export const useAppStore = create<AppStore>()(
                 currentStep: storedDraft.state.currentStep || 'input',
                 isDraftHydrated: true,
               });
+              // Migrate drafts saved under the previous app branding.
+              if (!browserStorage.getItem(DRAFT_STORAGE_KEY)) {
+                browserStorage.setItem(DRAFT_STORAGE_KEY, rawDraft);
+              }
               return;
             }
           }
@@ -580,7 +586,7 @@ export const useAppStore = create<AppStore>()(
       })
     })),
     {
-      name: 'billshare-store'
+      name: 'splitbill-store'
     }
   )
 );

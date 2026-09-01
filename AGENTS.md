@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-BillShare is a Next.js 14 application written in TypeScript. Keep user-facing routes and API handlers in `src/app/`; locale-aware pages use the `[locale]` route segment and API endpoints live under `src/app/api/`. Reusable UI belongs in `src/components/`, shared business and integration logic in `src/lib/`, global Zustand state in `src/store/`, and shared types in `src/types/`. Translation resources are in `src/messages/en.json` and `src/messages/zh.json`. Static assets belong in `public/`; sample receipt images for manual checks are in `test-receipts/`.
+SplitBill is a Next.js 14 application written in TypeScript. Keep user-facing routes and API handlers in `src/app/`; locale-aware pages use the `[locale]` route segment and API endpoints live under `src/app/api/`. Reusable UI belongs in `src/components/`, shared business and integration logic in `src/lib/`, global Zustand state in `src/store/`, and shared types in `src/types/`. Translation resources are in `src/messages/en.json` and `src/messages/zh.json`. Static assets belong in `public/`; sample receipt images for manual checks are in `test-receipts/`.
 
 ## Build, Test, and Development Commands
 
