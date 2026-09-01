@@ -88,7 +88,7 @@ export default function PreviewPage({}: PreviewPageProps) {
 
     // 验证UUID格式
     if (!isValidUUID(uuid)) {
-      setError('无效的分享链接格式')
+      setError(tPreview('invalidLink'))
       setIsLoading(false)
       return
     }
@@ -100,9 +100,9 @@ export default function PreviewPage({}: PreviewPageProps) {
         
         if (!response.ok) {
           if (response.status === 404) {
-            setError('分享的账单不存在或已过期')
+            setError(tPreview('notFound'))
           } else {
-            setError('加载分享内容失败')
+            setError(tPreview('loadFailed'))
           }
           return
         }
@@ -113,25 +113,25 @@ export default function PreviewPage({}: PreviewPageProps) {
           setSessionData(result.data)
           replaceDraft(result.data)
         } else {
-          setError('分享的账单数据无效')
+          setError(tPreview('invalidData'))
         }
       } catch (error) {
         console.error('加载预览数据错误:', error)
-        setError('网络连接失败，请稍后重试')
+        setError(tPreview('networkError'))
       } finally {
         setIsLoading(false)
       }
     }
 
     loadPreviewData()
-  }, [replaceDraft, uuid])
+  }, [replaceDraft, tPreview, uuid])
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">正在加载分享内容...</p>
+          <p className="text-gray-600">{tPreview('loading')}</p>
         </div>
       </div>
     )
@@ -146,10 +146,10 @@ export default function PreviewPage({}: PreviewPageProps) {
               <ExternalLink className="h-12 w-12 mx-auto opacity-50" />
             </div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              无法加载分享内容
+              {tPreview('cannotLoad')}
             </h2>
             <p className="text-gray-600 mb-6">
-              {error || '分享的账单数据无效'}
+              {error || tPreview('invalidData')}
             </p>
             <button
               onClick={handleCreateNewBill}
@@ -176,10 +176,10 @@ export default function PreviewPage({}: PreviewPageProps) {
         <div className="max-w-md mx-auto text-center">
           <div className="bg-white rounded-lg shadow-sm p-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              账单数据不完整
+              {tPreview('incompleteData')}
             </h2>
             <p className="text-gray-600 mb-6">
-              这个分享的账单缺少必要的信息
+              {tPreview('missingInfo')}
             </p>
             <button
               onClick={handleCreateNewBill}
@@ -202,7 +202,7 @@ export default function PreviewPage({}: PreviewPageProps) {
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <h1 className="text-xl font-semibold text-gray-900 hidden md:block md:ml-4">
-                账单分摊预览
+                {tPreview('title')}
               </h1>
             </div>
             <div className="flex items-center gap-3">
