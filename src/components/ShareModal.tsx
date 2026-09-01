@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { Copy, X, ExternalLink, Check } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -77,7 +77,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
     >
       {/* 背景遮罩 */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50"
         onClick={onClose}
         onKeyDown={(e) => e.key === 'Enter' && onClose()}
         role="button"
@@ -123,18 +123,13 @@ const ShareModal: React.FC<ShareModalProps> = ({
             {/* 复制链接 */}
             <button
               onClick={onCopyLink}
-              className={`btn w-full gap-3 ${
+              className={`btn w-full ${
                 copySuccess
-                  ? 'bg-green-50 text-green-700 border border-green-200'
-                  : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100'
+                  ? 'btn-secondary text-green-700'
+                  : 'btn-primary'
               }`}
               disabled={copySuccess}
             >
-              {copySuccess ? (
-                <Check className="h-5 w-5" aria-hidden="true" />
-              ) : (
-                <Copy className="h-5 w-5" aria-hidden="true" />
-              )}
               {copySuccess ? tCommon('copied') : t('copyLink')}
             </button>
 
@@ -142,9 +137,8 @@ const ShareModal: React.FC<ShareModalProps> = ({
             {/* 浏览器打开 */}
             <button
               onClick={onOpenInBrowser}
-              className="btn btn-secondary w-full gap-3"
+              className="btn btn-secondary w-full"
             >
-              <ExternalLink className="h-5 w-5" aria-hidden="true" />
               {t('openInBrowser')}
             </button>
           </div>

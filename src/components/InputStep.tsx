@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { Receipt, PlusCircle, AlertCircle, RotateCcw, ChevronDown, Trash2, User } from 'lucide-react';
+import { Receipt, AlertCircle, ChevronDown, Trash2, User } from 'lucide-react';
 import { useAppStore } from '../store';
 import { ReceiptCard } from './ReceiptCard';
 import ReceiptRecognitionSkeleton from './ReceiptRecognitionSkeleton';
@@ -108,7 +108,6 @@ const InputStep: React.FC = () => {
                   disabled={isAiProcessing}
                   className="btn btn-sm bg-red-100 text-red-800 border border-red-200 hover:bg-red-200 disabled:cursor-not-allowed"
                 >
-                  <RotateCcw className="h-4 w-4 mr-1.5" aria-hidden="true" />
                   {tAI('retry')}
                 </button>
                 <button
@@ -136,7 +135,7 @@ const InputStep: React.FC = () => {
             <button
               onClick={handleUploadClick}
               disabled={isAiProcessing}
-              className="btn btn-primary min-h-[3.25rem] w-56 px-6 text-lg shadow-sm hover:shadow-md disabled:cursor-not-allowed"
+              className="btn btn-primary min-h-[3.25rem] w-56 px-6 text-lg disabled:cursor-not-allowed"
             >
               {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
             </button>
@@ -181,10 +180,10 @@ const InputStep: React.FC = () => {
           </div>
 
           {/* Collapsible split section */}
-          <div className="border border-gray-200 rounded-xl overflow-hidden p-1 bg-white">
+          <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
             <button
               onClick={() => setIsSplitSectionExpanded(!isSplitSectionExpanded)}
-              className="w-full flex items-center justify-between rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center">
                 <User className="h-5 w-5 text-gray-500 mr-2" aria-hidden="true" />
@@ -225,7 +224,7 @@ const InputStep: React.FC = () => {
                       disabled={!newPersonName.trim()}
                       aria-label={tCommon('add')}
                     >
-                      <PlusCircle className="h-5 w-5" aria-hidden="true" />
+                      {tCommon('add')}
                     </button>
                   </div>
                 </form>
@@ -268,7 +267,7 @@ const InputStep: React.FC = () => {
           <div className="flex justify-end pt-4">
             <button
               onClick={handleNext}
-              className="btn btn-primary btn-lg"
+              className="btn btn-primary btn-lg w-full sm:w-auto"
               disabled={totalItems === 0}
               aria-label={nextButtonText}
             >

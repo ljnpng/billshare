@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { useAppStore } from '../store';
-import { CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 const AssignStep: React.FC = () => {
   const t = useTranslations('assignStep');
@@ -69,13 +69,12 @@ const AssignStep: React.FC = () => {
           <div className="mb-8 pb-6 border-b-2 border-blue-600">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <CheckCircle className="h-6 w-6 text-blue-600 mr-3" aria-hidden="true" />
                 <span className="text-base font-semibold text-gray-900">
                   {t('progressText', { assigned: getAssignedItemsCount(), total: allItems.length })}
                 </span>
               </div>
               {getAssignedItemsCount() === allItems.length && (
-                <span className="text-sm text-green-600 font-semibold bg-green-50 px-3 py-1 rounded border border-green-300">
+                  <span className="text-sm text-green-700 font-semibold">
                   {t('allAssigned')}
                 </span>
               )}
@@ -89,7 +88,7 @@ const AssignStep: React.FC = () => {
               {people.map(person => {
                 const info = getPersonAssignmentInfo(person.id);
                 return (
-                  <div key={person.id} className="p-4 border-l-2 border-gray-300 hover:border-blue-500 transition-colors">
+                  <div key={person.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex items-center mb-3">
                       <div 
                         className="person-color"
@@ -118,8 +117,8 @@ const AssignStep: React.FC = () => {
                     {receipt.items.map((item) => (
                       <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors duration-200">
                         <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-lg">{item.name}</h4>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-medium text-lg break-words">{item.name}</h4>
                             <div className="text-sm text-gray-600">
                               {t('originalPrice')}: ${item.originalPrice?.toFixed(2) || 'N/A'}
                               {item.originalPrice && item.finalPrice > item.originalPrice && (
@@ -156,8 +155,8 @@ const AssignStep: React.FC = () => {
                               key={person.id}
                               onClick={() => handlePersonToggle(item.id, person.id)}
                               className={`p-3 rounded border-2 flex items-center justify-center transition-colors duration-200 ease-in-out ${
-                                item.assignedTo.includes(person.id)
-                                  ? 'border-blue-600 bg-blue-100 text-blue-800'
+                                  item.assignedTo.includes(person.id)
+                                  ? 'border-blue-600 bg-blue-50 text-blue-800'
                                   : 'border-gray-300 bg-white hover:border-gray-400'
                               }`}
                               aria-pressed={item.assignedTo.includes(person.id)}
@@ -173,9 +172,6 @@ const AssignStep: React.FC = () => {
                                 aria-hidden="true"
                               />
                               <span className="text-sm font-semibold">{person.name}</span>
-                              {item.assignedTo.includes(person.id) && (
-                                <CheckCircle className="h-4 w-4 ml-2 flex-shrink-0 text-blue-600" aria-hidden="true" />
-                              )}
                             </button>
                           ))}
                         </div>
@@ -195,7 +191,7 @@ const AssignStep: React.FC = () => {
           className="btn btn-secondary btn-md sm:btn-lg"
           aria-label={tCommon('previous')}
         >
-          <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+          {tCommon('previous')}
         </button>
         <button
           onClick={handleNext}
@@ -203,11 +199,11 @@ const AssignStep: React.FC = () => {
           disabled={getAssignedItemsCount() !== allItems.length}
           aria-label={t('nextButton')}
         >
-          <ArrowRight className="h-5 w-5" aria-hidden="true" />
+          {t('nextButton')}
         </button>
       </div>
     </div>
   );
 };
 
-export default AssignStep; 
+export default AssignStep;

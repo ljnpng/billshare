@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { RotateCcw, Share2, Check, ChevronDown, ArrowLeft } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useAppStore } from '../store';
 import confetti from 'canvas-confetti';
 import ShareModal from './ShareModal';
@@ -36,7 +36,7 @@ const SummaryStep: React.FC = () => {
   const CurrencyDisplay = ({ usdAmount }: { usdAmount: number }) => {
     const cnyAmount = convertUsdToCny(usdAmount, exchangeRate);
     return (
-      <div className="text-right">
+      <div className="text-right shrink-0 whitespace-nowrap">
         <div className="font-medium">${usdAmount.toFixed(2)}</div>
         <div className="text-sm text-gray-600">≈ ¥{cnyAmount.toFixed(2)}</div>
       </div>
@@ -248,7 +248,7 @@ const SummaryStep: React.FC = () => {
             className="btn btn-secondary btn-md"
             aria-label={tCommon('back')}
           >
-            <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+            {tCommon('back')}
           </button>
         </div>
       </div>
@@ -268,7 +268,7 @@ const SummaryStep: React.FC = () => {
                 className="btn btn-primary btn-md mt-4"
                 aria-label={t('restartButton')}
               >
-                <RotateCcw className="h-5 w-5" aria-hidden="true" />
+                {t('restartButton')}
               </button>
             </div>
           </div>
@@ -314,7 +314,7 @@ const SummaryStep: React.FC = () => {
             </div>
 
             {/* 人员分摊 */}
-            <div className="p-4 bg-blue-50 rounded-lg">
+            <div className="p-4 bg-gray-50 rounded-lg">
               <h3 className="font-medium mb-3">{t('personalSplit')}</h3>
               <div className="space-y-2">
                 {billSummary.personalBills.map(bill => (
@@ -352,7 +352,7 @@ const SummaryStep: React.FC = () => {
                                 onClick={() => toggleReceipt(receipt.id)}
                                 className="w-full flex justify-between items-center p-4 text-left"
                             >
-                                <span className="font-medium">{receipt.name}</span>
+                      <span className="font-medium min-w-0 break-words">{receipt.name}</span>
                                 <div className="flex items-center">
                                     <div className="mr-4">
                                         <CurrencyDisplay usdAmount={receipt.total} />
@@ -369,7 +369,7 @@ const SummaryStep: React.FC = () => {
                                         {receipt.items.map(item => (
                                             <div key={item.id} className="space-y-1">
                                                 <div className="flex justify-between">
-                                                    <span className="text-gray-600">{item.name}</span>
+                                                    <span className="text-gray-600 min-w-0 break-words">{item.name}</span>
                                                     <CurrencyDisplay usdAmount={item.finalPrice} />
                                                 </div>
                                                 {/* 显示分配的人员 */}
@@ -465,13 +465,13 @@ const SummaryStep: React.FC = () => {
                     <div className="space-y-2">
                       {group.items.map(item => (
                         <div key={item.itemId} className="flex justify-between items-center">
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{item.itemName}</div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium text-sm break-words">{item.itemName}</div>
                             <div className="text-xs text-gray-600">
                               {item.share > 1 ? tAssign('sharedWith', { count: item.share - 1 }) : tAssign('exclusive')}
                             </div>
                           </div>
-                          <div className="text-right">
+                          <div className="text-right shrink-0 whitespace-nowrap">
                             <div className="font-medium text-sm">${item.finalShare.toFixed(2)}</div>
                             <div className="text-xs text-gray-600">≈ ¥{convertUsdToCny(item.finalShare, exchangeRate).toFixed(2)}</div>
                             <div className="text-xs text-gray-500">
@@ -504,7 +504,7 @@ const SummaryStep: React.FC = () => {
             className="btn btn-secondary btn-sm sm:btn-md"
             aria-label={t('modifyAssignments')}
           >
-            <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+            {t('modifyAssignments')}
           </button>
           <button
             onClick={handleShareClick}
@@ -512,7 +512,7 @@ const SummaryStep: React.FC = () => {
             disabled={isSharing}
             aria-label={t('shareLink')}
           >
-            <Share2 className={`h-5 w-5 ${isSharing ? 'animate-spin' : ''}`} aria-hidden="true" />
+            {isSharing ? tCommon('loading') : t('shareLink')}
           </button>
         </div>
 
@@ -522,7 +522,7 @@ const SummaryStep: React.FC = () => {
           disabled={isCreatingSession}
           aria-label={isCreatingSession ? tCommon('loading') : t('startOver')}
         >
-          <RotateCcw className={`h-5 w-5 ${isCreatingSession ? 'animate-spin' : ''}`} aria-hidden="true" />
+          {isCreatingSession ? tCommon('loading') : t('startOver')}
         </button>
       </div>
 

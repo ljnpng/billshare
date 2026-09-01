@@ -57,8 +57,12 @@
     @apply text-gray-600 leading-relaxed;
   }
   
-  .text-subtitle {
+.text-subtitle {
     @apply text-gray-500 text-sm;
+  }
+
+  .balance-text {
+    text-wrap: balance;
   }
   
   .sr-only {
@@ -89,6 +93,7 @@
   .btn {
     @apply inline-flex items-center justify-center rounded-lg text-sm font-medium ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
     transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
+    white-space: nowrap;
   }
 
   .btn:focus-visible {
@@ -325,10 +330,6 @@
   animation: scaleIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.animation-bounce-in {
-  animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
 /* Keep the empty state centered in the available viewport on small screens. */
 .upload-empty-state {
   position: relative;
@@ -398,21 +399,6 @@
   }
 }
 
-@keyframes bounceIn {
-  from {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 .loading-spinner {
   @apply inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600;
 }
@@ -455,10 +441,6 @@
   .animation-fade-in,
   .animation-slide-up,
   .animation-scale-in,
-  .animation-bounce-in {
-    animation: none;
-  }
-
   .step-indicator,
   .step-line,
   .sticky-step-container,

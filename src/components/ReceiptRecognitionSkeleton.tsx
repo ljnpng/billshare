@@ -1,5 +1,4 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 const ReceiptRecognitionSkeleton: React.FC = () => {
@@ -14,7 +13,6 @@ const ReceiptRecognitionSkeleton: React.FC = () => {
     >
       <div className="card-header">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-blue-500" aria-hidden="true" />
           <span className="text-sm font-medium text-gray-600">{t('aiRecognizing')}</span>
         </div>
         <div className="skeleton-shimmer mt-3 h-7 w-2/5 rounded" />

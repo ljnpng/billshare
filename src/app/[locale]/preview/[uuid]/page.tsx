@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { useParams, useRouter } from 'next/navigation'
-import { ChevronDown, ExternalLink, Edit3, Plus } from 'lucide-react'
+import { ChevronDown, Receipt } from 'lucide-react'
 import { AppState } from '../../../../types'
 import { dataProcessor } from '../../../../lib/dataProcessor'
 import { getCachedExchangeRate, convertUsdToCny } from '../../../../lib/currencyService'
@@ -15,6 +15,7 @@ export default function PreviewPage({}: PreviewPageProps) {
   const t = useTranslations('summaryStep')
   const tCommon = useTranslations('common')
   const tPreview = useTranslations('preview')
+  const tInput = useTranslations('inputStep')
   const tAssign = useTranslations('assignStep')
   const params = useParams()
   const router = useRouter()
@@ -26,8 +27,12 @@ export default function PreviewPage({}: PreviewPageProps) {
   const [isCreatingSession, setIsCreatingSession] = useState(false)
   const replaceDraft = useAppStore(state => state.replaceDraft)
   const reset = useAppStore(state => state.reset)
+  const addReceipt = useAppStore(state => state.addReceipt)
+  const processReceiptImage = useAppStore(state => state.processReceiptImage)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   
   const uuid = params.uuid as string
+  const locale = params.locale as string
 
   // 验证UUID格式
   const isValidUUID = (uuid: string): boolean => {
@@ -57,11 +62,57 @@ export default function PreviewPage({}: PreviewPageProps) {
     setIsCreatingSession(false);
   }, [isCreatingSession, reset, router]);
 
+  const handleReceiptSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    await processReceiptImage('', file, locale)
+    router.replace('/')
+    event.target.value = ''
+  }
+
+  const handleManualInput = () => {
+    addReceipt(tCommon('receipt'))
+    router.replace('/')
+  }
+
+  const renderEmptyState = (title: string, description: string) => (
+    <div className="min-h-screen bg-luxury-rich">
+      <div className="max-w-3xl mx-auto px-4 pt-6 pb-6">
+        <main className="animation-fade-in text-center py-16 sm:py-24">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleReceiptSelected}
+            className="sr-only"
+            aria-label={tInput('uploadReceipt')}
+          />
+          <Receipt className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-6 sm:mb-8 text-gray-300" aria-hidden="true" />
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-700 mb-2">{title}</h2>
+          <p className="text-gray-500 text-sm sm:text-base px-4 max-w-md mx-auto mb-6">{description}</p>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="btn btn-primary min-h-[3.25rem] w-56 px-6 text-lg shadow-sm hover:shadow-md whitespace-nowrap"
+          >
+            {tInput('aiRecognition')}
+          </button>
+          <button
+            onClick={handleManualInput}
+            className="block mx-auto mt-4 text-gray-500 hover:text-gray-700 text-sm underline transition-colors whitespace-nowrap"
+          >
+            {tInput('orManualInput')}
+          </button>
+        </main>
+      </div>
+    </div>
+  )
+
   // Currency display component
   const CurrencyDisplay = ({ usdAmount }: { usdAmount: number }) => {
     const cnyAmount = convertUsdToCny(usdAmount, exchangeRate);
     return (
-      <div className="text-right">
+      <div className="text-right shrink-0 whitespace-nowrap">
         <div className="font-medium">${usdAmount.toFixed(2)}</div>
         <div className="text-sm text-gray-600">≈ ¥{cnyAmount.toFixed(2)}</div>
       </div>
@@ -84,7 +135,11 @@ export default function PreviewPage({}: PreviewPageProps) {
   }, []);
 
   useEffect(() => {
-    if (!uuid) return
+    if (!uuid) {
+      setError(tPreview('invalidLink'))
+      setIsLoading(false)
+      return
+    }
 
     // 验证UUID格式
     if (!isValidUUID(uuid)) {
@@ -128,40 +183,22 @@ export default function PreviewPage({}: PreviewPageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">{tPreview('loading')}</p>
+      <div className="min-h-screen bg-luxury-rich">
+        <div className="max-w-3xl mx-auto px-4 pt-6 pb-6">
+          <main className="animation-fade-in text-center py-16 sm:py-24">
+            <div
+              className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 border-t-gray-700 mx-auto mb-4"
+              aria-hidden="true"
+            />
+            <p className="text-gray-500 text-sm sm:text-base px-4">{tPreview('loading')}</p>
+          </main>
         </div>
       </div>
     )
   }
 
   if (error || !sessionData) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md mx-auto text-center">
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <div className="text-red-500 mb-4">
-              <ExternalLink className="h-12 w-12 mx-auto opacity-50" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {tPreview('cannotLoad')}
-            </h2>
-            <p className="text-gray-600 mb-6">
-              {error || tPreview('invalidData')}
-            </p>
-            <button
-              onClick={handleCreateNewBill}
-              disabled={isCreatingSession}
-              className="btn btn-primary btn-md"
-            >
-              {isCreatingSession ? tCommon('loading') : tCommon('newBill')}
-            </button>
-          </div>
-        </div>
-      </div>
-    )
+    return renderEmptyState(tPreview('cannotLoad'), error || tPreview('invalidData'))
   }
 
   // 计算账单摘要
@@ -171,27 +208,7 @@ export default function PreviewPage({}: PreviewPageProps) {
   )
 
   if (!billSummary) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md mx-auto text-center">
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {tPreview('incompleteData')}
-            </h2>
-            <p className="text-gray-600 mb-6">
-              {tPreview('missingInfo')}
-            </p>
-            <button
-              onClick={handleCreateNewBill}
-              disabled={isCreatingSession}
-              className="btn btn-primary btn-md"
-            >
-              {isCreatingSession ? tCommon('loading') : tCommon('newBill')}
-            </button>
-          </div>
-        </div>
-      </div>
-    )
+    return renderEmptyState(tPreview('incompleteData'), tPreview('missingInfo'))
   }
 
   return (
@@ -199,20 +216,17 @@ export default function PreviewPage({}: PreviewPageProps) {
       {/* 头部 */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900 hidden md:block md:ml-4">
-                {tPreview('title')}
-              </h1>
-            </div>
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-xl font-semibold text-gray-900 min-w-0 balance-text">
+              {tPreview('title')}
+            </h1>
             <div className="flex items-center gap-3">
               <button
                 onClick={handleEditSession}
                 className="btn btn-secondary btn-sm"
                 title={tPreview('editBill')}
               >
-                <Edit3 className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">{tPreview('editBill')}</span>
+                {tPreview('editBill')}
               </button>
               <button
                 onClick={handleCreateNewBill}
@@ -220,8 +234,7 @@ export default function PreviewPage({}: PreviewPageProps) {
                 className="btn btn-primary btn-sm"
                 title={tCommon('newBill')}
               >
-                <Plus className={`h-4 w-4 md:mr-2 ${isCreatingSession ? 'animate-spin' : ''}`} />
-                <span className="hidden md:inline">{tCommon('newBill')}</span>
+                {isCreatingSession ? tCommon('loading') : tCommon('newBill')}
               </button>
             </div>
           </div>
@@ -264,7 +277,7 @@ export default function PreviewPage({}: PreviewPageProps) {
               </div>
 
               {/* 人员分摊 */}
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-medium mb-3">{t('personalSplit')}</h3>
                 <div className="space-y-2">
                   {billSummary.personalBills.map(bill => (
@@ -302,7 +315,7 @@ export default function PreviewPage({}: PreviewPageProps) {
                                   onClick={() => toggleReceipt(receipt.id)}
                                   className="w-full flex justify-between items-center p-4 text-left"
                               >
-                                  <span className="font-medium">{receipt.name}</span>
+                                  <span className="font-medium min-w-0 break-words">{receipt.name}</span>
                                   <div className="flex items-center">
                                       <div className="mr-4">
                                         <CurrencyDisplay usdAmount={receipt.total} />
@@ -318,7 +331,7 @@ export default function PreviewPage({}: PreviewPageProps) {
                                           {receipt.items.map(item => (
                                               <div key={item.id} className="space-y-1">
                                                   <div className="flex justify-between">
-                                                      <span className="text-gray-600">{item.name}</span>
+                                                      <span className="text-gray-600 min-w-0 break-words">{item.name}</span>
                                                       <CurrencyDisplay usdAmount={item.finalPrice} />
                                                   </div>
                                                   {/* 显示分配的人员 */}
@@ -328,7 +341,7 @@ export default function PreviewPage({}: PreviewPageProps) {
                                                           return person ? (
                                                               <div 
                                                                   key={personId}
-                                                                  className="flex items-center gap-1 px-2 py-1 bg-white rounded-full text-xs border"
+                                                                  className="flex items-center gap-1 px-2 py-1 bg-white rounded text-xs border"
                                                               >
                                                                   <div 
                                                                       className="w-2 h-2 rounded-full"
@@ -413,13 +426,13 @@ export default function PreviewPage({}: PreviewPageProps) {
                       <div className="space-y-2">
                         {group.items.map(item => (
                           <div key={item.itemId} className="flex justify-between items-center">
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{item.itemName}</div>
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium text-sm break-words">{item.itemName}</div>
                               <div className="text-xs text-gray-600">
                                 {item.share > 1 ? tAssign('sharedWith', { count: item.share - 1 }) : tAssign('exclusive')}
                               </div>
                             </div>
-                            <div className="text-right">
+                            <div className="text-right shrink-0 whitespace-nowrap">
                               <div className="font-medium text-sm">${item.finalShare.toFixed(2)}</div>
                               <div className="text-xs text-gray-600">≈ ¥{convertUsdToCny(item.finalShare, exchangeRate).toFixed(2)}</div>
                               <div className="text-xs text-gray-500">
