@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 import { Receipt, AlertCircle, ChevronDown, Trash2, User } from 'lucide-react';
 import { useAppStore } from '../store';
 import { ReceiptCard } from './ReceiptCard';
@@ -9,8 +8,6 @@ import ReceiptRecognitionSkeleton from './ReceiptRecognitionSkeleton';
 const InputStep: React.FC = () => {
   const t = useTranslations('inputStep');
   const tCommon = useTranslations('common');
-  const params = useParams();
-  const locale = params.locale as string;
   const { receipts, people, addReceipt, addPerson, removePerson, setCurrentStep, processReceiptImage, isAiProcessing, error, setError } = useAppStore();
   const tAI = useTranslations('aiRecognition');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -29,7 +26,7 @@ const InputStep: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    await processReceiptImage('', file, locale);
+    await processReceiptImage('', file);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';

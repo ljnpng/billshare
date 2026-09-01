@@ -161,9 +161,7 @@ If image is not a receipt or cannot be recognized, return:
 Now please analyze this receipt image:
 `;
 
-export const getReceiptAnalysisPrompt = (locale: string = 'zh') => {
-  return locale === 'en' ? RECEIPT_ANALYSIS_PROMPT_EN : RECEIPT_ANALYSIS_PROMPT;
-};
+export const getReceiptAnalysisPrompt = () => RECEIPT_ANALYSIS_PROMPT_EN;
 
 export const SIMPLE_RECEIPT_PROMPT = `
 请识别这张账单图片中的关键信息：
@@ -187,9 +185,7 @@ Please identify key information from this receipt image:
 Please return results in JSON format, focusing on price number accuracy.
 `;
 
-export const getSimpleReceiptPrompt = (locale: string = 'zh') => {
-  return locale === 'en' ? SIMPLE_RECEIPT_PROMPT_EN : SIMPLE_RECEIPT_PROMPT;
-};
+export const getSimpleReceiptPrompt = () => SIMPLE_RECEIPT_PROMPT_EN;
 
 export const ERROR_RESPONSE_PROMPT = `
 如果无法识别，请返回：
@@ -221,9 +217,7 @@ If unable to recognize, return:
 }
 `;
 
-export const getErrorResponsePrompt = (locale: string = 'zh') => {
-  return locale === 'en' ? ERROR_RESPONSE_PROMPT_EN : ERROR_RESPONSE_PROMPT;
-};
+export const getErrorResponsePrompt = () => ERROR_RESPONSE_PROMPT_EN;
 
 export const COMPLETE_RECEIPT_PROMPT = RECEIPT_ANALYSIS_PROMPT;
 

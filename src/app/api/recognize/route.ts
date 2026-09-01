@@ -15,10 +15,7 @@ const fileToBase64 = async (file: File): Promise<string> => {
   return `data:${file.type};base64,${base64}`;
 };
 
-const locales = ['en', 'zh'] as const;
-type Locale = (typeof locales)[number];
-
-const recognizeReceipt = async (file: File, locale: string): Promise<AIRecognizedReceipt> => {
+const recognizeReceipt = async (file: File): Promise<AIRecognizedReceipt> => {
   const baseUrl = (process.env.OPENAI_COMPATIBLE_BASE_URL || '').replace(/\/$/, '');
   const apiKey = process.env.OPENAI_COMPATIBLE_API_KEY;
   const model = process.env.OPENAI_COMPATIBLE_MODEL || 'qwen/qwen3.6-27b';
@@ -42,7 +39,7 @@ const recognizeReceipt = async (file: File, locale: string): Promise<AIRecognize
         {
           role: 'user',
           content: [
-            { type: 'text', text: getReceiptAnalysisPrompt(locale) },
+            { type: 'text', text: getReceiptAnalysisPrompt() },
             { type: 'image_url', image_url: { url: await fileToBase64(file) } },
           ],
         },
@@ -115,15 +112,9 @@ const cleanAndValidate = (data: AIRecognizedReceipt, fileName: string, fileSize:
 
 export async function POST(request: NextRequest) {
   let file: File | null = null;
-  let locale: Locale = 'en';
   try {
     const formData = await request.formData();
     file = formData.get('file') as File;
-    const requestedLocale = formData.get('locale');
-    if (requestedLocale !== null && !locales.includes(requestedLocale as Locale)) {
-      return NextResponse.json({ success: false, error: '不支持的语言' }, { status: 400 });
-    }
-    locale = (requestedLocale as Locale | null) || 'en';
 
     if (!file) {
       return NextResponse.json({ success: false, error: '未找到上传的文件' }, { status: 400 });
@@ -137,7 +128,7 @@ export async function POST(request: NextRequest) {
 
     const processedFile = await validateAndPreprocessImage(file);
 
-    let recognizedData = await recognizeReceipt(processedFile, locale);
+    let recognizedData = await recognizeReceipt(processedFile);
 
     aiLogger.info('AI 响应解析成功', {
       businessName: recognizedData.businessName,
@@ -159,7 +150,6 @@ export async function POST(request: NextRequest) {
       fileName: file?.name,
       fileSize: file?.size,
       fileType: file?.type,
-      locale,
       timestamp: new Date().toISOString(),
     };
 

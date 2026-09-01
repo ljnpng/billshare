@@ -32,7 +32,7 @@ interface AppStore extends AppState {
   removeItem: (receiptId: string, itemId: string) => void;
   updateItemAssignment: (itemId: string, assignedTo: string[]) => void;
 
-  processReceiptImage: (receiptId: string, imageFile: File, locale?: string) => Promise<boolean>;
+  processReceiptImage: (receiptId: string, imageFile: File) => Promise<boolean>;
   setAiProcessing: (processing: boolean) => void;
 
   setCurrentStep: (step: AppState['currentStep']) => void;
@@ -366,18 +366,17 @@ export const useAppStore = create<AppStore>()(
         }
       },
 
-      processReceiptImage: async (receiptId, imageFile, locale = 'zh') => {
+      processReceiptImage: async (receiptId, imageFile) => {
         storeLogger.info('开始处理收据图片', {
           receiptId,
           fileName: imageFile.name,
           fileSize: imageFile.size,
-          locale,
         });
 
         set({ isAiProcessing: true, error: null });
 
         try {
-          const result = await recognizeReceipt(imageFile, locale);
+          const result = await recognizeReceipt(imageFile);
 
           if (!result.success || !result.data) {
             storeLogger.error('AI识别失败', {

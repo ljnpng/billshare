@@ -55,13 +55,12 @@ const preprocessImage = async (file: File): Promise<File> => {
   return processedFile;
 };
 
-const callRecognitionAPI = async (file: File, locale: string = 'zh'): Promise<AIProcessingResult> => {
+const callRecognitionAPI = async (file: File): Promise<AIProcessingResult> => {
   try {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('locale', locale);
 
-    aiLogger.info(`开始 AI 识别，语言: ${locale}`);
+    aiLogger.info('开始 AI 识别...');
 
     const response = await fetch('/api/recognize', {
       method: 'POST',
@@ -81,13 +80,13 @@ const callRecognitionAPI = async (file: File, locale: string = 'zh'): Promise<AI
   }
 };
 
-export const recognizeReceipt = async (imageFile: File, locale: string = 'zh'): Promise<AIProcessingResult> => {
+export const recognizeReceipt = async (imageFile: File): Promise<AIProcessingResult> => {
   try {
     aiLogger.info('开始 AI 识别流程...');
 
     const processedFile = await preprocessImage(imageFile);
 
-    const result = await callRecognitionAPI(processedFile, locale);
+    const result = await callRecognitionAPI(processedFile);
 
     if (result.success) {
       aiLogger.info('AI 识别成功', {
