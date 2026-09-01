@@ -1,7 +1,7 @@
 const EXCHANGE_API_KEY = 'cfb509526c7db8ec6499e020';
 const EXCHANGE_API_URL = `https://v6.exchangerate-api.com/v6/${EXCHANGE_API_KEY}/latest/USD`;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
-const FALLBACK_RATE = 7.2; // Fallback USD to CNY rate
+export const FALLBACK_RATE = 7.2;
 
 interface ExchangeRateResponse {
   result: string;
@@ -51,11 +51,6 @@ export async function getCachedExchangeRate(): Promise<number> {
   localStorage.setItem('usd_cny_timestamp', Date.now().toString());
   
   return rate;
-}
-
-export function formatCurrencyPair(usdAmount: number, exchangeRate: number): string {
-  const cnyAmount = (usdAmount * exchangeRate).toFixed(2);
-  return `$${usdAmount.toFixed(2)} USD ≈ ¥${cnyAmount} CNY`;
 }
 
 export function convertUsdToCny(usdAmount: number, exchangeRate: number): number {

@@ -127,9 +127,6 @@ export async function isStorageHealthy(): Promise<DatabaseResult<boolean>> {
   catch (error) { return failure('Storage health check failed', error); }
 }
 
-// Compatibility alias for existing API route imports.
-export const isRedisHealthy = isStorageHealthy;
-
 export interface SessionData {
   uuid: string;
   data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>;

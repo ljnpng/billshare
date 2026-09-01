@@ -4,7 +4,7 @@ import { AppState, Person, Receipt } from '../types';
 import { dataProcessor } from '../lib/dataProcessor';
 import { recognizeReceipt } from '../lib/aiService';
 import { storeLogger } from '../lib/logger';
-import { getCachedExchangeRate } from '../lib/currencyService';
+import { FALLBACK_RATE, getCachedExchangeRate } from '../lib/currencyService';
 interface AppStore extends AppState {
   isDraftHydrated: boolean;
 
@@ -100,14 +100,6 @@ const browserStorage = {
       storeLogger.warn('浏览器草稿保存失败', { error });
     }
   },
-  removeItem: (name: string): void => {
-    if (typeof window === 'undefined') return;
-    try {
-      window.localStorage.removeItem(name);
-    } catch (error) {
-      storeLogger.warn('浏览器草稿删除失败', { error });
-    }
-  },
 };
 
 export const useAppStore = create<AppStore>()(
@@ -124,7 +116,7 @@ export const useAppStore = create<AppStore>()(
       isDraftHydrated: false,
       
       // Exchange rate state
-      exchangeRate: 7.2, // Default fallback rate
+      exchangeRate: FALLBACK_RATE,
       isLoadingExchangeRate: false,
       
       createShareSession: async () => {
@@ -236,6 +228,7 @@ export const useAppStore = create<AppStore>()(
           storeLogger.info('汇率加载成功', { rate });
         } catch (error) {
           storeLogger.error('汇率加载失败', { error });
+          // Keep the initial fallback rate when cache access fails.
           set({ isLoadingExchangeRate: false });
         }
       },
@@ -581,7 +574,7 @@ export const useAppStore = create<AppStore>()(
         error: null,
         isAiProcessing: false,
         isDraftHydrated: true,
-        exchangeRate: 7.2,
+        exchangeRate: FALLBACK_RATE,
         isLoadingExchangeRate: false
       })
     })),

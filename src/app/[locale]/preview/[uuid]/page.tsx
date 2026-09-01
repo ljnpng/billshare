@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { ChevronDown, Receipt } from 'lucide-react'
 import { AppState } from '../../../../types'
 import { dataProcessor } from '../../../../lib/dataProcessor'
-import { getCachedExchangeRate, convertUsdToCny } from '../../../../lib/currencyService'
+import { FALLBACK_RATE, getCachedExchangeRate, convertUsdToCny } from '../../../../lib/currencyService'
 import { useAppStore } from '../../../../store'
 
 interface PreviewPageProps {}
@@ -23,7 +23,7 @@ export default function PreviewPage({}: PreviewPageProps) {
   const [error, setError] = useState<string | null>(null)
   const [sessionData, setSessionData] = useState<AppState | null>(null)
   const [expandedReceipts, setExpandedReceipts] = useState<string[]>([])
-  const [exchangeRate, setExchangeRate] = useState(7.2) // Default fallback rate
+  const [exchangeRate, setExchangeRate] = useState(FALLBACK_RATE)
   const [isCreatingSession, setIsCreatingSession] = useState(false)
   const replaceDraft = useAppStore(state => state.replaceDraft)
   const reset = useAppStore(state => state.reset)
@@ -127,7 +127,7 @@ export default function PreviewPage({}: PreviewPageProps) {
         setExchangeRate(rate);
       } catch (error) {
         console.error('Failed to load exchange rate:', error);
-        // Keep default fallback rate
+        // Keep the initial fallback rate when cache access fails.
       }
     };
     
