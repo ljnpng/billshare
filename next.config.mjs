@@ -28,8 +28,7 @@ const nextConfig = {
     config.ignoreWarnings = [
       {
         module: /libheif-js\/libheif-wasm\/libheif-bundle\.js/,
-        message:
-          /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/,
+        message: /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/,
       },
     ];
 

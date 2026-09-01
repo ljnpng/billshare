@@ -55,8 +55,6 @@ export interface BillSummary {
   createdAt: Date;
 }
 
-
-
 // 用于前端状态管理
 export interface AppState {
   people: Person[];
@@ -89,4 +87,4 @@ export interface AIProcessingResult {
   success: boolean;
   data?: AIRecognizedReceipt;
   error?: string;
-} 
+}

@@ -1,10 +1,4 @@
-import { 
-  Receipt, 
-  MenuItem, 
-  Person, 
-  PersonalBill, 
-  BillSummary 
-} from '../types';
+import { Receipt, MenuItem, Person, PersonalBill, BillSummary } from '../types';
 import { dataLogger } from './logger';
 
 export class BillDataProcessor {
@@ -13,20 +7,23 @@ export class BillDataProcessor {
    */
   validateData(receipt: Receipt): boolean {
     dataLogger.debug('开始验证数据完整性', { receiptId: receipt.id });
-    
+
     // 检查基本字段
     if (!receipt.id || !receipt.items) {
-      dataLogger.error('数据验证失败：缺少基本字段', { id: receipt.id, hasItems: !!receipt.items });
+      dataLogger.error('数据验证失败：缺少基本字段', {
+        id: receipt.id,
+        hasItems: !!receipt.items,
+      });
       return false;
     }
 
     // 检查每个条目
     for (const item of receipt.items) {
       if (!item.id || !item.name || (item.originalPrice !== null && item.originalPrice < 0)) {
-        dataLogger.error('数据验证失败：条目数据无效', { 
-          itemId: item.id, 
-          itemName: item.name, 
-          price: item.originalPrice 
+        dataLogger.error('数据验证失败：条目数据无效', {
+          itemId: item.id,
+          itemName: item.name,
+          price: item.originalPrice,
         });
         return false;
       }
@@ -34,11 +31,11 @@ export class BillDataProcessor {
 
     // 检查金额逻辑
     if (receipt.subtotal < 0 || receipt.tax < 0 || receipt.tip < 0 || receipt.total < 0) {
-      dataLogger.error('数据验证失败：金额数据无效', { 
+      dataLogger.error('数据验证失败：金额数据无效', {
         subtotal: receipt.subtotal,
         tax: receipt.tax,
         tip: receipt.tip,
-        total: receipt.total
+        total: receipt.total,
       });
       return false;
     }
@@ -52,36 +49,36 @@ export class BillDataProcessor {
    */
   calculateTaxAndTip(receipt: Receipt): Receipt {
     const { items, subtotal, tax, tip } = receipt;
-    
+
     if (subtotal === 0) return receipt;
 
     // 计算每个条目的最终价格（按比例分摊税费和小费）
-    const updatedItems = items.map(item => {
+    const updatedItems = items.map((item) => {
       // 如果原价为 null，则最终价格也为 0，不参与税费和小费分摊
       if (item.originalPrice === null) {
         return {
           ...item,
           finalPrice: 0,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
       }
-      
+
       const ratio = item.originalPrice / subtotal;
       const taxShare = tax * ratio;
       const tipShare = tip * ratio;
       const finalPrice = item.originalPrice + taxShare + tipShare;
-      
+
       return {
         ...item,
         finalPrice: Math.round(finalPrice * 100) / 100, // 保留两位小数
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
     });
 
     return {
       ...receipt,
       items: updatedItems,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   }
 
@@ -89,23 +86,23 @@ export class BillDataProcessor {
    * 生成个人账单
    */
   generatePersonalBills(receipt: Receipt, people: Person[]): PersonalBill[] {
-    dataLogger.info('开始生成个人账单', { 
-      receiptId: receipt.id, 
-      peopleCount: people.length 
+    dataLogger.info('开始生成个人账单', {
+      receiptId: receipt.id,
+      peopleCount: people.length,
     });
-    
+
     const personalBills: PersonalBill[] = [];
 
-    people.forEach(person => {
+    people.forEach((person) => {
       const personalBill: PersonalBill = {
         personId: person.id,
         personName: person.name,
         items: [],
         totalOriginal: 0,
-        totalFinal: 0
+        totalFinal: 0,
       };
 
-      receipt.items.forEach(item => {
+      receipt.items.forEach((item) => {
         if (item.assignedTo.includes(person.id)) {
           // 计算该人应该支付的份额
           const shareCount = item.assignedTo.length;
@@ -121,7 +118,7 @@ export class BillDataProcessor {
             receiptName: receipt.name,
             share: shareCount,
             originalShare: Math.round(originalShare * 100) / 100,
-            finalShare: Math.round(finalShare * 100) / 100
+            finalShare: Math.round(finalShare * 100) / 100,
           });
 
           personalBill.totalOriginal += originalShare;
@@ -136,10 +133,10 @@ export class BillDataProcessor {
       personalBills.push(personalBill);
     });
 
-    dataLogger.info('个人账单生成完成', { 
-      receiptId: receipt.id, 
+    dataLogger.info('个人账单生成完成', {
+      receiptId: receipt.id,
       billsCount: personalBills.length,
-      totalAmount: personalBills.reduce((sum, bill) => sum + bill.totalFinal, 0)
+      totalAmount: personalBills.reduce((sum, bill) => sum + bill.totalFinal, 0),
     });
 
     return personalBills;
@@ -151,19 +148,19 @@ export class BillDataProcessor {
   generateBillSummary(receipts: Receipt[], people: Person[]): BillSummary {
     const personalBillsMap = new Map<string, PersonalBill>();
 
-    people.forEach(person => {
+    people.forEach((person) => {
       personalBillsMap.set(person.id, {
         personId: person.id,
         personName: person.name,
         items: [],
         totalOriginal: 0,
-        totalFinal: 0
+        totalFinal: 0,
       });
     });
 
-    receipts.forEach(receipt => {
+    receipts.forEach((receipt) => {
       const billsForReceipt = this.generatePersonalBills(receipt, people);
-      billsForReceipt.forEach(bill => {
+      billsForReceipt.forEach((bill) => {
         const existingBill = personalBillsMap.get(bill.personId);
         if (existingBill) {
           existingBill.items.push(...bill.items);
@@ -174,7 +171,7 @@ export class BillDataProcessor {
     });
 
     const personalBills = Array.from(personalBillsMap.values());
-    
+
     const totalSubtotal = receipts.reduce((sum, r) => sum + r.subtotal, 0);
     const totalTax = receipts.reduce((sum, r) => sum + r.tax, 0);
     const totalTip = receipts.reduce((sum, r) => sum + r.tip, 0);
@@ -188,7 +185,7 @@ export class BillDataProcessor {
       totalTax,
       totalTip,
       grandTotal,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
   }
 
@@ -196,12 +193,12 @@ export class BillDataProcessor {
    * 更新条目分配
    */
   updateItemAssignment(receipt: Receipt, itemId: string, assignedTo: string[]): Receipt {
-    const updatedItems = receipt.items.map(item => {
+    const updatedItems = receipt.items.map((item) => {
       if (item.id === itemId) {
         return {
           ...item,
           assignedTo: [...assignedTo],
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
       }
       return item;
@@ -210,7 +207,7 @@ export class BillDataProcessor {
     return {
       ...receipt,
       items: updatedItems,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   }
 
@@ -223,7 +220,7 @@ export class BillDataProcessor {
       tax,
       tip,
       total: receipt.subtotal + tax + tip,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     return this.calculateTaxAndTip(updatedReceipt);
@@ -240,7 +237,7 @@ export class BillDataProcessor {
       finalPrice: 0,
       assignedTo: [],
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     // 只有当价格不为 null 时才计算到小计中
@@ -250,7 +247,7 @@ export class BillDataProcessor {
       items: [...receipt.items, newItem],
       subtotal: receipt.subtotal + priceToAdd,
       total: receipt.subtotal + priceToAdd + receipt.tax + receipt.tip,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     return this.calculateTaxAndTip(updatedReceipt);
@@ -260,10 +257,10 @@ export class BillDataProcessor {
    * 删除条目
    */
   removeItem(receipt: Receipt, itemId: string): Receipt {
-    const itemToRemove = receipt.items.find(item => item.id === itemId);
+    const itemToRemove = receipt.items.find((item) => item.id === itemId);
     if (!itemToRemove) return receipt;
 
-    const updatedItems = receipt.items.filter(item => item.id !== itemId);
+    const updatedItems = receipt.items.filter((item) => item.id !== itemId);
     // 只有当价格不为 null 时才从小计中减去
     const priceToRemove = itemToRemove.originalPrice || 0;
     const updatedReceipt = {
@@ -271,7 +268,7 @@ export class BillDataProcessor {
       items: updatedItems,
       subtotal: receipt.subtotal - priceToRemove,
       total: receipt.subtotal - priceToRemove + receipt.tax + receipt.tip,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     return this.calculateTaxAndTip(updatedReceipt);
@@ -279,4 +276,4 @@ export class BillDataProcessor {
 }
 
 // 导出单例实例
-export const dataProcessor = new BillDataProcessor(); 
+export const dataProcessor = new BillDataProcessor();

@@ -1,6 +1,6 @@
-import type { Metadata } from 'next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
-import './globals.css'
+import type { Metadata } from 'next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'SplitBill',
@@ -9,13 +9,9 @@ export const metadata: Metadata = {
     icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
     apple: '/favicon.svg',
   },
-}
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html>
       <head>
@@ -26,5 +22,5 @@ export default function RootLayout({
         <SpeedInsights />
       </body>
     </html>
-  )
+  );
 }

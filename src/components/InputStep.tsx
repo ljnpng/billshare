@@ -11,18 +11,7 @@ const InputStep: React.FC = () => {
   const tCommon = useTranslations('common');
   const params = useParams();
   const locale = params.locale as string;
-  const {
-    receipts,
-    people,
-    addReceipt,
-    addPerson,
-    removePerson,
-    setCurrentStep,
-    processReceiptImage,
-    isAiProcessing,
-    error,
-    setError
-  } = useAppStore();
+  const { receipts, people, addReceipt, addPerson, removePerson, setCurrentStep, processReceiptImage, isAiProcessing, error, setError } = useAppStore();
   const tAI = useTranslations('aiRecognition');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newPersonName, setNewPersonName] = useState('');
@@ -85,14 +74,7 @@ const InputStep: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileUpload}
-        className="sr-only"
-        aria-label={t('uploadReceipt')}
-      />
+      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="sr-only" aria-label={t('uploadReceipt')} />
 
       {/* Error alert */}
       {error && (
@@ -110,10 +92,7 @@ const InputStep: React.FC = () => {
                 >
                   {tAI('retry')}
                 </button>
-                <button
-                  onClick={handleDismissError}
-                  className="btn btn-sm btn-secondary"
-                >
+                <button onClick={handleDismissError} className="btn btn-sm btn-secondary">
                   {tAI('dismiss')}
                 </button>
               </div>
@@ -132,19 +111,12 @@ const InputStep: React.FC = () => {
               <p className="text-gray-500 text-sm sm:text-base px-4 max-w-md mx-auto">{t('emptyStateDescription')}</p>
             </div>
 
-            <button
-              onClick={handleUploadClick}
-              disabled={isAiProcessing}
-              className="btn btn-primary min-h-[3.25rem] w-56 px-6 text-lg disabled:cursor-not-allowed"
-            >
+            <button onClick={handleUploadClick} disabled={isAiProcessing} className="btn btn-primary min-h-[3.25rem] w-56 px-6 text-lg disabled:cursor-not-allowed">
               {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
             </button>
 
             <div className="upload-empty-after">
-              <button
-                onClick={() => addReceipt(tCommon('receipt'))}
-                className="block mx-auto text-gray-500 hover:text-gray-700 text-sm underline transition-colors"
-              >
+              <button onClick={() => addReceipt(tCommon('receipt'))} className="block mx-auto text-gray-500 hover:text-gray-700 text-sm underline transition-colors">
                 {t('orManualInput')}
               </button>
             </div>
@@ -163,18 +135,10 @@ const InputStep: React.FC = () => {
 
           {/* Add more receipts buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-            <button
-              type="button"
-              onClick={handleUploadClick}
-              disabled={isAiProcessing}
-              className="btn btn-secondary btn-sm !text-sm disabled:cursor-not-allowed"
-            >
+            <button type="button" onClick={handleUploadClick} disabled={isAiProcessing} className="btn btn-secondary btn-sm !text-sm disabled:cursor-not-allowed">
               {isAiProcessing ? t('aiRecognizing') : t('aiRecognition')}
             </button>
-            <button
-              onClick={() => addReceipt(tCommon('receipt'))}
-              className="btn btn-primary btn-sm !text-sm"
-            >
+            <button onClick={() => addReceipt(tCommon('receipt'))} className="btn btn-primary btn-sm !text-sm">
               {t('manualAdd')}
             </button>
           </div>
@@ -187,19 +151,10 @@ const InputStep: React.FC = () => {
             >
               <div className="flex items-center">
                 <User className="h-5 w-5 text-gray-500 mr-2" aria-hidden="true" />
-                <span className="font-medium text-gray-700">
-                  {isSplitSectionExpanded ? t('splitSectionExpanded') : t('splitSection')}
-                </span>
-                {people.length > 0 && (
-                  <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
-                    {people.length}
-                  </span>
-                )}
+                <span className="font-medium text-gray-700">{isSplitSectionExpanded ? t('splitSectionExpanded') : t('splitSection')}</span>
+                {people.length > 0 && <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">{people.length}</span>}
               </div>
-              <ChevronDown
-                className={`h-5 w-5 text-gray-500 transition-transform duration-200 ${isSplitSectionExpanded ? 'rotate-180' : ''}`}
-                aria-hidden="true"
-              />
+              <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform duration-200 ${isSplitSectionExpanded ? 'rotate-180' : ''}`} aria-hidden="true" />
             </button>
 
             {isSplitSectionExpanded && (
@@ -218,12 +173,7 @@ const InputStep: React.FC = () => {
                       className="input flex-1 text-base"
                       maxLength={20}
                     />
-                    <button
-                      type="submit"
-                      className="btn btn-primary btn-md"
-                      disabled={!newPersonName.trim()}
-                      aria-label={tCommon('add')}
-                    >
+                    <button type="submit" className="btn btn-primary btn-md" disabled={!newPersonName.trim()} aria-label={tCommon('add')}>
                       {tCommon('add')}
                     </button>
                   </div>
@@ -233,15 +183,9 @@ const InputStep: React.FC = () => {
                 {people.length > 0 ? (
                   <div className="space-y-2">
                     {people.map((person) => (
-                      <div
-                        key={person.id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                      >
+                      <div key={person.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center min-w-0 flex-1">
-                          <div
-                            className="person-color"
-                            style={{ backgroundColor: person.color }}
-                          />
+                          <div className="person-color" style={{ backgroundColor: person.color }} />
                           <span className="font-medium text-sm truncate">{person.name}</span>
                         </div>
                         <button
@@ -255,9 +199,7 @@ const InputStep: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500 text-center py-2">
-                    {t('splitSection')}
-                  </p>
+                  <p className="text-sm text-gray-500 text-center py-2">{t('splitSection')}</p>
                 )}
               </div>
             )}
@@ -265,12 +207,7 @@ const InputStep: React.FC = () => {
 
           {/* Navigation buttons */}
           <div className="flex justify-end pt-4">
-            <button
-              onClick={handleNext}
-              className="btn btn-primary btn-lg w-full sm:w-auto"
-              disabled={totalItems === 0}
-              aria-label={nextButtonText}
-            >
+            <button onClick={handleNext} className="btn btn-primary btn-lg w-full sm:w-auto" disabled={totalItems === 0} aria-label={nextButtonText}>
               {nextButtonText}
             </button>
           </div>

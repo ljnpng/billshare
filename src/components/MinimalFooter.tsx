@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { useTranslations } from 'next-intl'
+import React from 'react';
+import { useTranslations } from 'next-intl';
 const MinimalFooter: React.FC = () => {
-  const tApp = useTranslations('app')
+  const tApp = useTranslations('app');
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-10">
@@ -13,16 +13,14 @@ const MinimalFooter: React.FC = () => {
 
           {/* Center: Branding */}
           <div className="flex-1 text-center">
-            <span className="text-xs text-gray-500 font-medium tracking-wide">
-              {tApp('title')}
-            </span>
+            <span className="text-xs text-gray-500 font-medium tracking-wide">{tApp('title')}</span>
           </div>
 
           <div className="flex-1" />
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default MinimalFooter
+export default MinimalFooter;

@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "node --test",
     "test:watch": "node --test --watch"
   },
@@ -43,6 +45,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "form-data": "^4.0.0",
     "postcss": "^8.4.31",
+    "prettier": "^3.7.4",
     "puppeteer": "^24.12.1",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.2.2"

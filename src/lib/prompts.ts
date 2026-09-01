@@ -235,23 +235,23 @@ export const COMPLETE_RECEIPT_PROMPT = RECEIPT_ANALYSIS_PROMPT;
 
 // 示例响应格式
 export const EXAMPLE_RESPONSE = {
-  businessName: "The Poke Co",
+  businessName: 'The Poke Co',
   items: [
     {
-      name: "Poke Bowl",
+      name: 'Poke Bowl',
       price: 16.99,
-      description: null
+      description: null,
     },
     {
-      name: "Extra Sauce",
+      name: 'Extra Sauce',
       price: null, // 价格不清晰时可以为 null
-      description: "价格不清晰"
-    }
+      description: '价格不清晰',
+    },
   ],
   subtotal: 16.99,
   tax: 1.36,
-  tip: 3.00,
+  tip: 3.0,
   total: 21.35,
-  date: "2024-01-15",
-  confidence: 0.95
-} as const; 
+  date: '2024-01-15',
+  confidence: 0.95,
+} as const;

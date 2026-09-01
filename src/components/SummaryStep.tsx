@@ -23,8 +23,8 @@ const SummaryStep: React.FC = () => {
   const [shareUrl, setShareUrl] = useState('');
 
   const billSummary = getBillSummary();
-  const people = useAppStore(state => state.people);
-  const receipts = useAppStore(state => state.receipts);
+  const people = useAppStore((state) => state.people);
+  const receipts = useAppStore((state) => state.receipts);
   const isBillOnlyMode = people.length < 2;
 
   // Load exchange rate on component mount
@@ -44,11 +44,7 @@ const SummaryStep: React.FC = () => {
   };
 
   const toggleReceipt = (receiptId: string) => {
-    setExpandedReceipts(prev =>
-      prev.includes(receiptId)
-        ? prev.filter(id => id !== receiptId)
-        : [...prev, receiptId]
-    );
+    setExpandedReceipts((prev) => (prev.includes(receiptId) ? prev.filter((id) => id !== receiptId) : [...prev, receiptId]));
   };
 
   const getShareUrl = () => {
@@ -106,10 +102,10 @@ const SummaryStep: React.FC = () => {
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        
+
         const successful = document.execCommand('copy');
         document.body.removeChild(textArea);
-        
+
         if (successful) {
           return true;
         }
@@ -121,10 +117,10 @@ const SummaryStep: React.FC = () => {
     };
 
     const success = await copyToClipboard(shareUrl);
-    
+
     if (success) {
       setCopySuccess(true);
-      
+
       // 触发confetti特效
       confetti({
         particleCount: 100,
@@ -132,14 +128,14 @@ const SummaryStep: React.FC = () => {
         origin: { y: 0.6 },
         colors: ['#3B82F6', '#8B5CF6', '#06B6D4', '#10B981'],
         shapes: ['square', 'circle'],
-        scalar: 0.8
+        scalar: 0.8,
       });
-      
+
       setTimeout(() => setCopySuccess(false), 3000);
     } else {
       // 复制失败时显示链接让用户手动复制
       const fallbackMessage = `${t('copyManually')}: ${shareUrl}`;
-      
+
       // 在iOS Safari中使用prompt让用户可以长按复制
       if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
         const userSelection = window.prompt(t('copyManually'), shareUrl);
@@ -153,7 +149,6 @@ const SummaryStep: React.FC = () => {
       }
     }
   };
-
 
   const handleOpenInBrowser = () => {
     const shareUrl = getShareUrl();
@@ -188,14 +183,14 @@ const SummaryStep: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Bill cards */}
         <div className="space-y-6 mb-6">
-          {receipts.map(receipt => (
+          {receipts.map((receipt) => (
             <div key={receipt.id} className="card">
               <div className="card-header">
                 <h3 className="card-title">{receipt.name}</h3>
               </div>
               <div className="card-content">
                 <div className="space-y-2">
-                  {receipt.items.map(item => (
+                  {receipt.items.map((item) => (
                     <div key={item.id} className="flex justify-between">
                       <span className="text-gray-600">{item.name}</span>
                       <CurrencyDisplay usdAmount={item.originalPrice || 0} />
@@ -243,11 +238,7 @@ const SummaryStep: React.FC = () => {
 
         {/* Back button */}
         <div className="flex justify-start">
-          <button
-            onClick={handleBackToInput}
-            className="btn btn-secondary btn-md"
-            aria-label={tCommon('back')}
-          >
+          <button onClick={handleBackToInput} className="btn btn-secondary btn-md" aria-label={tCommon('back')}>
             {tCommon('back')}
           </button>
         </div>
@@ -263,11 +254,7 @@ const SummaryStep: React.FC = () => {
           <div className="card-content">
             <div className="text-center py-8">
               <p className="text-gray-500">{t('cannotGenerate')}</p>
-              <button
-                onClick={() => setCurrentStep('input')}
-                className="btn btn-primary btn-md mt-4"
-                aria-label={t('restartButton')}
-              >
+              <button onClick={() => setCurrentStep('input')} className="btn btn-primary btn-md mt-4" aria-label={t('restartButton')}>
                 {t('restartButton')}
               </button>
             </div>
@@ -283,11 +270,9 @@ const SummaryStep: React.FC = () => {
       <div className="card mb-6">
         <div className="card-header">
           <h2 className="card-title">{t('title')}</h2>
-          <p className="text-sm text-gray-600">
-            {t('description')}
-          </p>
+          <p className="text-sm text-gray-600">{t('description')}</p>
         </div>
-        
+
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* 账单总览 */}
@@ -317,13 +302,13 @@ const SummaryStep: React.FC = () => {
             <div className="p-4 bg-gray-50 rounded-lg">
               <h3 className="font-medium mb-3">{t('personalSplit')}</h3>
               <div className="space-y-2">
-                {billSummary.personalBills.map(bill => (
+                {billSummary.personalBills.map((bill) => (
                   <div key={bill.personId} className="flex justify-between">
                     <div className="flex items-center">
-                      <div 
+                      <div
                         className="person-color"
-                        style={{ 
-                          backgroundColor: billSummary.people.find(p => p.id === bill.personId)?.color 
+                        style={{
+                          backgroundColor: billSummary.people.find((p) => p.id === bill.personId)?.color,
                         }}
                       />
                       <span>{bill.personName}</span>
@@ -336,139 +321,133 @@ const SummaryStep: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* 收据明细 */}
       <div className="card mb-6">
         <div className="card-header">
-            <h2 className="card-title">{t('receiptDetails')}</h2>
+          <h2 className="card-title">{t('receiptDetails')}</h2>
         </div>
         <div className="card-content">
-            <div className="space-y-2">
-                {billSummary.receipts.map(receipt => {
-                    const isExpanded = expandedReceipts.includes(receipt.id);
-                    return (
-                        <div key={receipt.id} className="bg-gray-50 rounded-lg">
-                            <button
-                                onClick={() => toggleReceipt(receipt.id)}
-                                className="w-full flex justify-between items-center p-4 text-left"
-                            >
-                      <span className="font-medium min-w-0 break-words">{receipt.name}</span>
-                                <div className="flex items-center">
-                                    <div className="mr-4">
-                                        <CurrencyDisplay usdAmount={receipt.total} />
-                                    </div>
-                                    <ChevronDown
-                                        className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                                        aria-hidden="true"
-                                    />
-                                </div>
-                            </button>
-                            {isExpanded && (
-                                <div className="p-4 border-t">
-                                    <div className="space-y-2">
-                                        {receipt.items.map(item => (
-                                            <div key={item.id} className="space-y-1">
-                                                <div className="flex justify-between">
-                                                    <span className="text-gray-600 min-w-0 break-words">{item.name}</span>
-                                                    <CurrencyDisplay usdAmount={item.finalPrice} />
-                                                </div>
-                                                {/* 显示分配的人员 */}
-                                                <div className="flex flex-wrap gap-1">
-                                                    {item.assignedTo.map(personId => {
-                                                        const person = billSummary.people.find(p => p.id === personId);
-                                                        return person ? (
-                                                            <div
-                                                                key={personId}
-                                                                className="flex items-center gap-1 px-2 py-1 bg-white rounded text-xs border border-gray-200"
-                                                            >
-                                                                <div
-                                                                    className="w-2 h-2 rounded-full"
-                                                                    style={{ backgroundColor: person.color }}
-                                                                />
-                                                                <span className="text-gray-700">{person.name}</span>
-                                                            </div>
-                                                        ) : null;
-                                                    })}
-                                                </div>
-                                            </div>
-                                        ))}
-                                        { (receipt.tax > 0 || receipt.tip > 0) &&
-                                        <div className="border-t pt-2 mt-2">
-                                            <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">{tCommon('subtotal')}</span>
-                                            <div className="text-sm">
-                                              <div className="font-medium">${receipt.subtotal.toFixed(2)}</div>
-                                              <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.subtotal, exchangeRate).toFixed(2)}</div>
-                                            </div>
-                                            </div>
-                                            <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">{tCommon('tax')}</span>
-                                            <div className="text-sm">
-                                              <div className="font-medium">${receipt.tax.toFixed(2)}</div>
-                                              <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tax, exchangeRate).toFixed(2)}</div>
-                                            </div>
-                                            </div>
-                                            <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">{tCommon('tip')}</span>
-                                            <div className="text-sm">
-                                              <div className="font-medium">${receipt.tip.toFixed(2)}</div>
-                                              <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tip, exchangeRate).toFixed(2)}</div>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        }
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
+          <div className="space-y-2">
+            {billSummary.receipts.map((receipt) => {
+              const isExpanded = expandedReceipts.includes(receipt.id);
+              return (
+                <div key={receipt.id} className="bg-gray-50 rounded-lg">
+                  <button onClick={() => toggleReceipt(receipt.id)} className="w-full flex justify-between items-center p-4 text-left">
+                    <span className="font-medium min-w-0 break-words">{receipt.name}</span>
+                    <div className="flex items-center">
+                      <div className="mr-4">
+                        <CurrencyDisplay usdAmount={receipt.total} />
+                      </div>
+                      <ChevronDown className={`h-5 w-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} aria-hidden="true" />
+                    </div>
+                  </button>
+                  {isExpanded && (
+                    <div className="p-4 border-t">
+                      <div className="space-y-2">
+                        {receipt.items.map((item) => (
+                          <div key={item.id} className="space-y-1">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 min-w-0 break-words">{item.name}</span>
+                              <CurrencyDisplay usdAmount={item.finalPrice} />
+                            </div>
+                            {/* 显示分配的人员 */}
+                            <div className="flex flex-wrap gap-1">
+                              {item.assignedTo.map((personId) => {
+                                const person = billSummary.people.find((p) => p.id === personId);
+                                return person ? (
+                                  <div key={personId} className="flex items-center gap-1 px-2 py-1 bg-white rounded text-xs border border-gray-200">
+                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: person.color }} />
+                                    <span className="text-gray-700">{person.name}</span>
+                                  </div>
+                                ) : null;
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                        {(receipt.tax > 0 || receipt.tip > 0) && (
+                          <div className="border-t pt-2 mt-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-500">{tCommon('subtotal')}</span>
+                              <div className="text-sm">
+                                <div className="font-medium">${receipt.subtotal.toFixed(2)}</div>
+                                <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.subtotal, exchangeRate).toFixed(2)}</div>
+                              </div>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-500">{tCommon('tax')}</span>
+                              <div className="text-sm">
+                                <div className="font-medium">${receipt.tax.toFixed(2)}</div>
+                                <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tax, exchangeRate).toFixed(2)}</div>
+                              </div>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-500">{tCommon('tip')}</span>
+                              <div className="text-sm">
+                                <div className="font-medium">${receipt.tip.toFixed(2)}</div>
+                                <div className="text-gray-600">≈ ¥{convertUsdToCny(receipt.tip, exchangeRate).toFixed(2)}</div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-
       {/* 详细分摊 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        {billSummary.personalBills.map(bill => (
+        {billSummary.personalBills.map((bill) => (
           <div key={bill.personId} className="card">
             <div className="card-header">
               <div className="flex items-center">
-                <div 
+                <div
                   className="person-color"
-                  style={{ 
-                    backgroundColor: billSummary.people.find(p => p.id === bill.personId)?.color 
+                  style={{
+                    backgroundColor: billSummary.people.find((p) => p.id === bill.personId)?.color,
                   }}
                 />
                 <h3 className="card-title">{bill.personName}</h3>
               </div>
             </div>
-            
+
             <div className="card-content">
               <div className="space-y-4">
                 {/* 按收据分组显示条目 */}
                 {Object.entries(
-                  bill.items.reduce((groups, item) => {
-                    const receiptId = item.receiptId;
-                    if (!groups[receiptId]) {
-                      groups[receiptId] = {
-                        receiptName: item.receiptName,
-                        items: []
-                      };
-                    }
-                    groups[receiptId].items.push(item);
-                    return groups;
-                  }, {} as Record<string, { receiptName: string; items: typeof bill.items }>)
+                  bill.items.reduce(
+                    (groups, item) => {
+                      const receiptId = item.receiptId;
+                      if (!groups[receiptId]) {
+                        groups[receiptId] = {
+                          receiptName: item.receiptName,
+                          items: [],
+                        };
+                      }
+                      groups[receiptId].items.push(item);
+                      return groups;
+                    },
+                    {} as Record<string, { receiptName: string; items: typeof bill.items }>,
+                  ),
                 ).map(([receiptId, group]) => (
                   <div key={receiptId} className="border rounded-lg p-3 bg-gray-50">
                     <h4 className="font-medium text-sm text-gray-700 mb-2">{group.receiptName}</h4>
                     <div className="space-y-2">
-                      {group.items.map(item => (
+                      {group.items.map((item) => (
                         <div key={item.itemId} className="flex justify-between items-center">
                           <div className="min-w-0 flex-1">
                             <div className="font-medium text-sm break-words">{item.itemName}</div>
                             <div className="text-xs text-gray-600">
-                              {item.share > 1 ? tAssign('sharedWith', { count: item.share - 1 }) : tAssign('exclusive')}
+                              {item.share > 1
+                                ? tAssign('sharedWith', {
+                                    count: item.share - 1,
+                                  })
+                                : tAssign('exclusive')}
                             </div>
                           </div>
                           <div className="text-right shrink-0 whitespace-nowrap">
@@ -483,7 +462,7 @@ const SummaryStep: React.FC = () => {
                     </div>
                   </div>
                 ))}
-                
+
                 <div className="border-t pt-3">
                   <div className="flex justify-between text-lg font-bold">
                     <span>{tCommon('total')}:</span>
@@ -499,19 +478,10 @@ const SummaryStep: React.FC = () => {
       {/* 操作按钮 */}
       <div className="flex justify-between items-center gap-2">
         <div className="flex gap-2">
-          <button
-            onClick={handleEditAssignments}
-            className="btn btn-secondary btn-sm sm:btn-md"
-            aria-label={t('modifyAssignments')}
-          >
+          <button onClick={handleEditAssignments} className="btn btn-secondary btn-sm sm:btn-md" aria-label={t('modifyAssignments')}>
             {t('modifyAssignments')}
           </button>
-          <button
-            onClick={handleShareClick}
-            className="btn btn-secondary btn-sm sm:btn-md"
-            disabled={isSharing}
-            aria-label={t('shareLink')}
-          >
+          <button onClick={handleShareClick} className="btn btn-secondary btn-sm sm:btn-md" disabled={isSharing} aria-label={t('shareLink')}>
             {isSharing ? tCommon('loading') : t('shareLink')}
           </button>
         </div>

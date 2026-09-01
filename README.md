@@ -19,10 +19,10 @@ AI-powered receipt splitting application built with Next.js 14.
 - Multi-receipt processing and bill consolidation
 - i18n support (English/Chinese)
 
-
 ## Installation
 
 Requirements:
+
 - Node.js 18+
 - An OpenAI-compatible vision API endpoint, key, and model
 - A storage backend: local memory (default), Cloudflare KV, or Redis
@@ -55,6 +55,7 @@ REDIS_PASSWORD=your-password
 ```
 
 API Keys:
+
 - Groq: https://console.groq.com/keys
 - Redis: Railway, Upstash, Redis Cloud, or self-hosted
 
@@ -81,6 +82,7 @@ Pushing to `main` triggers production deployment. Other branches create preview 
 ### Self-hosted
 
 Ensure Redis is accessible from your deployment environment:
+
 - Allow external connections (modify `bind` config)
 - Open firewall ports
 - Use strong passwords

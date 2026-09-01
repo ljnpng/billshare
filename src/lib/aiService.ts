@@ -7,8 +7,7 @@ import { aiLogger } from './logger';
  * 检查文件是否为 HEIC 格式
  */
 const isHeicFormat = (file: File): boolean => {
-  return file.type === 'image/heic' || file.type === 'image/heif' || 
-         file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+  return file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
 };
 
 /**
@@ -121,7 +120,6 @@ export const recognizeReceipt = async (imageFile: File, locale: string = 'zh'): 
     }
 
     return result;
-
   } catch (error) {
     aiLogger.error('AI 识别失败:', error);
     return {
@@ -163,7 +161,7 @@ export const previewImageProcessing = async (file: File) => {
       success: true,
       original: originalInfo,
       processed: processedInfo,
-      compressionRatio: file.size > 0 ? ((file.size - processedFile.size) / file.size * 100).toFixed(1) + '%' : '0%',
+      compressionRatio: file.size > 0 ? (((file.size - processedFile.size) / file.size) * 100).toFixed(1) + '%' : '0%',
     };
   } catch (error) {
     return {
@@ -172,4 +170,4 @@ export const previewImageProcessing = async (file: File) => {
       error: error instanceof Error ? error.message : '处理失败',
     };
   }
-}; 
+};

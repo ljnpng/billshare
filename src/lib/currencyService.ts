@@ -15,13 +15,13 @@ interface ExchangeRateResponse {
 export async function getUsdToCnyRate(): Promise<number> {
   try {
     const response = await fetch(EXCHANGE_API_URL);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     const data: ExchangeRateResponse = await response.json();
-    
+
     if (data.result === 'success' && data.conversion_rates?.CNY) {
       return data.conversion_rates.CNY;
     } else {
@@ -41,15 +41,15 @@ export async function getCachedExchangeRate(): Promise<number> {
 
   const cached = localStorage.getItem('usd_cny_rate');
   const timestamp = localStorage.getItem('usd_cny_timestamp');
-  
+
   if (cached && timestamp && Date.now() - parseInt(timestamp) < CACHE_DURATION) {
     return parseFloat(cached);
   }
-  
+
   const rate = await getUsdToCnyRate();
   localStorage.setItem('usd_cny_rate', rate.toString());
   localStorage.setItem('usd_cny_timestamp', Date.now().toString());
-  
+
   return rate;
 }
 

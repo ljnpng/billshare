@@ -11,22 +11,22 @@ interface AppStore extends AppState {
   // Exchange rate state
   exchangeRate: number;
   isLoadingExchangeRate: boolean;
-  
+
   // Shared snapshots are remote; the active draft always belongs to this browser.
   createShareSession: () => Promise<string | null>;
   hydrateDraft: () => void;
   loadSharedSession: (uuid: string) => Promise<boolean>;
   replaceDraft: (data: PersistedAppState) => void;
-  
+
   // Exchange rate methods
   loadExchangeRate: () => Promise<void>;
   setExchangeRate: (rate: number) => void;
-  
+
   // Actions
   setPeople: (people: Person[]) => void;
   addPerson: (name: string) => void;
   removePerson: (personId: string) => void;
-  
+
   addReceipt: (name?: string) => string;
   removeReceipt: (receiptId: string) => void;
   updateReceiptName: (receiptId: string, name: string) => void;
@@ -35,18 +35,18 @@ interface AppStore extends AppState {
   addItem: (receiptId: string, name: string, price: number | null) => void;
   removeItem: (receiptId: string, itemId: string) => void;
   updateItemAssignment: (itemId: string, assignedTo: string[]) => void;
-  
+
   // AI识别相关
   processReceiptImage: (receiptId: string, imageFile: File, locale?: string) => Promise<boolean>;
   setAiProcessing: (processing: boolean) => void;
-  
+
   setCurrentStep: (step: AppState['currentStep']) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  
+
   // Computed values
   getBillSummary: () => ReturnType<typeof dataProcessor.generateBillSummary> | null;
-  
+
   // Reset
   reset: () => void;
 }
@@ -104,9 +104,8 @@ const browserStorage = {
 
 export const useAppStore = create<AppStore>()(
   devtools(
-    subscribeWithSelector(
-      (set, get) => ({
-        // Initial state
+    subscribeWithSelector((set, get) => ({
+      // Initial state
       people: [],
       receipts: [],
       currentStep: 'input',
@@ -114,11 +113,11 @@ export const useAppStore = create<AppStore>()(
       error: null,
       isAiProcessing: false,
       isDraftHydrated: false,
-      
+
       // Exchange rate state
       exchangeRate: FALLBACK_RATE,
       isLoadingExchangeRate: false,
-      
+
       createShareSession: async () => {
         const state = get();
 
@@ -126,9 +125,9 @@ export const useAppStore = create<AppStore>()(
           const persistData = {
             people: state.people || [],
             receipts: state.receipts || [],
-            currentStep: state.currentStep || 'input'
+            currentStep: state.currentStep || 'input',
           };
-          
+
           const response = await fetch('/api/session/new', {
             method: 'POST',
             headers: {
@@ -136,11 +135,11 @@ export const useAppStore = create<AppStore>()(
             },
             body: JSON.stringify({ data: persistData }),
           });
-          
+
           if (!response.ok) {
             throw new Error('Failed to create shared snapshot');
           }
-          
+
           const result = await response.json();
           return result.success && result.uuid ? result.uuid : null;
         } catch (error) {
@@ -153,8 +152,7 @@ export const useAppStore = create<AppStore>()(
         if (get().isDraftHydrated) return;
 
         try {
-          const rawDraft = browserStorage.getItem(DRAFT_STORAGE_KEY)
-            ?? browserStorage.getItem(LEGACY_DRAFT_STORAGE_KEY);
+          const rawDraft = browserStorage.getItem(DRAFT_STORAGE_KEY) ?? browserStorage.getItem(LEGACY_DRAFT_STORAGE_KEY);
           if (rawDraft) {
             const storedDraft = JSON.parse(rawDraft) as StoredDraft;
             if (storedDraft.version === 1 && storedDraft.state) {
@@ -177,36 +175,36 @@ export const useAppStore = create<AppStore>()(
 
         set({ isDraftHydrated: true });
       },
-      
+
       loadSharedSession: async (uuid: string) => {
         try {
           const response = await fetch(`/api/session/${uuid}`);
-          
+
           if (response.status === 404) {
             console.warn('Session not found:', uuid);
             return false;
           }
-          
+
           if (!response.ok) {
             throw new Error('Failed to load session');
           }
-          
+
           const result = await response.json();
-          
+
           if (result.success && result.data) {
             get().replaceDraft(result.data);
-            
+
             console.log('Shared snapshot loaded successfully:', uuid);
             return true;
           }
-          
+
           return false;
         } catch (error) {
           console.error('Session load error:', error);
           return false;
         }
       },
-      
+
       replaceDraft: (data: PersistedAppState) => {
         set({
           people: data.people || [],
@@ -218,7 +216,7 @@ export const useAppStore = create<AppStore>()(
           isDraftHydrated: true,
         });
       },
-      
+
       // Exchange rate methods
       loadExchangeRate: async () => {
         set({ isLoadingExchangeRate: true });
@@ -232,7 +230,7 @@ export const useAppStore = create<AppStore>()(
           set({ isLoadingExchangeRate: false });
         }
       },
-      
+
       setExchangeRate: (rate: number) => {
         set({ exchangeRate: rate });
         storeLogger.info('汇率已更新', { rate });
@@ -240,36 +238,39 @@ export const useAppStore = create<AppStore>()(
 
       // Actions
       setPeople: (people) => set({ people }),
-      
+
       addPerson: (name) => {
-        set(state => {
+        set((state) => {
           const newPerson: Person = {
             id: `person_${Date.now()}`,
             name,
-            color: assignColor(state.people.length)
+            color: assignColor(state.people.length),
           };
-          storeLogger.info('添加新人员', { 
-            personId: newPerson.id, 
+          storeLogger.info('添加新人员', {
+            personId: newPerson.id,
             name: newPerson.name,
-            totalPeople: state.people.length + 1
+            totalPeople: state.people.length + 1,
           });
           return { people: [...state.people, newPerson] };
         });
       },
-      
+
       removePerson: (personId) => {
-        set(state => {
-          const newReceipts = state.receipts.map(r => ({
+        set((state) => {
+          const newReceipts = state.receipts.map((r) => ({
             ...r,
-            items: r.items.map(item => ({
+            items: r.items.map((item) => ({
               ...item,
-              assignedTo: item.assignedTo.filter(id => id !== personId)
-            }))
+              assignedTo: item.assignedTo.filter((id) => id !== personId),
+            })),
           }));
-          return { people: state.people.filter(p => p.id !== personId), receipts: newReceipts };
+          return {
+            people: state.people.filter((p) => p.id !== personId),
+            receipts: newReceipts,
+          };
         });
       },
-      
+
       addReceipt: (name = '新收据') => {
         const newReceipt: Receipt = {
           id: `receipt_${Date.now()}`,
@@ -282,86 +283,84 @@ export const useAppStore = create<AppStore>()(
           createdAt: new Date(),
           updatedAt: new Date(),
         };
-        storeLogger.info('添加新收据', { 
-          receiptId: newReceipt.id, 
+        storeLogger.info('添加新收据', {
+          receiptId: newReceipt.id,
           name: newReceipt.name,
-          totalReceipts: get().receipts.length + 1
+          totalReceipts: get().receipts.length + 1,
         });
-        set(state => ({
+        set((state) => ({
           receipts: [...state.receipts, newReceipt],
         }));
         return newReceipt.id;
       },
 
       removeReceipt: (receiptId) => {
-        set(state => {
-          const newReceipts = state.receipts.filter(r => r.id !== receiptId);
+        set((state) => {
+          const newReceipts = state.receipts.filter((r) => r.id !== receiptId);
           return { receipts: newReceipts };
         });
       },
 
       updateReceiptName: (receiptId, name) => {
-        set(state => ({
-          receipts: state.receipts.map(r => 
-            r.id === receiptId ? { ...r, name, updatedAt: new Date() } : r
-          ),
+        set((state) => ({
+          receipts: state.receipts.map((r) => (r.id === receiptId ? { ...r, name, updatedAt: new Date() } : r)),
         }));
       },
-      
+
       updateTaxAndTip: (receiptId, tax, tip) => {
-        const receipt = get().receipts.find(r => r.id === receiptId);
+        const receipt = get().receipts.find((r) => r.id === receiptId);
         if (!receipt) return;
-        
+
         try {
           const updatedReceipt = dataProcessor.updateTaxAndTip(receipt, tax, tip);
-          set(state => ({
-            receipts: state.receipts.map(r => r.id === receiptId ? updatedReceipt : r),
+          set((state) => ({
+            receipts: state.receipts.map((r) => (r.id === receiptId ? updatedReceipt : r)),
           }));
         } catch (error) {
-          set({ 
-            error: error instanceof Error ? error.message : '更新税费失败' 
+          set({
+            error: error instanceof Error ? error.message : '更新税费失败',
           });
         }
       },
-      
+
       addItem: (receiptId, name, price) => {
-        const receipt = get().receipts.find(r => r.id === receiptId);
+        const receipt = get().receipts.find((r) => r.id === receiptId);
         if (!receipt) return;
-        
+
         try {
           const updatedReceipt = dataProcessor.addItem(receipt, name, price);
-          set(state => ({
-            receipts: state.receipts.map(r => r.id === receiptId ? updatedReceipt : r),
+          set((state) => ({
+            receipts: state.receipts.map((r) => (r.id === receiptId ? updatedReceipt : r)),
           }));
         } catch (error) {
-          set({ 
-            error: error instanceof Error ? error.message : '添加条目失败' 
+          set({
+            error: error instanceof Error ? error.message : '添加条目失败',
           });
         }
       },
-      
+
       removeItem: (receiptId, itemId) => {
-        const receipt = get().receipts.find(r => r.id === receiptId);
+        const receipt = get().receipts.find((r) => r.id === receiptId);
         if (!receipt) return;
-        
+
         try {
           const updatedReceipt = dataProcessor.removeItem(receipt, itemId);
-          set(state => ({
-            receipts: state.receipts.map(r => r.id === receiptId ? updatedReceipt : r),
+          set((state) => ({
+            receipts: state.receipts.map((r) => (r.id === receiptId ? updatedReceipt : r)),
           }));
         } catch (error) {
-          set({ 
-            error: error instanceof Error ? error.message : '删除条目失败' 
+          set({
+            error: error instanceof Error ? error.message : '删除条目失败',
           });
         }
       },
-      
+
       updateItemAssignment: (itemId, assignedTo) => {
         const allReceipts = get().receipts;
         let targetReceipt: Receipt | undefined;
-        
+
         for (const receipt of allReceipts) {
-          const found = receipt.items.find(item => item.id === itemId);
+          const found = receipt.items.find((item) => item.id === itemId);
           if (found) {
             targetReceipt = receipt;
             break;
@@ -369,73 +368,73 @@ export const useAppStore = create<AppStore>()(
         }
 
         if (!targetReceipt) return;
-        
+
         try {
           const updatedReceipt = dataProcessor.updateItemAssignment(targetReceipt, itemId, assignedTo);
-          set(state => ({
-            receipts: state.receipts.map(r => r.id === targetReceipt!.id ? updatedReceipt : r),
+          set((state) => ({
+            receipts: state.receipts.map((r) => (r.id === targetReceipt!.id ? updatedReceipt : r)),
           }));
         } catch (error) {
-          set({ 
-            error: error instanceof Error ? error.message : '更新分配失败' 
+          set({
+            error: error instanceof Error ? error.message : '更新分配失败',
           });
         }
       },
 
       // AI识别相关actions
       processReceiptImage: async (receiptId, imageFile, locale = 'zh') => {
-        storeLogger.info('开始处理收据图片', { 
-          receiptId, 
+        storeLogger.info('开始处理收据图片', {
+          receiptId,
           fileName: imageFile.name,
           fileSize: imageFile.size,
-          locale
+          locale,
         });
-        
+
         set({ isAiProcessing: true, error: null });
-        
+
         try {
           const result = await recognizeReceipt(imageFile, locale);
-          
+
           if (!result.success || !result.data) {
-            storeLogger.error('AI识别失败', { 
-              receiptId, 
-              error: result.error 
+            storeLogger.error('AI识别失败', {
+              receiptId,
+              error: result.error,
             });
-            set({ 
+            set({
               error: result.error || 'AI识别失败',
-              isAiProcessing: false 
+              isAiProcessing: false,
             });
             return false;
           }
 
           const aiData = result.data;
-          
+
           // 如果没有提供 receiptId 或 receiptId 为空，创建新收据
           let receipt: Receipt;
           let isNewReceipt = false;
-          
+
           if (!receiptId) {
             const newReceiptId = get().addReceipt(aiData.businessName || '新收据');
-            receipt = get().receipts.find(r => r.id === newReceiptId)!;
+            receipt = get().receipts.find((r) => r.id === newReceiptId)!;
             isNewReceipt = true;
             storeLogger.info('AI识别成功，创建新收据', {
               newReceiptId,
-              businessName: aiData.businessName
+              businessName: aiData.businessName,
             });
           } else {
-            const foundReceipt = get().receipts.find(r => r.id === receiptId);
+            const foundReceipt = get().receipts.find((r) => r.id === receiptId);
             if (!foundReceipt) {
               storeLogger.error('未找到指定的收据', { receiptId });
-              set({ 
+              set({
                 error: '未找到指定的收据',
-                isAiProcessing: false 
+                isAiProcessing: false,
               });
               return false;
             }
             receipt = foundReceipt;
           }
 
-          storeLogger.info('AI识别成功', { 
+          storeLogger.info('AI识别成功', {
             receiptId: receipt.id,
             businessName: aiData.businessName,
             itemCount: aiData.items.length,
@@ -444,27 +443,27 @@ export const useAppStore = create<AppStore>()(
             tip: aiData.tip,
             total: aiData.total,
             confidence: aiData.confidence,
-            isNewReceipt
+            isNewReceipt,
           });
 
           // 创建更新后的收据对象，包含AI识别的名称
-          let updatedReceipt: Receipt = { 
-            ...receipt, 
+          let updatedReceipt: Receipt = {
+            ...receipt,
             items: [],
             name: aiData.businessName || receipt.name, // 使用AI识别的名称，如果没有则保持原名称
-            updatedAt: new Date()
+            updatedAt: new Date(),
           };
 
           if (aiData.businessName && !isNewReceipt) {
-            storeLogger.info('收据名称已自动更新', { 
+            storeLogger.info('收据名称已自动更新', {
               receiptId: receipt.id,
               oldName: receipt.name,
-              newName: aiData.businessName
+              newName: aiData.businessName,
             });
           } else if (!aiData.businessName && !isNewReceipt) {
-            storeLogger.warn('AI未识别到商家名称，保持原名称', { 
+            storeLogger.warn('AI未识别到商家名称，保持原名称', {
               receiptId: receipt.id,
-              currentName: receipt.name
+              currentName: receipt.name,
             });
           }
 
@@ -474,32 +473,28 @@ export const useAppStore = create<AppStore>()(
           }
 
           // 更新税费和小费
-          const finalReceipt = dataProcessor.updateTaxAndTip(
-            updatedReceipt,
-            aiData.tax || 0,
-            aiData.tip || 0
-          );
+          const finalReceipt = dataProcessor.updateTaxAndTip(updatedReceipt, aiData.tax || 0, aiData.tip || 0);
 
           // 更新store中的receipt
-          set(state => ({
-            receipts: state.receipts.map(r => r.id === receipt.id ? finalReceipt : r),
-            isAiProcessing: false
+          set((state) => ({
+            receipts: state.receipts.map((r) => (r.id === receipt.id ? finalReceipt : r)),
+            isAiProcessing: false,
           }));
 
-          storeLogger.info('收据处理完成', { 
+          storeLogger.info('收据处理完成', {
             receiptId: receipt.id,
             finalItemCount: finalReceipt.items.length,
             finalTotal: finalReceipt.total,
-            isNewReceipt
+            isNewReceipt,
           });
 
           return true;
         } catch (error) {
-          storeLogger.error('AI识别处理异常', { 
-            receiptId, 
-            error: error instanceof Error ? error.message : 'Unknown error'
+          storeLogger.error('AI识别处理异常', {
+            receiptId,
+            error: error instanceof Error ? error.message : 'Unknown error',
           });
-          
+
           // 如果在处理过程中创建了新收据但出现异常，移除这个空收据
           if (!receiptId && error instanceof Error) {
             const receipts = get().receipts;
@@ -507,23 +502,23 @@ export const useAppStore = create<AppStore>()(
             const lastReceipt = receipts[receipts.length - 1];
             if (lastReceipt && lastReceipt.items.length === 0) {
               get().removeReceipt(lastReceipt.id);
-              storeLogger.info('移除失败创建的空收据', { 
+              storeLogger.info('移除失败创建的空收据', {
                 removedReceiptId: lastReceipt.id,
-                receiptName: lastReceipt.name
+                receiptName: lastReceipt.name,
               });
             }
           }
-          
-          set({ 
+
+          set({
             error: error instanceof Error ? error.message : 'AI识别处理失败',
-            isAiProcessing: false 
+            isAiProcessing: false,
           });
           return false;
         }
       },
 
       setAiProcessing: (isAiProcessing) => set({ isAiProcessing }),
-      
+
       setCurrentStep: (currentStep) => set({ currentStep }),
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => {
@@ -532,60 +527,61 @@ export const useAppStore = create<AppStore>()(
         }
         set({ error });
       },
-      
+
       getBillSummary: () => {
         const { receipts, people } = get();
 
         if (receipts.length === 0 || people.length === 0) {
-          storeLogger.debug('无法生成账单汇总', { 
+          storeLogger.debug('无法生成账单汇总', {
             receiptsCount: receipts.length,
-            peopleCount: people.length
+            peopleCount: people.length,
           });
           return null;
         }
-        
+
         try {
-          storeLogger.info('开始生成账单汇总', { 
+          storeLogger.info('开始生成账单汇总', {
             receiptsCount: receipts.length,
-            peopleCount: people.length
+            peopleCount: people.length,
           });
           const summary = dataProcessor.generateBillSummary(receipts, people);
-          storeLogger.info('账单汇总生成成功', { 
+          storeLogger.info('账单汇总生成成功', {
             grandTotal: summary.grandTotal,
-            personalBillsCount: summary.personalBills.length
+            personalBillsCount: summary.personalBills.length,
           });
           return summary;
         } catch (error) {
-          storeLogger.error('生成账单汇总失败', { 
-            error: error instanceof Error ? error.message : 'Unknown error'
+          storeLogger.error('生成账单汇总失败', {
+            error: error instanceof Error ? error.message : 'Unknown error',
           });
-          set({ 
-            error: error instanceof Error ? error.message : '生成账单汇总失败' 
+          set({
+            error: error instanceof Error ? error.message : '生成账单汇总失败',
           });
           return null;
         }
       },
-      
-      reset: () => set({
-        people: [],
-        receipts: [],
-        currentStep: 'input',
-        isLoading: false,
-        error: null,
-        isAiProcessing: false,
-        isDraftHydrated: true,
-        exchangeRate: FALLBACK_RATE,
-        isLoadingExchangeRate: false
-      })
+
+      reset: () =>
+        set({
+          people: [],
+          receipts: [],
+          currentStep: 'input',
+          isLoading: false,
+          error: null,
+          isAiProcessing: false,
+          isDraftHydrated: true,
+          exchangeRate: FALLBACK_RATE,
+          isLoadingExchangeRate: false,
+        }),
     })),
     {
-      name: 'splitbill-store'
-    }
-  )
+      name: 'splitbill-store',
+    },
+  ),
 );
 
 useAppStore.subscribe(
-  state => ({
+  (state) => ({
     people: state.people,
     receipts: state.receipts,
     currentStep: state.currentStep,
@@ -595,9 +591,6 @@ useAppStore.subscribe(
     browserStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(storedDraft));
   },
   {
-    equalityFn: (current, previous) =>
-      current.people === previous.people &&
-      current.receipts === previous.receipts &&
-      current.currentStep === previous.currentStep,
-  }
+    equalityFn: (current, previous) => current.people === previous.people && current.receipts === previous.receipts && current.currentStep === previous.currentStep,
+  },
 );

@@ -14,8 +14,7 @@ export const isSupportedImageFormat = (mimeType: string): boolean => {
  * 检查文件是否为 HEIC 格式
  */
 export const isHeicFormat = (file: File): boolean => {
-  return file.type === 'image/heic' || file.type === 'image/heif' || 
-         file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+  return file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
 };
 
 /**
@@ -27,26 +26,26 @@ export const convertHeicToJpeg = async (file: File): Promise<File> => {
       fileName: file.name,
       fileSize: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
     });
-    
+
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    
+
     const outputBuffer = await convert({
       buffer: buffer,
       format: 'JPEG',
-      quality: 0.9
+      quality: 0.9,
     });
-    
+
     const jpegFile = new File([outputBuffer], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
       type: 'image/jpeg',
       lastModified: Date.now(),
     });
-    
+
     aiLogger.info('HEIC 转换完成', {
       originalSize: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
       convertedSize: `${(jpegFile.size / 1024 / 1024).toFixed(2)}MB`,
     });
-    
+
     return jpegFile;
   } catch (error) {
     aiLogger.error('HEIC 转换失败:', error);
@@ -114,8 +113,7 @@ export const validateAIResponse = (response: any): boolean => {
       aiLogger.warn(`验证失败：商品 ${i + 1} 缺少有效的 name`);
       return false;
     }
-    if (item.price !== null && item.price !== undefined && 
-        (typeof item.price !== 'number' || item.price < 0)) {
+    if (item.price !== null && item.price !== undefined && (typeof item.price !== 'number' || item.price < 0)) {
       aiLogger.warn(`验证失败：商品 ${i + 1} 的 price 格式错误`);
       return false;
     }
@@ -148,9 +146,9 @@ export const parseAIResponse = (responseText: string): any => {
     aiLogger.warn('JSON 直接解析失败，尝试提取 JSON 部分', {
       directParseError: directParseError instanceof Error ? directParseError.message : 'Unknown error',
       responseLength: responseText.length,
-      responsePreview: responseText.substring(0, 200)
+      responsePreview: responseText.substring(0, 200),
     });
-    
+
     try {
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -160,7 +158,7 @@ export const parseAIResponse = (responseText: string): any => {
       } else {
         aiLogger.error('无法在响应中找到 JSON 结构', {
           responseText: responseText.substring(0, 500), // 记录前500字符用于调试
-          responseLength: responseText.length
+          responseLength: responseText.length,
         });
         throw new Error('formatError');
       }
@@ -169,9 +167,9 @@ export const parseAIResponse = (responseText: string): any => {
         extractParseError: extractParseError instanceof Error ? extractParseError.message : 'Unknown error',
         directParseError: directParseError instanceof Error ? directParseError.message : 'Unknown error',
         responseText: responseText.substring(0, 500),
-        responseLength: responseText.length
+        responseLength: responseText.length,
       });
       throw new Error('parseError');
     }
   }
-}; 
+};

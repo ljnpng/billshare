@@ -12,14 +12,8 @@ interface ReceiptCardProps {
 export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
   const t = useTranslations('receiptCard');
   const tCommon = useTranslations('common');
-  const { 
-    updateReceiptName, 
-    removeReceipt,
-    addItem, 
-    removeItem, 
-    updateTaxAndTip
-  } = useAppStore();
-  
+  const { updateReceiptName, removeReceipt, addItem, removeItem, updateTaxAndTip } = useAppStore();
+
   const [isEditingName, setIsEditingName] = useState(false);
   const [name, setName] = useState(receipt.name);
   const [newItemName, setNewItemName] = useState('');
@@ -29,7 +23,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editingItemName, setEditingItemName] = useState('');
   const [editingItemPrice, setEditingItemPrice] = useState('');
-  
+
   // 防抖定时器引用
   const [nameDebounceTimer, setNameDebounceTimer] = useState<NodeJS.Timeout | null>(null);
   const [taxDebounceTimer, setTaxDebounceTimer] = useState<NodeJS.Timeout | null>(null);
@@ -40,15 +34,14 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     setTaxAmount(receipt.tax.toString());
     setTipAmount(receipt.tip.toString());
     setName(receipt.name);
-    
+
     uiLogger.debug('收据信息同步到本地状态', {
       receiptId: receipt.id,
       tax: receipt.tax,
       tip: receipt.tip,
-      name: receipt.name
+      name: receipt.name,
     });
   }, [receipt.id, receipt.tax, receipt.tip, receipt.name]);
-
 
   const handleNameSave = () => {
     if (name.trim() !== receipt.name) {
@@ -75,38 +68,38 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
   // 即时更新税费，带防抖
   const handleTaxChange = (value: string) => {
     setTaxAmount(value);
-    
+
     // 清除之前的定时器
     if (taxDebounceTimer) {
       clearTimeout(taxDebounceTimer);
     }
-    
+
     // 设置新的防抖定时器
     const timer = setTimeout(() => {
       const tax = parseFloat(value) || 0;
       const tip = parseFloat(tipAmount) || 0;
       updateTaxAndTip(receipt.id, tax, tip);
     }, 800);
-    
+
     setTaxDebounceTimer(timer);
   };
 
   // 即时更新小费，带防抖
   const handleTipChange = (value: string) => {
     setTipAmount(value);
-    
+
     // 清除之前的定时器
     if (tipDebounceTimer) {
       clearTimeout(tipDebounceTimer);
     }
-    
+
     // 设置新的防抖定时器
     const timer = setTimeout(() => {
       const tax = parseFloat(taxAmount) || 0;
       const tip = parseFloat(value) || 0;
       updateTaxAndTip(receipt.id, tax, tip);
     }, 800);
-    
+
     setTipDebounceTimer(timer);
   };
 
@@ -142,15 +135,17 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
     setEditingItemPrice('');
   };
 
-
-
   return (
     <div className="pb-8 border-b border-gray-200">
       <div className="pb-4 border-b border-gray-200 flex justify-between items-center">
         {!isEditingName ? (
           <div className="flex items-center group">
             <h2 className="text-2xl font-bold text-gray-900">{receipt.name}</h2>
-            <button onClick={() => setIsEditingName(true)} className="ml-3 text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" aria-label={t('editReceiptName')}>
+            <button
+              onClick={() => setIsEditingName(true)}
+              className="ml-3 text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label={t('editReceiptName')}
+            >
               <Edit className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
@@ -198,7 +193,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
               placeholder={t('receiptNamePlaceholder')}
             />
             <button onClick={() => setIsEditingName(false)} className="ml-2 btn btn-ghost btn-sm text-gray-400 hover:text-gray-600" aria-label={t('finishEdit')}>
-                <Check className="h-4 w-4" aria-hidden="true" />
+              <Check className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         )}
@@ -222,8 +217,8 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
               />
               <div className="flex gap-3">
                 <div className="input-group relative flex-1 sm:flex-none">
-                   <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
-                   <input
+                  <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
+                  <input
                     type="number"
                     name="itemPrice"
                     value={newItemPrice}
@@ -242,38 +237,19 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
             </div>
           </form>
           <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-            {receipt.items.length > 0 ? receipt.items.map((item) => (
-              <div key={item.id} className="p-3 border-l-2 border-gray-200 hover:border-blue-400 hover:bg-gray-50 transition-colors">
-                {editingItemId === item.id ? (
-                  // 编辑模式
-                  <div className="flex items-center gap-3 flex-1">
-                    <input
-                      type="text"
-                      name="editItemName"
-                      value={editingItemName}
-                      onChange={(e) => setEditingItemName(e.target.value)}
-                      className="input input-sm flex-1"
-                      placeholder={t('itemNamePlaceholder')}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSaveEdit();
-                        }
-                        if (e.key === 'Escape') {
-                          handleCancelEdit();
-                        }
-                      }}
-                    />
-                    <div className="input-group relative">
-                      <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
+            {receipt.items.length > 0 ? (
+              receipt.items.map((item) => (
+                <div key={item.id} className="p-3 border-l-2 border-gray-200 hover:border-blue-400 hover:bg-gray-50 transition-colors">
+                  {editingItemId === item.id ? (
+                    // 编辑模式
+                    <div className="flex items-center gap-3 flex-1">
                       <input
-                        type="number"
-                        name="editItemPrice"
-                        value={editingItemPrice}
-                        onChange={(e) => setEditingItemPrice(e.target.value)}
-                        className="input input-sm w-24 pl-9"
-                        placeholder={t('priceEditPlaceholder')}
-                        step="0.01"
-                        min="0"
+                        type="text"
+                        name="editItemName"
+                        value={editingItemName}
+                        onChange={(e) => setEditingItemName(e.target.value)}
+                        className="input input-sm flex-1"
+                        placeholder={t('itemNamePlaceholder')}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             handleSaveEdit();
@@ -282,58 +258,83 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                             handleCancelEdit();
                           }
                         }}
-                        onBlur={() => {
-                          // 失焦时自动保存（如果有内容）
-                          if (editingItemName.trim() && editingItemPrice.trim()) {
-                            setTimeout(handleSaveEdit, 100);
-                          }
-                        }}
                       />
-                    </div>
-                    <button onClick={handleSaveEdit} className="btn btn-ghost btn-xs text-green-600 hover:text-green-700" aria-label={t('saveEditTitle')}>
-                      <Check className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                    <button onClick={handleCancelEdit} className="btn btn-ghost btn-xs text-gray-400 hover:text-gray-600" aria-label={t('cancelEditTitle')}>
-                      <X className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                  </div>
-                ) : (
-                  // 显示模式
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{item.name}</span>
-                    <div className="flex items-center gap-0.5">
-                      <span className={`text-sm font-semibold mr-2 ${item.originalPrice !== null ? 'text-gray-700' : 'text-red-500'}`}>
-                        {item.originalPrice !== null ? `$${item.originalPrice.toFixed(2)}` : t('needsPriceMessage')}
-                      </span>
-                      <button
-                        onClick={() => handleEditItem(item.id, item.name, item.originalPrice)}
-                        className="btn btn-ghost btn-xs text-gray-400 hover:text-blue-600 min-h-0 h-8 w-8 p-0"
-                        aria-label={`${t('editTitle')} ${item.name}`}
-                      >
-                        <Edit className="h-4 w-4" aria-hidden="true" />
+                      <div className="input-group relative">
+                        <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
+                        <input
+                          type="number"
+                          name="editItemPrice"
+                          value={editingItemPrice}
+                          onChange={(e) => setEditingItemPrice(e.target.value)}
+                          className="input input-sm w-24 pl-9"
+                          placeholder={t('priceEditPlaceholder')}
+                          step="0.01"
+                          min="0"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSaveEdit();
+                            }
+                            if (e.key === 'Escape') {
+                              handleCancelEdit();
+                            }
+                          }}
+                          onBlur={() => {
+                            // 失焦时自动保存（如果有内容）
+                            if (editingItemName.trim() && editingItemPrice.trim()) {
+                              setTimeout(handleSaveEdit, 100);
+                            }
+                          }}
+                        />
+                      </div>
+                      <button onClick={handleSaveEdit} className="btn btn-ghost btn-xs text-green-600 hover:text-green-700" aria-label={t('saveEditTitle')}>
+                        <Check className="h-4 w-4" aria-hidden="true" />
                       </button>
-                      <button
-                        onClick={() => removeItem(receipt.id, item.id)}
-                        className="btn btn-ghost btn-xs text-gray-400 hover:text-red-600 min-h-0 h-8 w-8 p-0"
-                        aria-label={`${t('deleteTitle')} ${item.name}`}
-                      >
-                        <Trash2 className="h-4 w-4" aria-hidden="true" />
+                      <button onClick={handleCancelEdit} className="btn btn-ghost btn-xs text-gray-400 hover:text-gray-600" aria-label={t('cancelEditTitle')}>
+                        <X className="h-4 w-4" aria-hidden="true" />
                       </button>
                     </div>
-                  </div>
-                )}
-              </div>
-            )) : <p className="text-description text-center py-8">{t('noItemsMessage')}</p>}
+                  ) : (
+                    // 显示模式
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{item.name}</span>
+                      <div className="flex items-center gap-0.5">
+                        <span className={`text-sm font-semibold mr-2 ${item.originalPrice !== null ? 'text-gray-700' : 'text-red-500'}`}>
+                          {item.originalPrice !== null ? `$${item.originalPrice.toFixed(2)}` : t('needsPriceMessage')}
+                        </span>
+                        <button
+                          onClick={() => handleEditItem(item.id, item.name, item.originalPrice)}
+                          className="btn btn-ghost btn-xs text-gray-400 hover:text-blue-600 min-h-0 h-8 w-8 p-0"
+                          aria-label={`${t('editTitle')} ${item.name}`}
+                        >
+                          <Edit className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                        <button
+                          onClick={() => removeItem(receipt.id, item.id)}
+                          className="btn btn-ghost btn-xs text-gray-400 hover:text-red-600 min-h-0 h-8 w-8 p-0"
+                          aria-label={`${t('deleteTitle')} ${item.name}`}
+                        >
+                          <Trash2 className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-description text-center py-8">{t('noItemsMessage')}</p>
+            )}
           </div>
         </div>
         {/* Right: Tax, Tip, Summary */}
         <div className="md:col-span-2 md:border-l md:pl-6">
           <div className="space-y-6">
             <div>
-              <label htmlFor={`tax-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">{t('taxLabel')}</label>
+              <label htmlFor={`tax-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">
+                {t('taxLabel')}
+              </label>
               <div className="input-group relative">
-                 <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
-                 <input
+                <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
+                <input
                   id={`tax-${receipt.id}`}
                   type="number"
                   name="tax"
@@ -346,13 +347,17 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   placeholder="0.00"
                 />
               </div>
-              <div id={`tax-help-${receipt.id}`} className="sr-only">{t('taxHelpText')}</div>
+              <div id={`tax-help-${receipt.id}`} className="sr-only">
+                {t('taxHelpText')}
+              </div>
             </div>
             <div>
-              <label htmlFor={`tip-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">{t('tipLabel')}</label>
+              <label htmlFor={`tip-${receipt.id}`} className="block text-sm font-semibold text-gray-700 mb-2">
+                {t('tipLabel')}
+              </label>
               <div className="input-group relative">
-                 <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
-                 <input
+                <DollarSign className="input-icon left-3 h-4 w-4" aria-hidden="true" />
+                <input
                   id={`tip-${receipt.id}`}
                   type="number"
                   name="tip"
@@ -365,16 +370,26 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ receipt }) => {
                   placeholder="0.00"
                 />
               </div>
-              <div id={`tip-help-${receipt.id}`} className="sr-only">{t('tipHelpText')}</div>
+              <div id={`tip-help-${receipt.id}`} className="sr-only">
+                {t('tipHelpText')}
+              </div>
             </div>
           </div>
           <div className="pt-4 mt-6 border-t border-gray-200">
             <div className="space-y-3">
-              <div className="flex justify-between text-sm"><span className="text-gray-600">{tCommon('subtotal')}:</span> <span className="font-semibold">${receipt.subtotal.toFixed(2)}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-gray-600">{tCommon('tax')}:</span> <span className="font-semibold">${receipt.tax.toFixed(2)}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-gray-600">{tCommon('tip')}:</span> <span className="font-semibold">${receipt.tip.toFixed(2)}</span></div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">{tCommon('subtotal')}:</span> <span className="font-semibold">${receipt.subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">{tCommon('tax')}:</span> <span className="font-semibold">${receipt.tax.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">{tCommon('tip')}:</span> <span className="font-semibold">${receipt.tip.toFixed(2)}</span>
+              </div>
               <div className="h-px bg-gray-200 my-2"></div>
-              <div className="flex justify-between font-bold text-lg"><span>{tCommon('total')}:</span> <span className="text-blue-600">${receipt.total.toFixed(2)}</span></div>
+              <div className="flex justify-between font-bold text-lg">
+                <span>{tCommon('total')}:</span> <span className="text-blue-600">${receipt.total.toFixed(2)}</span>
+              </div>
             </div>
           </div>
         </div>

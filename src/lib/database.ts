@@ -9,8 +9,16 @@ export enum DatabaseErrorType {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
-export interface DatabaseError { type: DatabaseErrorType; message: string; originalError?: Error }
-export interface DatabaseResult<T> { success: boolean; data?: T; error?: DatabaseError }
+export interface DatabaseError {
+  type: DatabaseErrorType;
+  message: string;
+  originalError?: Error;
+}
+export interface DatabaseResult<T> {
+  success: boolean;
+  data?: T;
+  error?: DatabaseError;
+}
 
 export interface StorageAdapter {
   get(key: string): Promise<string | null>;
@@ -35,7 +43,9 @@ class MemoryStorage implements StorageAdapter {
     this.values.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
   }
 
-  async delete(key: string) { return this.values.delete(key); }
+  async delete(key: string) {
+    return this.values.delete(key);
+  }
   async healthCheck() {}
 }
 
@@ -54,17 +64,28 @@ class RedisStorage implements StorageAdapter {
       const port = process.env.REDIS_PORT?.trim();
       const password = process.env.REDIS_PASSWORD?.trim();
       if (!host || !port || !password) throw new Error('Missing REDIS_HOST, REDIS_PORT or REDIS_PASSWORD');
-      this.client = createClient({ socket: { host, port: parseInt(port, 10) }, password });
+      this.client = createClient({
+        socket: { host, port: parseInt(port, 10) },
+        password,
+      });
       this.client.on('error', (error) => console.error('Redis connection error:', error));
     }
     if (!this.client.isOpen) await this.client.connect();
     return this.client;
   }
 
-  async get(key: string) { return (await this.getClient()).get(key); }
-  async set(key: string, value: string, ttlSeconds: number) { await (await this.getClient()).setEx(key, ttlSeconds, value); }
-  async delete(key: string) { return (await (await this.getClient()).del(key)) > 0; }
-  async healthCheck() { await (await this.getClient()).ping(); }
+  async get(key: string) {
+    return (await this.getClient()).get(key);
+  }
+  async set(key: string, value: string, ttlSeconds: number) {
+    await (await this.getClient()).setEx(key, ttlSeconds, value);
+  }
+  async delete(key: string) {
+    return (await (await this.getClient()).del(key)) > 0;
+  }
+  async healthCheck() {
+    await (await this.getClient()).ping();
+  }
 }
 
 class CloudflareKVStorage implements StorageAdapter {
@@ -82,7 +103,13 @@ class CloudflareKVStorage implements StorageAdapter {
     const { accountId, namespaceId, apiToken } = this.getConfig();
     const base = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(accountId)}/storage/kv/namespaces/${encodeURIComponent(namespaceId)}/values/${encodeURIComponent(key)}`;
     const url = ttlSeconds ? `${base}?expiration_ttl=${ttlSeconds}` : base;
-    return fetch(url, { ...init, headers: { Authorization: `Bearer ${apiToken}`, ...(init?.headers || {}) } });
+    return fetch(url, {
+      ...init,
+      headers: {
+        Authorization: `Bearer ${apiToken}`,
+        ...(init?.headers || {}),
+      },
+    });
   }
 
   async get(key: string) {
@@ -123,8 +150,12 @@ function createStorage(): StorageAdapter {
 export const storage = createStorage();
 
 export async function isStorageHealthy(): Promise<DatabaseResult<boolean>> {
-  try { await storage.healthCheck(); return { success: true, data: true }; }
-  catch (error) { return failure('Storage health check failed', error); }
+  try {
+    await storage.healthCheck();
+    return { success: true, data: true };
+  } catch (error) {
+    return failure('Storage health check failed', error);
+  }
 }
 
 export interface SessionData {
@@ -137,15 +168,34 @@ export interface SessionData {
 const SESSION_TTL = 30 * 24 * 60 * 60;
 
 export class SessionService {
-  private getSessionKey(uuid: string) { return `session:${uuid}`; }
+  private getSessionKey(uuid: string) {
+    return `session:${uuid}`;
+  }
 
   async getSession(uuid: string): Promise<DatabaseResult<SessionData>> {
     try {
       const raw = await storage.get(this.getSessionKey(uuid));
-      if (!raw) return { success: false, error: { type: DatabaseErrorType.SESSION_NOT_FOUND, message: `Session not found: ${uuid}` } };
+      if (!raw)
+        return {
+          success: false,
+          error: {
+            type: DatabaseErrorType.SESSION_NOT_FOUND,
+            message: `Session not found: ${uuid}`,
+          },
+        };
       const parsed = JSON.parse(raw);
-      return { success: true, data: { uuid, data: parsed.data, createdAt: new Date(parsed.createdAt), updatedAt: new Date(parsed.updatedAt) } };
-    } catch (error) { return failure('Failed to get session', error, DatabaseErrorType.INVALID_DATA); }
+      return {
+        success: true,
+        data: {
+          uuid,
+          data: parsed.data,
+          createdAt: new Date(parsed.createdAt),
+          updatedAt: new Date(parsed.updatedAt),
+        },
+      };
+    } catch (error) {
+      return failure('Failed to get session', error, DatabaseErrorType.INVALID_DATA);
+    }
   }
 
   async saveSession(uuid: string, data: Omit<AppState, 'isLoading' | 'error' | 'isAiProcessing'>): Promise<DatabaseResult<boolean>> {
@@ -153,23 +203,48 @@ export class SessionService {
       const key = this.getSessionKey(uuid);
       const existing = await storage.get(key);
       const createdAt = existing ? JSON.parse(existing).createdAt : new Date().toISOString();
-      await storage.set(key, JSON.stringify({ data, createdAt, updatedAt: new Date().toISOString() }), SESSION_TTL);
+      await storage.set(
+        key,
+        JSON.stringify({
+          data,
+          createdAt,
+          updatedAt: new Date().toISOString(),
+        }),
+        SESSION_TTL,
+      );
       return { success: true, data: true };
-    } catch (error) { return failure('Failed to save session', error); }
+    } catch (error) {
+      return failure('Failed to save session', error);
+    }
   }
 
   async deleteSession(uuid: string): Promise<DatabaseResult<boolean>> {
-    try { return { success: true, data: await storage.delete(this.getSessionKey(uuid)) }; }
-    catch (error) { return failure('Failed to delete session', error); }
+    try {
+      return {
+        success: true,
+        data: await storage.delete(this.getSessionKey(uuid)),
+      };
+    } catch (error) {
+      return failure('Failed to delete session', error);
+    }
   }
 
-  async cleanupOldSessions() { return 0; }
+  async cleanupOldSessions() {
+    return 0;
+  }
 }
 
 function failure<T>(operation: string, error: unknown, type = DatabaseErrorType.CONNECTION_ERROR): DatabaseResult<T> {
   const message = error instanceof Error ? error.message : 'Unknown error';
   console.error(`${operation}:`, error);
-  return { success: false, error: { type, message, originalError: error instanceof Error ? error : new Error(message) } };
+  return {
+    success: false,
+    error: {
+      type,
+      message,
+      originalError: error instanceof Error ? error : new Error(message),
+    },
+  };
 }
 
 export const sessionService = new SessionService();

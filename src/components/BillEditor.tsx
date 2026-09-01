@@ -8,13 +8,13 @@ import InputStep from './InputStep';
 import SummaryStep from './SummaryStep';
 
 export default function BillEditor() {
-  const isHydrated = useAppStore(state => state.isDraftHydrated);
-  const hydrateDraft = useAppStore(state => state.hydrateDraft);
-  const currentStep = useAppStore(state => state.currentStep);
-  const error = useAppStore(state => state.error);
-  const people = useAppStore(state => state.people);
-  const receipts = useAppStore(state => state.receipts);
-  const setCurrentStep = useAppStore(state => state.setCurrentStep);
+  const isHydrated = useAppStore((state) => state.isDraftHydrated);
+  const hydrateDraft = useAppStore((state) => state.hydrateDraft);
+  const currentStep = useAppStore((state) => state.currentStep);
+  const error = useAppStore((state) => state.error);
+  const people = useAppStore((state) => state.people);
+  const receipts = useAppStore((state) => state.receipts);
+  const setCurrentStep = useAppStore((state) => state.setCurrentStep);
 
   useEffect(() => {
     hydrateDraft();
@@ -36,9 +36,7 @@ export default function BillEditor() {
     }
 
     if (currentStep === 'summary' && people.length >= 2) {
-      const allItemsAssigned = receipts
-        .flatMap(receipt => receipt.items)
-        .every(item => item.assignedTo.length > 0);
+      const allItemsAssigned = receipts.flatMap((receipt) => receipt.items).every((item) => item.assignedTo.length > 0);
 
       if (totalItems > 0 && !allItemsAssigned) {
         setCurrentStep('assign');
@@ -46,11 +44,7 @@ export default function BillEditor() {
     }
   }, [currentStep, isHydrated, people.length, receipts, setCurrentStep]);
 
-  const step = currentStep === 'assign'
-    ? <AssignStep />
-    : currentStep === 'summary'
-      ? <SummaryStep />
-      : <InputStep />;
+  const step = currentStep === 'assign' ? <AssignStep /> : currentStep === 'summary' ? <SummaryStep /> : <InputStep />;
 
   return (
     <div className="min-h-screen bg-luxury-rich">
@@ -63,7 +57,6 @@ export default function BillEditor() {
 
         <main className="animation-fade-in">{step}</main>
       </div>
-
     </div>
   );
 }

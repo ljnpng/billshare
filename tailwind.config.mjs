@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -26,9 +23,9 @@ export default {
           gold: '#d4af37',
           darkGold: '#b8860b',
           bronze: '#cd7f32',
-        }
+        },
       },
     },
   },
   plugins: [],
-}
+};

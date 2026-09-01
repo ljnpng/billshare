@@ -17,7 +17,7 @@ export const AI_CONFIG = {
       initialQuality: 0.8,
     },
   },
-  
+
   // 错误消息配置
   errors: {
     fileUploadFailed: 'File upload failed, please check your network connection or try again later',
@@ -39,7 +39,6 @@ export const AI_CONFIG = {
 export const isSupportedImageFormat = (type: string): boolean => {
   return AI_CONFIG.image.supportedFormats.includes(type as any);
 };
-
 
 // 获取支持的图片格式信息
 export const getSupportedFormatsInfo = () => {

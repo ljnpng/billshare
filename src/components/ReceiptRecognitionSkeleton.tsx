@@ -5,12 +5,7 @@ const ReceiptRecognitionSkeleton: React.FC = () => {
   const t = useTranslations('inputStep');
 
   return (
-    <section
-      className="card receipt-recognition-skeleton"
-      aria-busy="true"
-      aria-live="polite"
-      aria-label={t('aiRecognizing')}
-    >
+    <section className="card receipt-recognition-skeleton" aria-busy="true" aria-live="polite" aria-label={t('aiRecognizing')}>
       <div className="card-header">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-600">{t('aiRecognizing')}</span>

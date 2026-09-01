@@ -12,7 +12,7 @@ export default function SharedDraftPage() {
   const router = useRouter();
   const tPreview = useTranslations('preview');
   const tCommon = useTranslations('common');
-  const loadSharedSession = useAppStore(state => state.loadSharedSession);
+  const loadSharedSession = useAppStore((state) => state.loadSharedSession);
   const [error, setError] = useState<string | null>(null);
   const uuid = params.uuid as string;
 
@@ -48,10 +48,7 @@ export default function SharedDraftPage() {
           <>
             <h2 className="text-xl font-bold text-gray-900 mb-2">{tPreview('cannotLoad')}</h2>
             <p className="text-gray-600 mb-6 text-sm">{error}</p>
-            <button
-              onClick={() => router.replace('/')}
-              className="btn btn-primary"
-            >
+            <button onClick={() => router.replace('/')} className="btn btn-primary">
               {tCommon('back')}
             </button>
           </>
