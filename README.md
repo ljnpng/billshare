@@ -38,9 +38,9 @@ npm run dev
 ## Environment Variables
 
 ```bash
-OPENAI_COMPATIBLE_BASE_URL=https://api.deepseek.com/v1
+OPENAI_COMPATIBLE_BASE_URL=https://api.groq.com/openai/v1
 OPENAI_COMPATIBLE_API_KEY=sk-...
-OPENAI_COMPATIBLE_MODEL=deepseek-v4-flash-vision-exp
+OPENAI_COMPATIBLE_MODEL=qwen/qwen3.6-27b
 STORAGE_PROVIDER=memory       # memory (default), cloudflare, or redis
 
 # Required for Cloudflare KV
@@ -55,7 +55,7 @@ REDIS_PASSWORD=your-password
 ```
 
 API Keys:
-- DeepSeek: https://platform.deepseek.com/
+- Groq: https://console.groq.com/keys
 - Redis: Railway, Upstash, Redis Cloud, or self-hosted
 
 ## Development

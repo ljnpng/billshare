@@ -19,7 +19,7 @@ const fileToBase64 = async (file: File): Promise<string> => {
 const recognizeReceipt = async (file: File, locale: string): Promise<AIRecognizedReceipt> => {
   const baseUrl = (process.env.OPENAI_COMPATIBLE_BASE_URL || '').replace(/\/$/, '')
   const apiKey = process.env.OPENAI_COMPATIBLE_API_KEY
-  const model = process.env.OPENAI_COMPATIBLE_MODEL || 'deepseek-v4-flash-vision-exp'
+  const model = process.env.OPENAI_COMPATIBLE_MODEL || 'qwen/qwen3.6-27b'
 
   if (!baseUrl || !apiKey) {
     throw new Error('OpenAI-compatible provider is not configured')
